@@ -7,7 +7,6 @@
 
 import SwiftUI
 
-@main
 struct EverFormApp: App {
     var body: some Scene {
         WindowGroup {
