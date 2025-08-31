@@ -1,0 +1,48 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/tip tracker/Core/UX/ErrorBanner.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Error: %@",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 61
+        }
+      },
+      {
+        "comment": "",
+        "key": "Double tap to retry",
+        "location": {
+          "startingColumn": 43,
+          "startingLine": 62
+        }
+      },
+      {
+        "comment": "",
+        "key": "Double tap to dismiss",
+        "location": {
+          "startingColumn": 67,
+          "startingLine": 62
+        }
+      },
+      {
+        "comment": "",
+        "key": "Retry",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 28
+        }
+      },
+      {
+        "comment": "",
+        "key": "Show Error",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 141
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,144 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/tip tracker/Features/Scanner/ScanSheetView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Scan Food",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 59
+        }
+      },
+      {
+        "comment": "",
+        "key": "Camera Error",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 88
+        }
+      },
+      {
+        "comment": "",
+        "key": "Scan Mode",
+        "location": {
+          "startingColumn": 16,
+          "startingLine": 103
+        }
+      },
+      {
+        "comment": "",
+        "key": "Scan mode selector",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 111
+        }
+      },
+      {
+        "comment": "",
+        "key": "Scan instructions: %@",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 239
+        }
+      },
+      {
+        "comment": "",
+        "key": "Processing scan",
+        "location": {
+          "startingColumn": 41,
+          "startingLine": 270
+        }
+      },
+      {
+        "comment": "",
+        "key": "Tap to %@",
+        "location": {
+          "startingColumn": 61,
+          "startingLine": 270
+        }
+      },
+      {
+        "comment": "",
+        "key": "Cancel",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 64
+        }
+      },
+      {
+        "comment": "",
+        "key": "OK",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 89
+        }
+      },
+      {
+        "comment": "",
+        "key": "Take a photo of your meal",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 154
+        }
+      },
+      {
+        "comment": "",
+        "key": "Position your plate in the frame and tap the camera button",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 158
+        }
+      },
+      {
+        "comment": "",
+        "key": "Camera Not Available",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 179
+        }
+      },
+      {
+        "comment": "",
+        "key": "Camera scanning is not available in the simulator. Tap the button below to test with mock data.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 182
+        }
+      },
+      {
+        "comment": "",
+        "key": "Generate Mock Result",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 188
+        }
+      },
+      {
+        "comment": "",
+        "key": "Camera Access Required",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 205
+        }
+      },
+      {
+        "comment": "",
+        "key": "Please grant camera access to scan food labels and barcodes.",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 208
+        }
+      },
+      {
+        "comment": "",
+        "key": "Grant Access",
+        "location": {
+          "startingColumn": 20,
+          "startingLine": 214
+        }
+      }
+    ]
+  },
+  "version": 1
+}

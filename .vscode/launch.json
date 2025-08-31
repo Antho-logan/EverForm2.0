@@ -1,0 +1,13 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run iOS (SweepPad)",
+      "type": "cppdbg",
+      "request": "launch",
+      "program": "/usr/bin/true",
+      "preLaunchTask": "sweeppad: ios run",
+      "MIMode": "lldb"
+    }
+  ]
+}

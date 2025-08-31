@@ -1,0 +1,48 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Chat/ChatComposer.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Add attachment",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 28
+        }
+      },
+      {
+        "comment": "",
+        "key": "Stop recording",
+        "location": {
+          "startingColumn": 47,
+          "startingLine": 58
+        }
+      },
+      {
+        "comment": "",
+        "key": "Start recording",
+        "location": {
+          "startingColumn": 66,
+          "startingLine": 58
+        }
+      },
+      {
+        "comment": "",
+        "key": "Send message",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 70
+        }
+      },
+      {
+        "comment": "",
+        "key": "Ask your question…",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 33
+        }
+      }
+    ]
+  },
+  "version": 1
+}

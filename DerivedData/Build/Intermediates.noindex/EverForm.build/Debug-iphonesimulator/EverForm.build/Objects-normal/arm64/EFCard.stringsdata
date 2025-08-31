@@ -1,0 +1,24 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Components/EFCard.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Complete your workout plan",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 18
+        }
+      },
+      {
+        "comment": "",
+        "key": "Training",
+        "location": {
+          "startingColumn": 1,
+          "startingLine": 18
+        }
+      }
+    ]
+  },
+  "version": 1
+}

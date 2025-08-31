@@ -1,0 +1,24 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/tip tracker/Features/Dashboard/Components/TodaysPlanSection.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Today's Plan",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 16
+        }
+      },
+      {
+        "comment": "",
+        "key": "Explain",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 102
+        }
+      }
+    ]
+  },
+  "version": 1
+}

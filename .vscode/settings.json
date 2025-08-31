@@ -1,1 +1,7 @@
-{}
+{
+  "sweetpad.workspacePath": "EverForm.xcodeproj",
+  "sweetpad.build.configuration": "Debug",
+  "sweetpad.build.scheme": "EverForm",
+  "sweetpad.build.sdk": "iphonesimulator",
+  "sweetpad.simulator.device": "iPhone 16 Pro"
+}

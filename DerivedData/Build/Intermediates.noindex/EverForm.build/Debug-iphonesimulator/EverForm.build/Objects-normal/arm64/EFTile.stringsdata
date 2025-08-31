@@ -1,0 +1,16 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Components/EFTile.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "%@: %@",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 75
+        }
+      }
+    ]
+  },
+  "version": 1
+}

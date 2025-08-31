@@ -1,0 +1,24 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/tip tracker/Features/Onboarding/Steps/LifestyleStep.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Your lifestyle",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 12
+        }
+      },
+      {
+        "comment": "",
+        "key": "Help us understand your goals and habits",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 16
+        }
+      }
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,104 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/tip tracker/Features/Onboarding/OnboardingFlow.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Progress: Step %lld of %lld",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 207
+        }
+      },
+      {
+        "comment": "",
+        "key": "Step %lld of %lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 186
+        }
+      },
+      {
+        "comment": "",
+        "key": "Back",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 248
+        }
+      },
+      {
+        "comment": "",
+        "key": "Go back to previous step",
+        "location": {
+          "startingColumn": 37,
+          "startingLine": 260
+        }
+      },
+      {
+        "comment": "",
+        "key": "Skip",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 265
+        }
+      },
+      {
+        "comment": "",
+        "key": "Skip goals and finish onboarding",
+        "location": {
+          "startingColumn": 37,
+          "startingLine": 271
+        }
+      },
+      {
+        "comment": "",
+        "key": "Finish",
+        "location": {
+          "startingColumn": 50,
+          "startingLine": 275
+        }
+      },
+      {
+        "comment": "",
+        "key": "Next",
+        "location": {
+          "startingColumn": 61,
+          "startingLine": 275
+        }
+      },
+      {
+        "comment": "",
+        "key": "Finish onboarding",
+        "location": {
+          "startingColumn": 63,
+          "startingLine": 294
+        }
+      },
+      {
+        "comment": "",
+        "key": "Continue to next step",
+        "location": {
+          "startingColumn": 85,
+          "startingLine": 294
+        }
+      },
+      {
+        "comment": "",
+        "key": "",
+        "location": {
+          "startingColumn": 42,
+          "startingLine": 295
+        }
+      },
+      {
+        "comment": "",
+        "key": "Complete required fields to continue",
+        "location": {
+          "startingColumn": 47,
+          "startingLine": 295
+        }
+      }
+    ]
+  },
+  "version": 1
+}

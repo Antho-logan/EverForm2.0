@@ -1,9 +1,0 @@
-// EverForm Prod Configuration (no secrets here)
-APP_ENV = prod
-
-// These resolve from environment-specific values (set in Xcode User-Defined Settings or CI)
-SUPABASE_URL = $(SUPABASE_URL_$(APP_ENV))
-SUPABASE_ANON_KEY = $(SUPABASE_ANON_KEY_$(APP_ENV))
-REVENUECAT_API_KEY = $(REVENUECAT_API_KEY_$(APP_ENV))
-TELEMETRY_APP_ID = $(TELEMETRY_APP_ID_$(APP_ENV))
-

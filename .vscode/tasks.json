@@ -1,0 +1,22 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "sweeppad: ios build",
+      "type": "shell",
+      "command": "bash tools/build.sh",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always", "panel": "dedicated", "echo": true, "focus": false },
+      "problemMatcher": []
+    },
+    {
+      "label": "sweeppad: ios run",
+      "type": "shell",
+      "command": "bash -lc 'set -o pipefail; bash tools/build.sh | bash tools/run-sim.sh'",
+      "options": { "cwd": "${workspaceFolder}" },
+      "presentation": { "reveal": "always", "panel": "dedicated", "echo": true, "focus": false },
+      "dependsOn": "sweeppad: ios build",
+      "problemMatcher": []
+    }
+  ]
+}

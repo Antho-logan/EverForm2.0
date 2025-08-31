@@ -1,0 +1,32 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Settings/AppearanceSettingsView.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Display",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 18
+        }
+      },
+      {
+        "comment": "",
+        "key": "Theme",
+        "location": {
+          "startingColumn": 25,
+          "startingLine": 9
+        }
+      },
+      {
+        "comment": "",
+        "key": "Appearance",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 10
+        }
+      }
+    ]
+  },
+  "version": 1
+}

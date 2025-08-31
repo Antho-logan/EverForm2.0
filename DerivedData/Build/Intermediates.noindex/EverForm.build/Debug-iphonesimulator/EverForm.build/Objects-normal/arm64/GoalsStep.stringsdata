@@ -1,0 +1,64 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/tip tracker/Features/Onboarding/Steps/GoalsStep.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Your goals",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 12
+        }
+      },
+      {
+        "comment": "",
+        "key": "Anything specific you'd like to work on? (Optional)",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 16
+        }
+      },
+      {
+        "comment": "",
+        "key": "Tell us more about your goals",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 23
+        }
+      },
+      {
+        "comment": "",
+        "key": "I want to improve my energy levels, sleep better, and build a sustainable routine...",
+        "location": {
+          "startingColumn": 21,
+          "startingLine": 27
+        }
+      },
+      {
+        "comment": "",
+        "key": "Goals and notes",
+        "location": {
+          "startingColumn": 37,
+          "startingLine": 37
+        }
+      },
+      {
+        "comment": "",
+        "key": "Pro tip",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 47
+        }
+      },
+      {
+        "comment": "",
+        "key": "The more specific you are, the better we can personalize your experience.",
+        "location": {
+          "startingColumn": 26,
+          "startingLine": 51
+        }
+      }
+    ]
+  },
+  "version": 1
+}

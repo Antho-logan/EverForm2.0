@@ -1,0 +1,32 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/tip tracker/Features/Dashboard/Components/MetricTile.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "%@: %@ %@",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 84
+        }
+      },
+      {
+        "comment": "",
+        "key": "Tap to view details",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 85
+        }
+      },
+      {
+        "comment": "",
+        "key": "Loading...",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 52
+        }
+      }
+    ]
+  },
+  "version": 1
+}

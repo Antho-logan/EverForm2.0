@@ -24,6 +24,16 @@
 			path = "tip tracker";
 			sourceTree = "<group>";
 		};
+		A1B2C3D42E4D000000000004 /* UI */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = UI;
+			sourceTree = "<group>";
+		};
+		A1B2C3D42E4D000000000005 /* Features */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Features;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -45,6 +55,8 @@
 				A1B2C3D42E4D000000000103 /* Config.prod.xcconfig */,
 				8E14E2C12E4CDC8B002FB2D1 /* EverForm */,
 				A1B2C3D42E4D000000000001 /* tip tracker */,
+				A1B2C3D42E4D000000000004 /* UI */,
+				A1B2C3D42E4D000000000005 /* Features */,
 				8E14E2C02E4CDC8B002FB2D1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -75,6 +87,8 @@
 			fileSystemSynchronizedGroups = (
 				8E14E2C12E4CDC8B002FB2D1 /* EverForm */,
 				A1B2C3D42E4D000000000001 /* tip tracker */,
+				A1B2C3D42E4D000000000004 /* UI */,
+				A1B2C3D42E4D000000000005 /* Features */,
 			);
 			name = EverForm;
 			packageProductDependencies = (
@@ -281,6 +295,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_AppEnvironment = "$(APP_ENV)";
 				INFOPLIST_KEY_CFBundleDisplayName = EverForm;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Allow EverForm to use the camera to attach photos.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Allow EverForm to record short audio notes for chat.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow EverForm to access your photos to attach images to chat.";
 				INFOPLIST_KEY_RevenueCatAPIKey = "$(REVENUECAT_API_KEY)";
 				INFOPLIST_KEY_SupabaseAnonKey = "$(SUPABASE_ANON_KEY)";
 				INFOPLIST_KEY_SupabaseURL = "$(SUPABASE_URL)";
@@ -298,6 +315,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Webproducta.EverForm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = minimal;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -324,6 +342,9 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_AppEnvironment = "$(APP_ENV)";
 				INFOPLIST_KEY_CFBundleDisplayName = EverForm;
+				INFOPLIST_KEY_NSCameraUsageDescription = "Allow EverForm to use the camera to attach photos.";
+				INFOPLIST_KEY_NSMicrophoneUsageDescription = "Allow EverForm to record short audio notes for chat.";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow EverForm to access your photos to attach images to chat.";
 				INFOPLIST_KEY_RevenueCatAPIKey = "$(REVENUECAT_API_KEY)";
 				INFOPLIST_KEY_SupabaseAnonKey = "$(SUPABASE_ANON_KEY)";
 				INFOPLIST_KEY_SupabaseURL = "$(SUPABASE_URL)";
@@ -341,6 +362,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.Webproducta.EverForm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_STRICT_CONCURRENCY = minimal;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

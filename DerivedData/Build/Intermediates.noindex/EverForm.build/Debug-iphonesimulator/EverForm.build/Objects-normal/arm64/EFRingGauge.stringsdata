@@ -1,0 +1,24 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Components/EFRingGauge.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "%@ %lld percent. %@. %@.",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 77
+        }
+      },
+      {
+        "comment": "",
+        "key": "%lld",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 54
+        }
+      }
+    ]
+  },
+  "version": 1
+}

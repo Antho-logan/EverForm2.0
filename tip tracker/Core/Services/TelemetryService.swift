@@ -1,12 +1,21 @@
+//
+//  TelemetryService.swift
+//  EverForm
+//
+//  Telemetry service for tracking user events
+//  Assumption: Simple stub for now, can integrate with TelemetryDeck later
+//
+
 import Foundation
 
-/// Telemetry service stub. Strips potential PII by convention.
-enum TelemetryService {
-	static func configure(appID: String) {
-		DebugLog.info("Telemetry configured with appID=(hidden)")
-	}
-	static func track(_ event: String, props: [String: String] = [:]) {
-		DebugLog.info("Telemetry track: \(event) props=\(props)")
-	}
+final class TelemetryService {
+    static let shared = TelemetryService()
+    
+    private init() {}
+    
+    func track(_ event: String, properties: [String: Any] = [:]) {
+        DebugLog.d("Telemetry: \(event) \(properties)")
+        // TODO: Integrate with TelemetryDeck or analytics service
+    }
 }
 

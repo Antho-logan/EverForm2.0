@@ -1,0 +1,48 @@
+{
+    "tasks": {
+        "build": {
+            "description": "Build EverForm iOS app for simulator",
+            "command": "make build",
+            "cwd": ".",
+            "env": {},
+            "tags": [
+                "build",
+                "ios"
+            ]
+        },
+        "run": {
+            "description": "Build and run EverForm in iOS Simulator",
+            "command": "make run",
+            "cwd": ".",
+            "env": {},
+            "tags": [
+                "run",
+                "ios",
+                "simulator"
+            ],
+            "dependsOn": [
+                "build"
+            ]
+        },
+        "clean": {
+            "description": "Clean build artifacts",
+            "command": "make clean",
+            "cwd": ".",
+            "env": {},
+            "tags": [
+                "clean",
+                "build"
+            ]
+        },
+        "xcode": {
+            "description": "Open project in Xcode",
+            "command": "open EverForm.xcodeproj",
+            "cwd": ".",
+            "env": {},
+            "tags": [
+                "xcode",
+                "ide"
+            ]
+        }
+    }
+}

@@ -1,0 +1,129 @@
+/Users/antho/Documents/Biofriend/EverForm/EverForm/EverForm/EverFormApp.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/EverForm/PremiumDashboard.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/EverForm/Components.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/EverForm/ContentView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Overview/QuickActions/MobilityRunView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Dashboard/ReadinessExplainerView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Services/HydrationService.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Coach/CoachView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Nutrition/FoodDatabaseService.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Services/RestTimerService.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/AppShell/CustomTabBar.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Nutrition/QuickAddMacroSheet.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Onboarding/Steps/BasicInfoStep.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Onboarding/Steps/LifestyleStep.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Persistence/SafeFileIO.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Nutrition/NutritionDiaryView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Training/WorkoutFinishView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Dashboard/Components/TodaysProgressGrid.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Training/Models/WorkoutSummary.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Nutrition/GoalEditorSheet.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Scanner/ScanSheetView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Services/ScanHistoryService.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Overview/QuickActions/FixPainSheet.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Scanner/ScanResultView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Services/TrainingStore.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Scanner/ScanViewModel.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/UX/ErrorBanner.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Nutrition/MealLogView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Mobility/MobilityRoutineSheet.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Training/WorkoutRunnerView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Profile/AdvancedProfileView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Services/TelemetryService.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Onboarding/Steps/GoalsStep.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/DesignSystem/Components/StatTile.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Overview/QuickActions/QuickMealSheet.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Overview/QuickActions/WaterQuickAddSheet.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Coordinators/AppMenuCoordinator.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Dashboard/Components/QuickActionsRow.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Models/Workout.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Nutrition/Models/FoodItem.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Scanner/ScanModels.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Coach/CoachCoordinator.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Nutrition/Models/DayNutrition.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Onboarding/ExpressOnboardingView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Services/NutritionLogService.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Services/TrainingService.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Training/WorkoutStore.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Dashboard/Components/SevenDayTrends.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Profile/ProfileStore.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/AppShell/TabTypes.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/UX/Toolbar+Extensions.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Nutrition/NutritionChartsService.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Profile/Calculators.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Models/WorkoutSession.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Nutrition/Models/MealEntry.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/AppShell/DrawerMenu.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Dashboard/Components/TodaysPlanSection.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Training/Models/ExerciseTemplate.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Onboarding/Steps/StepGoalsView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Dashboard/OverviewContentView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Models/Exercise.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/AppShell/SideMenuDrawer.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/AppShell/AppRouter.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/DesignSystem/Components/QuickActionChip.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Services/AIService.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Nutrition/NutritionIngestService.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Training/History/WorkoutHistoryListView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Training/TodayPlanSheet.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Onboarding/Steps/StepLifestyleView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Scanner/ScanHomeView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/AppShell/CustomTopBar.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Models/ChatModels.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Nutrition/Models/NutritionEntry.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Profile/ProfileExporter.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Overview/QuickActions/QuickActionCoordinator.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Nutrition/LogMealSheet.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Mocks/MockWorkouts.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Profile/CoachContextBuilder.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Onboarding/Components/ChipButton.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Training/History/WorkoutHistoryDetailView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Overview/QuickActions/BreathworkSheet.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Models/TrainingLog.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Dashboard/Components/CoachCard.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Dashboard/Components/MetricTile.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Settings/SettingsView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Profile/Models/UserProfile.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/AppShell/RootTabView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Profile/ProfileNotesStore.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/DesignSystem/DesignTokens.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Dashboard/Components/ReadinessRing.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Onboarding/Components/CardContainer.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/Features/Profile/ProfileSheet.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/Features/Profile/ProfileFlyout.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/Features/More/MoreSheetView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/Features/More/MoreSheet.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/Features/Overview/AppearanceQuickMenu.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/Features/Overview/KPIGrid.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/Features/Overview/OverviewView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Profile/Models/ProfileAdvanced.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Components/EFRingGauge.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Foundation/AppearanceStore.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Components/EFTile.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Components/EFCard.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Foundation/Color+Hex.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Foundation/Theme.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Components/EFPillButton.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Foundation/ThemeManager.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Components/EFKPI.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Foundation/AppThemeStore.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Settings/AppearanceSettingsView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Sleep/SleepRoutineSheet.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/UX/SkeletonView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Onboarding/OnboardingFlow.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/UX/UXHelpers.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Nutrition/WeeklyTrendsView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Nutrition/NutritionStore.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Nutrition/Models/WeekNutritionSummary.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Logging/DebugLog.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Services/ScanService.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Onboarding/Steps/StepBasicView.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Utils/Notifications.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Overview/QuickActions/StartWorkoutSheet.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Coordinators/WorkoutCoordinator.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Overview/QuickActions/MobilitySheet.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Profile/AttachmentStore.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Features/Dashboard/DashboardViewModel.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/tip\ tracker/Core/Training/Models/SetPlan.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/EverForm/DesignSystem.swift
+/Users/antho/Documents/Biofriend/EverForm/EverForm/.derived/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/DerivedSources/GeneratedAssetSymbols.swift

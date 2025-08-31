@@ -1,0 +1,16 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/EverForm/PremiumDashboard.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "%@: %@",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 408
+        }
+      }
+    ]
+  },
+  "version": 1
+}

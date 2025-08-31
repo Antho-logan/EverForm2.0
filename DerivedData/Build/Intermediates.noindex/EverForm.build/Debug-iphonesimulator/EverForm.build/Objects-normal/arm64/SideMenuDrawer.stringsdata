@@ -1,0 +1,16 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/tip tracker/Core/AppShell/SideMenuDrawer.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "EverForm",
+        "location": {
+          "startingColumn": 18,
+          "startingLine": 37
+        }
+      }
+    ]
+  },
+  "version": 1
+}

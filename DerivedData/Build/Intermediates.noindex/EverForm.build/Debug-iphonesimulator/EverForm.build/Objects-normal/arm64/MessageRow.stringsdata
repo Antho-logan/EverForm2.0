@@ -1,0 +1,40 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Chat/MessageRow.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Copy",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 29
+        }
+      },
+      {
+        "comment": "",
+        "key": "Delete",
+        "location": {
+          "startingColumn": 32,
+          "startingLine": 33
+        }
+      },
+      {
+        "comment": "",
+        "key": "Regenerate",
+        "location": {
+          "startingColumn": 36,
+          "startingLine": 38
+        }
+      },
+      {
+        "comment": "",
+        "key": "Audio Message",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 149
+        }
+      }
+    ]
+  },
+  "version": 1
+}
