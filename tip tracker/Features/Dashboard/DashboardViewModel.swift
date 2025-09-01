@@ -26,7 +26,19 @@ final class DashboardViewModel {
     var todayHydrationMl: Int {
         hydrationService.todayMl
     }
+    var todayHydrationGlasses: Int {
+        todayHydrationMl / 250 // Convert ml to glasses (250ml per glass)
+    }
     var targetCalories: Int = 2700
+
+    var recommendedBedtimeText: String {
+        if let recovery = todayRecovery {
+            let formatter = DateFormatter()
+            formatter.timeStyle = .short
+            return formatter.string(from: recovery.bedStart)
+        }
+        return "22:30"
+    }
 
     func addWater(_ ml: Int = 250) {
         hydrationService.addWater(ml: ml)
@@ -90,6 +102,12 @@ final class DashboardViewModel {
     // Sheet presentation states
     var showingScanSheet = false
     var showingCoachView = false
+
+    // Navigation sheet states for Today's Plan
+    var presentTraining: Bool = false
+    var presentNutrition: Bool = false
+    var presentRecovery: Bool = false
+    var presentMobility: Bool = false
     
     init() {
         seedDemo()
@@ -168,4 +186,15 @@ final class DashboardViewModel {
         openCoach()
         showingCoachView = true
     }
+
+    func profileTapped() {
+        logTap("profile_tap")
+        // TODO: Open profile view
+    }
+
+    func moreTapped() {
+        logTap("more_tap")
+        // TODO: Open more options
+    }
+
 }

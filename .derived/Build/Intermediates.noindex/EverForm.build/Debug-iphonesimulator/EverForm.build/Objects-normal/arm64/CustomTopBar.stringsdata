@@ -1,0 +1,24 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/tip tracker/Core/AppShell/CustomTopBar.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Settings",
+        "location": {
+          "startingColumn": 33,
+          "startingLine": 67
+        }
+      },
+      {
+        "comment": "",
+        "key": "%@, %@",
+        "location": {
+          "startingColumn": 22,
+          "startingLine": 39
+        }
+      }
+    ]
+  },
+  "version": 1
+}

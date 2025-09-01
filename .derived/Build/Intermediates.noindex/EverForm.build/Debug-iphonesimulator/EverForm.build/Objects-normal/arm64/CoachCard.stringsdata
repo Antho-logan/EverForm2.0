@@ -1,0 +1,56 @@
+{
+  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/tip tracker/Features/Dashboard/Components/CoachCard.swift",
+  "tables": {
+    "Localizable": [
+      {
+        "comment": "",
+        "key": "Ask the Coach",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 60
+        }
+      },
+      {
+        "comment": "",
+        "key": "Get personalized guidance and advice",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 61
+        }
+      },
+      {
+        "comment": "",
+        "key": "Ask the Coach",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 37
+        }
+      },
+      {
+        "comment": "",
+        "key": "Natural guidance with citations",
+        "location": {
+          "startingColumn": 30,
+          "startingLine": 42
+        }
+      },
+      {
+        "comment": "",
+        "key": "Insight: %@",
+        "location": {
+          "startingColumn": 29,
+          "startingLine": 132
+        }
+      },
+      {
+        "comment": "",
+        "key": "Tap to learn more",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 133
+        }
+      }
+    ]
+  },
+  "version": 1
+}

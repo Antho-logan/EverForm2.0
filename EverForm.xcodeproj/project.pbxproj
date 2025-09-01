@@ -34,6 +34,21 @@
 			path = Features;
 			sourceTree = "<group>";
 		};
+		A1B2C3D42E4D000000000006 /* Models */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A1B2C3D42E4D000000000007 /* Services */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Services;
+			sourceTree = "<group>";
+		};
+		A1B2C3D42E4D000000000008 /* Data */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = Data;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,7 +72,10 @@
 				A1B2C3D42E4D000000000001 /* tip tracker */,
 				A1B2C3D42E4D000000000004 /* UI */,
 				A1B2C3D42E4D000000000005 /* Features */,
+				A1B2C3D42E4D000000000006 /* Models */,
+				A1B2C3D42E4D000000000007 /* Services */,
 				8E14E2C02E4CDC8B002FB2D1 /* Products */,
+				8E2D135D2E65E2A7005C7B3C /* Recovered References */,
 			);
 			sourceTree = "<group>";
 		};
@@ -67,6 +85,14 @@
 				8E14E2BF2E4CDC8B002FB2D1 /* EverForm.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		8E2D135D2E65E2A7005C7B3C /* Recovered References */ = {
+			isa = PBXGroup;
+			children = (
+				A1B2C3D42E4D000000000008 /* Data */,
+			);
+			name = "Recovered References";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -89,6 +115,9 @@
 				A1B2C3D42E4D000000000001 /* tip tracker */,
 				A1B2C3D42E4D000000000004 /* UI */,
 				A1B2C3D42E4D000000000005 /* Features */,
+				A1B2C3D42E4D000000000006 /* Models */,
+				A1B2C3D42E4D000000000007 /* Services */,
+				A1B2C3D42E4D000000000008 /* Data */,
 			);
 			name = EverForm;
 			packageProductDependencies = (

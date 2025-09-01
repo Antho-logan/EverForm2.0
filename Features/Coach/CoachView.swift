@@ -8,12 +8,18 @@
 import SwiftUI
 
 struct CoachView: View {
-    @State private var messages: [ChatMessage] = [
-        ChatMessage(role: .assistant, text: "Hi! I'm your EverForm coach. How can I help you today?")
+    @State private var messages: [Message] = [
+        .init(id: UUID(), isUser: false, text: "Hi! I'm your EverForm coach. How can I help you today?")
     ]
-    @State private var inputText = ""
-    @State private var isRecording = false
-    
+    @State private var draft: String = ""
+    @State private var showRecording: Bool = false
+
+    struct Message: Identifiable, Equatable {
+        var id: UUID
+        var isUser: Bool
+        var text: String
+    }
+
     @Environment(\.colorScheme) private var colorScheme
     
     private let suggestions = [
@@ -25,193 +31,102 @@ struct CoachView: View {
     ]
     
     var body: some View {
-        let palette = Theme.palette(colorScheme)
-        
-        VStack(spacing: 0) {
-            // Messages list
+        ZStack {
             ScrollViewReader { proxy in
                 ScrollView {
-                    LazyVStack(spacing: Theme.Spacing.sm) {
-                        ForEach(messages) { message in
-                            MessageBubble(message: message)
-                                .id(message.id)
+                    CenteredContainer {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Coach")
+                                .font(.largeTitle.weight(.bold))
+                                .padding(.top, 6)
+
+                            ForEach(messages) { msg in
+                                HStack {
+                                    if msg.isUser { Spacer(minLength: 40) }
+                                    Text(msg.text)
+                                        .padding(12)
+                                        .background(
+                                            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                                                .fill(msg.isUser ? Color.accentColor.opacity(0.2) : Color(uiColor: .secondarySystemBackground))
+                                        )
+                                        .overlay(
+                                            RoundedRectangle(cornerRadius: 16).stroke(.white.opacity(0.06), lineWidth: 1)
+                                        )
+                                        .frame(maxWidth: 320, alignment: msg.isUser ? .trailing : .leading)
+                                    if !msg.isUser { Spacer(minLength: 40) }
+                                }
+                                .id(msg.id)
+                            }
+                            Color.clear.frame(height: 100)
                         }
+                        .padding(.vertical, 10)
                     }
-                    .padding(.horizontal, Theme.Spacing.md)
-                    .padding(.top, Theme.Spacing.md)
-                    .padding(.bottom, Theme.Spacing.xl)
                 }
-                .background(palette.background)
-                .onTapGesture {
-                    hideKeyboard()
-                }
-                .onChange(of: messages.count) { _, _ in
-                    if let lastMessage = messages.last {
-                        withAnimation(.easeInOut(duration: 0.3)) {
-                            proxy.scrollTo(lastMessage.id, anchor: .bottom)
-                        }
+                .onChange(of: messages) { _ in
+                    if let last = messages.last {
+                        withAnimation(.snappy) { proxy.scrollTo(last.id, anchor: .bottom) }
                     }
                 }
             }
-            
-            // Suggestions chips (above input bar)
-            if !suggestions.isEmpty {
-                SuggestionsChipsView(
-                    suggestions: suggestions,
-                    onSuggestionTapped: { suggestion in
-                        inputText = suggestion
+        }
+        .safeAreaInset(edge: .bottom) { Composer() }
+    }
+
+    @ViewBuilder
+    private func Composer() -> some View {
+        VStack(spacing: 10) {
+            // Chips
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(suggestions, id: \.self) { s in
+                        Button(s) { draft = s }
+                            .buttonStyle(.bordered)
                     }
-                )
+                }
+                .padding(.horizontal, 24)
             }
-            
+
             // Input bar
-            ChatInputBar(
-                text: $inputText,
-                onAttach: handleAttach,
-                onMicToggle: handleMicToggle,
-                onSend: handleSend
-            )
-        }
-        .navigationTitle("Coach")
-        .navigationBarTitleDisplayMode(.inline)
-        .background(palette.background)
-    }
-    
-    private func handleAttach() {
-        // Stub for document picker
-        print("Attach document - not implemented")
-    }
-    
-    private func handleMicToggle(isRecording: Bool) {
-        self.isRecording = isRecording
-        // Stub for voice recording
-        print("Mic toggle: \(isRecording)")
-    }
-    
-    private func handleSend(_ text: String) {
-        // Add user message
-        let userMessage = ChatMessage(role: .user, text: text)
-        messages.append(userMessage)
+            HStack(spacing: 10) {
+                Button { /* placeholder for file picker */ } label: {
+                    Image(systemName: "paperclip")
+                        .font(.system(size: 18, weight: .semibold))
+                        .padding(10)
+                }
 
-        // Simulate assistant response after delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            let assistantMessage = ChatMessage(role: .assistant, text: generateResponse(for: text))
-            withAnimation(.easeInOut(duration: 0.3)) {
-                messages.append(assistantMessage)
-            }
-        }
-    }
-    
-    private func generateResponse(for input: String) -> String {
-        // Simple response generation for demo
-        switch input.lowercased() {
-        case let text where text.contains("day"):
-            return "Based on your data today, you've made great progress! You've completed 8.4K steps and logged 1.9K calories. Consider adding some hydration and getting quality sleep tonight."
-        case let text where text.contains("training"):
-            return "Your training plan focuses on progressive overload and balanced muscle development. Today's Upper Power session targets your chest, shoulders, and back with compound movements."
-        case let text where text.contains("macro"):
-            return "Your current macro targets are 2400 calories with 150g protein, 300g carbs, and 80g fats. This supports your training goals while maintaining energy balance."
-        default:
-            return "I understand you're asking about \"\(input)\". Let me help you with that based on your current health data and goals."
-        }
-    }
-    
-    private func hideKeyboard() {
-        UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
-    }
-}
+                TextField("Message", text: $draft, axis: .vertical)
+                    .textFieldStyle(.roundedBorder)
+                    .lineLimit(1...4)
 
-// MARK: - Message Bubble
+                Button {
+                    showRecording.toggle()
+                } label: {
+                    Image(systemName: showRecording ? "waveform.circle.fill" : "mic.fill")
+                        .font(.system(size: 18, weight: .semibold))
+                        .padding(10)
+                }
+                .contentTransition(.symbolEffect)
+                .animation(.snappy, value: showRecording)
 
-private struct MessageBubble: View {
-    let message: ChatMessage
-    @Environment(\.colorScheme) private var colorScheme
-    
-    var body: some View {
-        let palette = Theme.palette(colorScheme)
-        
-        HStack {
-            if message.role == .user {
-                Spacer(minLength: 60)
-            }
-            
-            VStack(alignment: message.role == .user ? .trailing : .leading, spacing: 4) {
-                Text(message.text)
-                    .font(.system(size: 16, weight: .regular))
-                    .foregroundStyle(message.role == .user ? .white : palette.textPrimary)
-                    .padding(.horizontal, Theme.Spacing.md)
-                    .padding(.vertical, Theme.Spacing.sm)
-                    .background(
-                        message.role == .user ?
-                        palette.accent :
-                        palette.surfaceElevated
-                    )
-                    .clipShape(
-                        RoundedRectangle(cornerRadius: Theme.Radius.card)
-                    )
-
-                Text(formatTimestamp(message.createdAt))
-                    .font(.system(size: 12, weight: .regular))
-                    .foregroundStyle(palette.textSecondary)
-                    .padding(.horizontal, Theme.Spacing.xs)
-            }
-            
-            if message.role == .assistant {
-                Spacer(minLength: 60)
-            }
-        }
-    }
-    
-    private func formatTimestamp(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
-    }
-}
-
-// MARK: - Suggestions Chips
-
-private struct SuggestionsChipsView: View {
-    let suggestions: [String]
-    let onSuggestionTapped: (String) -> Void
-    
-    @Environment(\.colorScheme) private var colorScheme
-    
-    var body: some View {
-        let palette = Theme.palette(colorScheme)
-        
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: Theme.Spacing.xs) {
-                ForEach(suggestions, id: \.self) { suggestion in
-                    Button(action: {
-                        let impact = UIImpactFeedbackGenerator(style: .light)
-                        impact.impactOccurred()
-                        onSuggestionTapped(suggestion)
-                    }) {
-                        Text(suggestion)
-                            .font(.system(size: 14, weight: .medium))
-                            .foregroundStyle(palette.textPrimary)
-                            .padding(.horizontal, Theme.Spacing.sm)
-                            .padding(.vertical, Theme.Spacing.xs)
-                            .background(palette.surface)
-                            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.pill))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: Theme.Radius.pill)
-                                    .stroke(palette.stroke, lineWidth: 1)
-                            )
-                    }
-                    .buttonStyle(.plain)
+                Button {
+                    guard !draft.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+                    messages.append(.init(id: UUID(), isUser: true, text: draft))
+                    draft = ""
+                } label: {
+                    Image(systemName: "arrow.up.circle.fill")
+                        .font(.system(size: 22, weight: .semibold))
+                        .padding(.leading, 2)
                 }
             }
-            .padding(.horizontal, Theme.Spacing.md)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 10)
+            .background(.ultraThinMaterial, in: Capsule())
+            .padding(.horizontal, 24)
+            .padding(.bottom, 10)
         }
-        .padding(.vertical, Theme.Spacing.xs)
-        .background(palette.background.opacity(0.8))
+        .background(.clear)
     }
 }
-
-// MARK: - Chat Message Model
-// Using existing ChatMessage from ChatTypes.swift
 
 #Preview {
     NavigationView {

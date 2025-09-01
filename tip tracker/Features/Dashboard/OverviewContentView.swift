@@ -209,7 +209,8 @@ struct OverviewContentView: View {
             ], spacing: 12) {
                 QuickActionTile(
                     icon: "drop.fill",
-                    title: "Add Water"
+                    title: "Add Water",
+                    style: .water
                 ) {
                     DebugLog.info("Overview: Add Water quick action tapped")
                     viewModel.addWater(250)
@@ -217,14 +218,16 @@ struct OverviewContentView: View {
 
                 QuickActionTile(
                     icon: "wind",
-                    title: "Breathwork"
+                    title: "Breathwork",
+                    style: .info
                 ) {
                     DebugLog.info("Overview: Breathwork quick action tapped")
                 }
 
                 QuickActionTile(
                     icon: "cross.case",
-                    title: "Fix Pain"
+                    title: "Fix Pain",
+                    style: .danger
                 ) {
                     DebugLog.info("Overview: Fix pain quick action tapped")
                     openExplain("fix_pain", CoachTopic.mobility.rawValue)
@@ -232,7 +235,8 @@ struct OverviewContentView: View {
 
                 QuickActionTile(
                     icon: "brain.head.profile",
-                    title: "Ask Coach"
+                    title: "Ask Coach",
+                    style: .success
                 ) {
                     DebugLog.info("Overview: Ask Coach quick action tapped")
                     viewModel.openCoach()
@@ -318,42 +322,7 @@ private struct PlanCard: View {
     }
 }
 
-// MARK: - Quick Action Tile Component
 
-private struct QuickActionTile: View {
-    let icon: String
-    let title: String
-    let action: () -> Void
-
-    @Environment(\.colorScheme) private var colorScheme
-
-    var body: some View {
-        Button(action: action) {
-            VStack(spacing: 8) {
-                Image(systemName: icon)
-                    .font(.system(size: 20, weight: .medium))
-                    .foregroundStyle(Theme.palette(colorScheme).accent)
-                    .frame(width: 32, height: 32)
-
-                Text(title)
-                    .font(.system(size: 12, weight: .medium))
-                    .foregroundStyle(Theme.palette(colorScheme).textPrimary)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .minimumScaleFactor(0.8)
-            }
-            .frame(width: 84, height: 84)
-            .background(Theme.palette(colorScheme).surface)
-            .overlay(
-                RoundedRectangle(cornerRadius: Theme.Radius.card)
-                    .stroke(Theme.palette(colorScheme).stroke, lineWidth: 1)
-            )
-            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
-        }
-        .buttonStyle(.plain)
-        .accessibilityLabel(title)
-    }
-}
 
 // MARK: - Resume Workout Chip
 

@@ -252,36 +252,7 @@ struct ScanView: View {
 
 // MARK: - Supporting Components
 
-private struct EFPillButton: View {
-    let title: String
-    let style: Style
-    let action: () -> Void
 
-    @Environment(\.colorScheme) private var colorScheme
-
-    enum Style {
-        case primary, secondary
-    }
-
-    var body: some View {
-        let palette = Theme.palette(colorScheme)
-
-        Button(action: action) {
-            Text(title)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(style == .primary ? .white : palette.accent)
-                .frame(maxWidth: .infinity)
-                .frame(height: 44)
-                .background(style == .primary ? palette.accent : palette.accent.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.pill))
-                .overlay(
-                    RoundedRectangle(cornerRadius: Theme.Radius.pill)
-                        .stroke(style == .primary ? Color.clear : palette.accent, lineWidth: 1)
-                )
-        }
-        .buttonStyle(.plain)
-    }
-}
 
 private struct ExplainerView: View {
     let mode: ScanMode

@@ -1,6 +1,16 @@
 import SwiftUI
 import Observation
 
+// MARK: - Notifications for navigation hops
+extension Notification.Name {
+    static let navigateToCoachTab = Notification.Name("NavigateToCoachTab")
+    static let switchToCoachTab = Notification.Name("SwitchToCoachTab")
+    static let navigateToTraining  = Notification.Name("EF.NavigateToTraining")
+    static let navigateToNutrition = Notification.Name("EF.NavigateToNutrition")
+    static let navigateToRecovery  = Notification.Name("EF.NavigateToRecovery")
+    static let navigateToMobility  = Notification.Name("EF.NavigateToMobility")
+}
+
 /// Root tab shell using unified AppRouter for all navigation
 struct RootTabView: View {
     @Environment(AppRouter.self) private var router
@@ -9,6 +19,7 @@ struct RootTabView: View {
     @State private var onboardingStore = OnboardingStore()
     @State private var showOnboarding = false
     @State private var dashboardViewModel = DashboardViewModel()
+    @State private var journalStore = JournalStore()
 
     // Local sheet state for quick actions (not menu-driven)
     @State private var showWorkoutSession = false
@@ -35,6 +46,7 @@ struct RootTabView: View {
                         onQuickMeal: { },
                         onStartMobility: { }
                     )
+                    .environmentObject(journalStore)
                 }
                 .tabItem { Label("Overview", systemImage: "house") }
                 .tag(AppRouter.Tab.overview)
@@ -42,6 +54,7 @@ struct RootTabView: View {
                 // COACH
                 NavigationStack {
                     CoachView()
+                        .environmentObject(journalStore)
                 }
                 .tabItem { Label("Coach", systemImage: "brain.head.profile") }
                 .tag(AppRouter.Tab.coach)
@@ -112,6 +125,17 @@ struct RootTabView: View {
         .onAppear {
             showOnboarding = !onboardingStore.isCompleted
         }
+        .onReceive(NotificationCenter.default.publisher(for: .navigateToCoachTab)) { _ in
+            router.selectedTab = .coach
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .switchToCoachTab)) { _ in
+            router.selectedTab = .coach
+        }
+        // Optional future hooks if you later navigate deeper from Overview:
+        .onReceive(NotificationCenter.default.publisher(for: .navigateToTraining))  { _ in router.selectedTab = .overview }
+        .onReceive(NotificationCenter.default.publisher(for: .navigateToNutrition)) { _ in router.selectedTab = .overview }
+        .onReceive(NotificationCenter.default.publisher(for: .navigateToRecovery))  { _ in router.selectedTab = .overview }
+        .onReceive(NotificationCenter.default.publisher(for: .navigateToMobility))  { _ in router.selectedTab = .overview }
         // ==== ONBOARDING FULL SCREEN COVER ====
         .fullScreenCover(isPresented: $showOnboarding) {
             OnboardingFlow()
@@ -192,12 +216,8 @@ struct RootTabView: View {
             .interactiveDismissDisabled() // don't lose a session by swipe
         }
         .sheet(isPresented: $showBreathwork) {
-            NavigationStack {
-                BreathworkSheet(onClose: { showBreathwork = false })
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbarCloseButton { showBreathwork = false }
-            }
-            .presentationDetents([.medium, .large])
+            BreathworkSheet()
+                .presentationDetents([.medium, .large])
         }
         .sheet(isPresented: $showWater) {
             NavigationStack {

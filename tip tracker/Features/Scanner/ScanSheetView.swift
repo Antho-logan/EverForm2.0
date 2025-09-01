@@ -24,6 +24,7 @@ struct ScanSheetView: View {
     @State private var scanResult: ScanResult? = nil
     @State private var showingResult = false
     @State private var showingImagePicker = false
+    @State private var selectedImage: UIImage? = nil
     @State private var cameraPermission: AVAuthorizationStatus = .notDetermined
     @State private var errorMessage: String? = nil
     
@@ -73,12 +74,19 @@ struct ScanSheetView: View {
             .onChange(of: selectedMode) { newMode in
                 TelemetryService.shared.track("scan_mode_change_\(newMode.rawValue)")
             }
-            .sheet(isPresented: $showingImagePicker) {
-                ImagePicker { image in
+            .onChange(of: selectedImage) { image in
+                if let image = image {
                     Task {
                         await handlePlateImage(image)
                     }
                 }
+            }
+            .sheet(isPresented: $showingImagePicker) {
+                ImagePicker(
+                    image: $selectedImage,
+                    isPresented: $showingImagePicker,
+                    sourceType: .camera
+                )
             }
             .sheet(isPresented: $showingResult) {
                 if let result = scanResult {
@@ -430,39 +438,4 @@ struct DataScannerViewRepresentable: UIViewControllerRepresentable {
 }
 
 // MARK: - Image Picker
-
-struct ImagePicker: UIViewControllerRepresentable {
-    let onImageSelected: (UIImage) -> Void
-    
-    func makeUIViewController(context: Context) -> UIImagePickerController {
-        let picker = UIImagePickerController()
-        picker.sourceType = .camera
-        picker.delegate = context.coordinator
-        return picker
-    }
-    
-    func updateUIViewController(_ uiViewController: UIImagePickerController, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(onImageSelected: onImageSelected)
-    }
-    
-    class Coordinator: NSObject, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
-        let onImageSelected: (UIImage) -> Void
-        
-        init(onImageSelected: @escaping (UIImage) -> Void) {
-            self.onImageSelected = onImageSelected
-        }
-        
-        func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-            if let image = info[.originalImage] as? UIImage {
-                onImageSelected(image)
-            }
-            picker.dismiss(animated: true)
-        }
-        
-        func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-            picker.dismiss(animated: true)
-        }
-    }
-}
+// ImagePicker moved to Services/Media/MediaPicker.swift to avoid duplicates

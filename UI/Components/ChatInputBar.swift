@@ -22,91 +22,75 @@ struct ChatInputBar: View {
     
     var body: some View {
         let palette = Theme.palette(colorScheme)
-        
+
         VStack(spacing: 0) {
+            // Single full-width dock
             HStack(spacing: Theme.Spacing.sm) {
-                // Attach button
+                // Paperclip button (left)
                 Button(action: {
                     let impact = UIImpactFeedbackGenerator(style: .light)
                     impact.impactOccurred()
                     onAttach()
                 }) {
-                    Image(systemName: "plus")
+                    Image(systemName: "paperclip")
                         .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(palette.textSecondary)
-                        .frame(width: 32, height: 32)
-                        .background(palette.surface)
-                        .clipShape(Circle())
+                        .foregroundStyle(palette.textPrimary)
+                        .frame(width: 44, height: 44)
+                        .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
                 .accessibilityLabel("Attach document")
                 
-                // Text input area
-                HStack(spacing: Theme.Spacing.xs) {
-                    TextField("Message", text: $text, axis: .vertical)
-                        .textFieldStyle(.plain)
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundStyle(palette.textPrimary)
-                        .focused($isTextFieldFocused)
-                        .lineLimit(1...3)
-                        .padding(.horizontal, Theme.Spacing.sm)
-                        .padding(.vertical, Theme.Spacing.xs)
-                    
-                    // Mic button with animation
-                    Button(action: {
-                        let impact = UIImpactFeedbackGenerator(style: .medium)
-                        impact.impactOccurred()
-                        toggleRecording()
-                    }) {
-                        ZStack {
-                            // Ripple effect when recording
-                            if isRecording {
-                                Circle()
-                                    .stroke(palette.accent.opacity(0.3), lineWidth: 2)
-                                    .scaleEffect(micScale)
-                                    .opacity(micOpacity)
-                            }
-                            
-                            Image(systemName: isRecording ? "mic.fill" : "mic")
-                                .font(.system(size: 18, weight: .medium))
-                                .foregroundStyle(isRecording ? palette.accent : palette.textSecondary)
-                                .frame(width: 32, height: 32)
-                                .background(isRecording ? palette.accent.opacity(0.1) : palette.surface)
-                                .clipShape(Circle())
-                        }
-                    }
-                    .buttonStyle(.plain)
-                    .accessibilityLabel(isRecording ? "Stop recording" : "Start recording")
-                }
-                .background(palette.surface)
-                .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
-                .overlay(
-                    RoundedRectangle(cornerRadius: Theme.Radius.card)
-                        .stroke(palette.stroke, lineWidth: 1)
-                )
-                
-                // Send button
+                // Center: rounded text field that grows up to 3 lines
+                TextField("Message", text: $text, axis: .vertical)
+                    .textFieldStyle(.plain)
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundStyle(palette.textPrimary)
+                    .focused($isTextFieldFocused)
+                    .lineLimit(1...3)
+                    .padding(.horizontal, Theme.Spacing.md)
+                    .padding(.vertical, Theme.Spacing.sm)
+                    .background(palette.surface)
+                    .clipShape(RoundedRectangle(cornerRadius: 22))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 22)
+                            .stroke(palette.stroke, lineWidth: 1)
+                    )
+
+                // Right: mic button with pulse animation
                 Button(action: {
-                    let impact = UIImpactFeedbackGenerator(style: .light)
+                    let impact = UIImpactFeedbackGenerator(style: .medium)
                     impact.impactOccurred()
-                    sendMessage()
+                    toggleRecording()
                 }) {
-                    Image(systemName: "arrow.up")
-                        .font(.system(size: 16, weight: .semibold))
-                        .foregroundStyle(.white)
-                        .frame(width: 32, height: 32)
-                        .background(canSend ? palette.accent : palette.textSecondary)
-                        .clipShape(Circle())
+                    ZStack {
+                        // Pulsing animation when recording
+                        if isRecording {
+                            Circle()
+                                .fill(palette.accent.opacity(0.2))
+                                .frame(width: 44, height: 44)
+                                .scaleEffect(micScale)
+                                .opacity(micOpacity)
+                                .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true), value: isRecording)
+                        }
+
+                        Image(systemName: isRecording ? "mic.fill" : "mic")
+                            .font(.system(size: 20, weight: .medium))
+                            .foregroundStyle(isRecording ? .white : palette.textPrimary)
+                            .frame(width: 44, height: 44)
+                            .background(isRecording ? palette.accent : Color.clear)
+                            .clipShape(Circle())
+                    }
                 }
                 .buttonStyle(.plain)
-                .disabled(!canSend)
-                .accessibilityLabel("Send message")
+                .accessibilityLabel(isRecording ? "Stop recording" : "Start recording")
+                .accessibilityValue(isRecording ? "Recording in progress" : "Tap and hold to record")
             }
             .padding(.horizontal, Theme.Spacing.md)
-            .padding(.vertical, Theme.Spacing.sm)
+            .padding(.vertical, Theme.Spacing.md)
             .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
-            .shadow(color: .black.opacity(0.15), radius: 8, x: 0, y: 4)
+            .clipShape(RoundedRectangle(cornerRadius: 24))
+            .shadow(color: .black.opacity(0.1), radius: 12, x: 0, y: 4)
         }
         .padding(.horizontal, Theme.Spacing.md)
         .padding(.bottom, Theme.Spacing.sm)

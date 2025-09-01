@@ -62,7 +62,7 @@ enum Theme {
             textPrimary: Color.black.opacity(0.9),
             textSecondary: Color.black.opacity(0.65),
             accent: Color(red: 0.20, green: 0.70, blue: 0.35),
-            stroke: Color.black.opacity(0.12)
+            stroke: Color.black.opacity(0.08)
         )
 
         // Dark = existing minimal
@@ -73,7 +73,30 @@ enum Theme {
             textPrimary: .white,
             textSecondary: .white.opacity(0.75),
             accent: Color(red: 0.47, green: 0.90, blue: 0.38),
-            stroke: .white.opacity(0.10)
+            stroke: .white.opacity(0.08)
+        )
+    }
+
+    // MARK: - Semantic Colors
+
+    struct Semantic {
+        let success: Color
+        let info: Color
+        let danger: Color
+        let water: Color
+
+        static let light = Semantic(
+            success: Color(red: 0.20, green: 0.70, blue: 0.35), // accentGreen
+            info: Color(red: 0.20, green: 0.50, blue: 0.90),    // accentBlue
+            danger: Color(red: 0.90, green: 0.30, blue: 0.30),  // accentRed
+            water: Color(red: 0.20, green: 0.80, blue: 0.80)    // accentAqua
+        )
+
+        static let dark = Semantic(
+            success: Color(red: 0.47, green: 0.90, blue: 0.38), // accentGreen
+            info: Color(red: 0.40, green: 0.70, blue: 1.0),     // accentBlue
+            danger: Color(red: 1.0, green: 0.50, blue: 0.50),   // accentRed
+            water: Color(red: 0.40, green: 0.90, blue: 0.90)    // accentAqua
         )
     }
 
@@ -84,6 +107,14 @@ enum Theme {
     }
     
     static func palette(_ cs: ColorScheme) -> Palette {
+        switch currentMode {
+        case .system: return cs == .dark ? .dark : .light
+        case .light: return .light
+        case .dark: return .dark
+        }
+    }
+
+    static func semantic(_ cs: ColorScheme) -> Semantic {
         switch currentMode {
         case .system: return cs == .dark ? .dark : .light
         case .light: return .light

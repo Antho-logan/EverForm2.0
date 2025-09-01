@@ -2,15 +2,22 @@ import SwiftUI
 
 public struct EFCard<Content: View>: View {
     let content: Content
+    let minHeight: CGFloat
+    let corner: CGFloat
     @Environment(\.colorScheme) private var colorScheme
-    
-    public init(@ViewBuilder content: () -> Content) {
+
+    public init(minHeight: CGFloat = 156,
+                corner: CGFloat = 16,
+                @ViewBuilder content: () -> Content) {
+        self.minHeight = minHeight
+        self.corner = corner
         self.content = content()
     }
-    
+
     public var body: some View {
         content
             .padding(Theme.Spacing.lg)
+            .frame(minHeight: minHeight)
             .efCardStyle(scheme: colorScheme)
     }
 }
