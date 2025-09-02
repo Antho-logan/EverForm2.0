@@ -1,0 +1,27 @@
+# macOS
+.DS_Store
+
+# Xcode / Derived
+DerivedData/
+build/
+*.xcworkspace/xcuserdata/
+xcuserdata/
+*.xcuserstate
+
+# Swift Package Manager
+.build/
+Package.resolved
+
+# CocoaPods / Carthage (if ever used)
+Pods/
+Carthage/
+
+# Fastlane / Logs
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+*.log
+
+# Misc
+*.swp
+*.zip

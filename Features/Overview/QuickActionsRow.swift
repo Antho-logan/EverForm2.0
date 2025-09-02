@@ -9,6 +9,7 @@ import SwiftUI
 
 // A simple, in-content, single-row Quick Actions section (no floating dock).
 struct QuickActionsRow: View {
+    @Environment(\.colorScheme) private var scheme
     var onAddWater: () -> Void
     var onBreathwork: () -> Void
     var onFixPain: () -> Void
@@ -44,13 +45,14 @@ struct QuickActionsRow: View {
                     .font(.title3.weight(.semibold))
                 Text(title)
                     .font(.footnote)
+                    .foregroundStyle(.primary)
                     .multilineTextAlignment(.center)
                     .lineLimit(2)
                     .minimumScaleFactor(0.8)
             }
             .frame(maxWidth: .infinity, minHeight: 72)
             .padding(12)
-            .background(RoundedRectangle(cornerRadius: 14).fill(Color(.tertiarySystemFill)))
+            .efCard()
         }
         .buttonStyle(.plain)
         .accessibilityLabel(Text(title))

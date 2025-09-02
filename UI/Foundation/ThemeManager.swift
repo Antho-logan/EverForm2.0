@@ -44,4 +44,11 @@ final class ThemeManager {
         selectedTheme = theme
         print("Telemetry: theme_changed")
     }
+
+    var beigeBackground: Color {
+        switch selectedTheme {
+        case .light: return Color(red: 0.96, green: 0.93, blue: 0.89) // beige
+        default: return Color(.systemBackground)
+        }
+    }
 }

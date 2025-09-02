@@ -3,7 +3,7 @@ import Observation
 
 @Observable
 final class AppRouter {
-    enum Tab: Hashable { case overview, coach, scan, more }
+    enum Tab: Hashable { case overview, coach, scan, progress }
     enum FullScreen: Identifiable, Hashable {
         case logMeal, startWorkout, mobility, sleep, nutritionTrends, workoutHistory, settings
         case expressOnboarding, advancedProfile, editProfile, profile

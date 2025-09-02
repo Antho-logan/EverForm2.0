@@ -11,7 +11,8 @@ import Observation
 @main
 struct EverFormApp: App {
     @State private var appearance = AppearanceStore()
-    
+    @State private var themeManager = ThemeManager()
+
     // Own long-lived state here (create only for types that exist in the repo)
     @State private var appRouter          = AppRouter()
     @State private var workoutStore       = WorkoutStore()
@@ -20,13 +21,12 @@ struct EverFormApp: App {
     @State private var profileStore       = ProfileStore()
     @State private var notesStore         = ProfileNotesStore()
     @State private var attachmentStore    = AttachmentStore()
-    @State private var themeManager       = ThemeManager()
+
 
     var body: some Scene {
         WindowGroup {
-            RootTabView()
+            ContentView()
                 .environment(appearance)
-                .preferredColorScheme(appearance.preferredColorScheme)
                 // Inject Observation (@Observable) stores
                 .environment(appRouter)
                 .environment(workoutStore)
@@ -40,6 +40,8 @@ struct EverFormApp: App {
                 // ALSO inject as EnvironmentObject for any store that conforms to ObservableObject.
                 // CoachCoordinator uses singleton pattern, so we don't inject it here
                 .environmentObject(CoachCoordinator.shared)
+                .background(themeManager.beigeBackground.ignoresSafeArea())
+                .preferredColorScheme(themeManager.selectedTheme.colorScheme)
 
                 .onAppear { 
                     print("EverForm launched; stores injected")

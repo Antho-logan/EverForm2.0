@@ -201,69 +201,7 @@ private struct MenuRow<Trailing: View>: View {
     }
 }
 
-// MARK: - Display Settings View
 
-private struct DisplaySettingsView: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.colorScheme) private var colorScheme
-    @Environment(ThemeManager.self) private var themeManager
-    
-    var body: some View {
-        let palette = Theme.palette(colorScheme)
-        
-        NavigationView {
-            VStack(spacing: Theme.Spacing.lg) {
-                VStack(spacing: Theme.Spacing.sm) {
-                    ForEach(ThemeManager.ThemeMode.allCases, id: \.self) { mode in
-                        Button(action: {
-                            themeManager.setTheme(mode)
-                            let impact = UIImpactFeedbackGenerator(style: .light)
-                            impact.impactOccurred()
-                        }) {
-                            HStack {
-                                Text(mode.displayName)
-                                    .font(.system(size: 16, weight: .medium))
-                                    .foregroundStyle(palette.textPrimary)
-
-                                Spacer()
-
-                                if themeManager.selectedTheme == mode {
-                                    Image(systemName: "checkmark")
-                                        .font(.system(size: 16, weight: .semibold))
-                                        .foregroundStyle(palette.accent)
-                                }
-                            }
-                            .padding(.horizontal, Theme.Spacing.lg)
-                            .padding(.vertical, Theme.Spacing.md)
-                            .background(
-                                themeManager.selectedTheme == mode ?
-                                palette.accent.opacity(0.1) :
-                                Color.clear
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.pill))
-                        }
-                        .buttonStyle(.plain)
-                    }
-                }
-                
-                Spacer()
-            }
-            .padding(Theme.Spacing.lg)
-            .background(palette.surfaceElevated)
-            .navigationTitle("Display")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismiss()
-                    }
-                    .font(.system(size: 16, weight: .medium))
-                    .foregroundStyle(palette.accent)
-                }
-            }
-        }
-    }
-}
 
 #Preview {
     ProfilePopoverView()

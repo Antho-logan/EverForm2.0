@@ -16,37 +16,35 @@ struct KPITile: View {
     }
     
     var body: some View {
-        let palette = Theme.palette(colorScheme)
-        
         Button(action: { onTap?() }) {
             VStack(alignment: .leading, spacing: 8) {
                 HStack {
                     Image(systemName: icon)
                         .font(.system(size: 18, weight: .medium))
-                        .foregroundStyle(palette.accent)
+                        .foregroundStyle(Color.blue)
                         .frame(width: 20, height: 20)
-                    
+
                     Spacer()
                 }
-                
+
                 Text(value)
                     .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(palette.textPrimary)
+                    .foregroundStyle(.primary)
                     .lineLimit(1)
                     .minimumScaleFactor(0.7)
                     .allowsTightening(true)
                     .contentTransition(.numericText())
-                
+
                 Text(caption)
                     .font(.system(size: 11, weight: .medium))
-                    .foregroundStyle(palette.textSecondary)
+                    .foregroundStyle(.secondary)
                     .textCase(.uppercase)
                     .lineLimit(1)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .frame(height: 90)
             .padding(12)
-            .efCardStyle(scheme: colorScheme)
+            .efCard()
         }
         .buttonStyle(.plain)
         .disabled(onTap == nil)

@@ -15,20 +15,14 @@ struct EFQuickActionTile: View {
 
             Text(title)
                 .font(.footnote.weight(.semibold))
+                .foregroundStyle(.primary)
                 .multilineTextAlignment(.center)
                 .lineLimit(2)
                 .minimumScaleFactor(0.8)
         }
         .padding(12)
         .frame(minWidth: 88, maxWidth: .infinity, minHeight: 92)
-        .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
-                .fill(Color(.secondarySystemBackground))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .stroke(Color.black.opacity(0.06), lineWidth: 0.5)
-                )
-        )
+        .efCard()
         .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .accessibilityElement(children: .combine)
         .accessibilityLabel(Text(title))

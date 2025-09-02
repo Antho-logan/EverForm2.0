@@ -197,4 +197,38 @@ final class DashboardViewModel {
         // TODO: Open more options
     }
 
+    // MARK: - Profile Menu Methods
+    var profileName: String? { "Alex Chen" }
+    var profileEmail: String? { "alex@example.com" }
+
+    func openProfile() {
+        logTap("profile_menu_profile")
+        // TODO: Navigate to profile view
+    }
+
+    func openDisplaySettings() {
+        logTap("profile_menu_display")
+        // TODO: Navigate to display settings
+    }
+
+    func openSecurity() {
+        logTap("profile_menu_security")
+        // TODO: Navigate to security settings
+    }
+
+    func exportData() {
+        logTap("profile_menu_export")
+        // TODO: Export user data
+    }
+
+    func openHelp() {
+        logTap("profile_menu_help")
+        // TODO: Open help view
+    }
+
+    func reportBug() {
+        logTap("profile_menu_bug_report")
+        // TODO: Open bug report form
+    }
+
 }

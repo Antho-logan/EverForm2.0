@@ -1,45 +1,35 @@
 import SwiftUI
 
-public struct EFCard<Content: View>: View {
-    let content: Content
-    let minHeight: CGFloat
-    let corner: CGFloat
-    @Environment(\.colorScheme) private var colorScheme
+struct EFCard<Content: View>: View {
+    @Environment(\.colorScheme) private var scheme
+    var content: () -> Content
 
-    public init(minHeight: CGFloat = 156,
-                corner: CGFloat = 16,
-                @ViewBuilder content: () -> Content) {
-        self.minHeight = minHeight
-        self.corner = corner
-        self.content = content()
+    init(@ViewBuilder content: @escaping () -> Content) {
+        self.content = content
     }
 
-    public var body: some View {
-        content
-            .padding(Theme.Spacing.lg)
-            .frame(minHeight: minHeight)
-            .efCardStyle(scheme: colorScheme)
+    var body: some View {
+        content()
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(EFTheme.surface(scheme))
+            .overlay(
+                RoundedRectangle(cornerRadius: 18)
+                    .stroke(EFTheme.cardStroke(scheme))
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .shadow(color: scheme == .dark ? .black.opacity(0.35) : .black.opacity(0.08), radius: 12, x: 0, y: 6)
     }
 }
 
-#Preview {
-    let palette = Theme.palette(.dark)
-    EFCard {
-        VStack(alignment: .leading, spacing: Theme.Spacing.md) {
-            HStack {
-                Image(systemName: "dumbbell.fill")
-                    .foregroundStyle(palette.accent)
-                Text("Training")
-                    .font(.headline)
-                    .foregroundStyle(palette.textPrimary)
-                Spacer()
-            }
-            
-            Text("Complete your workout plan")
-                .font(.callout)
-                .foregroundStyle(palette.textSecondary)
-        }
+struct EFSectionHeader: View {
+    @Environment(\.colorScheme) private var scheme
+    let title: String
+    var body: some View {
+        Text(title)
+            .font(.system(.title2, weight: .bold))
+            .foregroundStyle(EFTheme.text(scheme))
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.top, 8)
     }
-    .padding()
-    .background(palette.background)
 }
