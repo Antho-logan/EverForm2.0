@@ -1,5 +1,5 @@
 {
-  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/tip tracker/Core/AppShell/RootTabView.swift",
+  "source": "/Users/antho/Desktop/Everform 2.0/EverForm/RootTabView.swift",
   "tables": {
     "Localizable": [
       {
@@ -7,7 +7,7 @@
         "key": "Overview",
         "location": {
           "startingColumn": 34,
-          "startingLine": 39
+          "startingLine": 9
         }
       },
       {
@@ -15,7 +15,7 @@
         "key": "Coach",
         "location": {
           "startingColumn": 34,
-          "startingLine": 46
+          "startingLine": 12
         }
       },
       {
@@ -23,31 +23,15 @@
         "key": "Scan",
         "location": {
           "startingColumn": 34,
-          "startingLine": 53
+          "startingLine": 15
         }
       },
       {
         "comment": "",
-        "key": "More",
+        "key": "Progress",
         "location": {
           "startingColumn": 34,
-          "startingLine": 61
-        }
-      },
-      {
-        "comment": "",
-        "key": "More Options",
-        "location": {
-          "startingColumn": 22,
-          "startingLine": 208
-        }
-      },
-      {
-        "comment": "",
-        "key": "Coming Soon",
-        "location": {
-          "startingColumn": 22,
-          "startingLine": 209
+          "startingLine": 18
         }
       }
     ]

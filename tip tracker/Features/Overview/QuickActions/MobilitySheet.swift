@@ -8,17 +8,17 @@
 
 import SwiftUI
 
-struct MobilityRoutine {
+struct QuickActionMobilityRoutine {
     let id = UUID()
     let title: String
     let duration: Int // minutes
     let description: String
-    let steps: [MobilityStep]
+    let steps: [QuickActionMobilityStep]
     let icon: String
     let color: Color
 }
 
-struct MobilityStep {
+struct QuickActionMobilityStep {
     let id = UUID()
     let name: String
     let description: String
@@ -30,46 +30,46 @@ struct MobilitySheet: View {
     @Environment(\.dismiss) private var dismiss
     let onComplete: () -> Void
     
-    @State private var selectedRoutine: MobilityRoutine?
+    @State private var selectedRoutine: QuickActionMobilityRoutine?
     @State private var showRoutineRun = false
     
     private let routines = [
-        MobilityRoutine(
+        QuickActionMobilityRoutine(
             title: "Daily Flow",
             duration: 10,
             description: "Full-body mobility for daily maintenance",
             steps: [
-                MobilityStep(
+                QuickActionMobilityStep(
                     name: "Cat-Cow Stretch",
                     description: "Spinal mobility",
                     duration: 60,
                     instructions: "On hands and knees, alternate between arching and rounding your spine"
                 ),
-                MobilityStep(
+                QuickActionMobilityStep(
                     name: "Hip Circles",
                     description: "Hip mobility",
                     duration: 45,
                     instructions: "Standing, hands on hips, make large circles with your hips"
                 ),
-                MobilityStep(
+                QuickActionMobilityStep(
                     name: "Shoulder Rolls",
                     description: "Shoulder mobility",
                     duration: 45,
                     instructions: "Roll shoulders backward in large circles, then forward"
                 ),
-                MobilityStep(
+                QuickActionMobilityStep(
                     name: "Thoracic Rotation",
                     description: "Upper back mobility",
                     duration: 60,
                     instructions: "On hands and knees, reach one arm under and across your body"
                 ),
-                MobilityStep(
+                QuickActionMobilityStep(
                     name: "Ankle Circles",
                     description: "Ankle mobility",
                     duration: 45,
                     instructions: "Seated or standing, lift one foot and make circles with your ankle"
                 ),
-                MobilityStep(
+                QuickActionMobilityStep(
                     name: "Neck Stretches",
                     description: "Neck mobility",
                     duration: 45,
@@ -79,36 +79,36 @@ struct MobilitySheet: View {
             icon: "figure.walk",
             color: .green
         ),
-        MobilityRoutine(
+        QuickActionMobilityRoutine(
             title: "Desk Break",
             duration: 5,
             description: "Quick reset for desk workers",
             steps: [
-                MobilityStep(
+                QuickActionMobilityStep(
                     name: "Neck Release",
                     description: "Release neck tension",
                     duration: 45,
                     instructions: "Slowly tilt head to each side, hold for 15 seconds"
                 ),
-                MobilityStep(
+                QuickActionMobilityStep(
                     name: "Shoulder Blade Squeeze",
                     description: "Counter rounded shoulders",
                     duration: 30,
                     instructions: "Pull shoulder blades together, hold for 5 seconds, repeat"
                 ),
-                MobilityStep(
+                QuickActionMobilityStep(
                     name: "Thoracic Extension",
                     description: "Open up the chest",
                     duration: 45,
                     instructions: "Hands behind head, lean back over chair, breathe deeply"
                 ),
-                MobilityStep(
+                QuickActionMobilityStep(
                     name: "Hip Flexor Stretch",
                     description: "Counter hip tightness",
                     duration: 60,
                     instructions: "Standing, step one foot back, lean forward into stretch"
                 ),
-                MobilityStep(
+                QuickActionMobilityStep(
                     name: "Wrist Circles",
                     description: "Wrist mobility",
                     duration: 30,
@@ -143,7 +143,7 @@ struct MobilitySheet: View {
                         
                         LazyVStack(spacing: 16) {
                             ForEach(routines, id: \.id) { routine in
-                                RoutineCard(
+                                QuickActionMobilityRoutineCard(
                                     routine: routine,
                                     isSelected: selectedRoutine?.id == routine.id
                                 ) {
@@ -247,8 +247,8 @@ struct MobilitySheet: View {
 }
 
 // MARK: - Routine Card
-struct RoutineCard: View {
-    let routine: MobilityRoutine
+struct QuickActionMobilityRoutineCard: View {
+    let routine: QuickActionMobilityRoutine
     let isSelected: Bool
     let onTap: () -> Void
     

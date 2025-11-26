@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct FixPainDetailView: View {
-    let region: FixPainView.PainRegion
+    let region: PainRegion
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
@@ -19,7 +19,7 @@ struct FixPainDetailView: View {
     
     var routine: [RoutineStep] {
         switch region {
-        case .back:
+        case .lowerBack, .upperBack:
             return [
                 RoutineStep(name: "Cat-Cow Stretch", duration: 30, description: "Gentle spinal mobility"),
                 RoutineStep(name: "Child's Pose", duration: 45, description: "Lower back release"),
@@ -34,33 +34,38 @@ struct FixPainDetailView: View {
                 RoutineStep(name: "Chin Tucks", duration: 20, description: "Posture correction"),
                 RoutineStep(name: "Shoulder Shrugs", duration: 15, description: "Tension release")
             ]
-        case .knees:
+        case .knee:
             return [
                 RoutineStep(name: "Quad Stretch", duration: 30, description: "Front thigh stretch"),
                 RoutineStep(name: "Hamstring Stretch", duration: 30, description: "Back thigh stretch"),
                 RoutineStep(name: "Calf Stretch", duration: 25, description: "Lower leg mobility"),
                 RoutineStep(name: "Ankle Circles", duration: 15, description: "Joint mobility")
             ]
-        case .shoulders:
+        case .shoulder:
             return [
                 RoutineStep(name: "Arm Circles", duration: 20, description: "Shoulder warm-up"),
                 RoutineStep(name: "Cross-Body Stretch", duration: 30, description: "Posterior deltoid"),
                 RoutineStep(name: "Overhead Reach", duration: 25, description: "Shoulder mobility"),
                 RoutineStep(name: "Wall Angels", duration: 30, description: "Posture improvement")
             ]
-        case .hips:
+        case .hip:
             return [
                 RoutineStep(name: "Hip Circles", duration: 20, description: "Joint mobility"),
                 RoutineStep(name: "Pigeon Pose", duration: 45, description: "Deep hip stretch"),
                 RoutineStep(name: "Figure-4 Stretch", duration: 30, description: "Hip flexor release"),
                 RoutineStep(name: "Glute Bridge", duration: 25, description: "Hip strengthening")
             ]
-        case .wrists:
+        case .wrist:
             return [
                 RoutineStep(name: "Wrist Circles", duration: 15, description: "Joint mobility"),
                 RoutineStep(name: "Prayer Stretch", duration: 20, description: "Flexor stretch"),
                 RoutineStep(name: "Reverse Prayer", duration: 20, description: "Extensor stretch"),
                 RoutineStep(name: "Tendon Glides", duration: 15, description: "Nerve mobility")
+            ]
+        default:
+            return [
+                RoutineStep(name: "Gentle Movement", duration: 30, description: "Move within comfort zone"),
+                RoutineStep(name: "Rest", duration: 30, description: "Relax the area")
             ]
         }
     }
@@ -268,5 +273,5 @@ struct FixPainDetailView: View {
 }
 
 #Preview {
-    FixPainDetailView(region: .back)
+    FixPainDetailView(region: .lowerBack)
 }

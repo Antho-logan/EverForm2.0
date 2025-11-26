@@ -13,7 +13,7 @@ final class QuickActionsManager {
     private let userDefaults = UserDefaults.standard
     private let orderKey = "quickActions.order"
     
-    var quickActions: [QuickAction] = []
+    var quickActions: [AppQuickAction] = []
     var isReordering = false
     
     init() {
@@ -26,12 +26,12 @@ final class QuickActionsManager {
         
         if savedOrder.isEmpty {
             // First time - use default order
-            quickActions = QuickAction.defaultActions
+            quickActions = AppQuickAction.defaultActions
             saveOrder()
         } else {
             // Restore saved order
-            var orderedActions: [QuickAction] = []
-            let defaultActionsDict = Dictionary(uniqueKeysWithValues: QuickAction.defaultActions.map { ($0.id, $0) })
+            var orderedActions: [AppQuickAction] = []
+            let defaultActionsDict = Dictionary(uniqueKeysWithValues: AppQuickAction.defaultActions.map { ($0.id, $0) })
             
             // Add actions in saved order
             for actionId in savedOrder {
@@ -41,7 +41,7 @@ final class QuickActionsManager {
             }
             
             // Add any new actions that weren't in the saved order
-            for defaultAction in QuickAction.defaultActions {
+            for defaultAction in AppQuickAction.defaultActions {
                 if !orderedActions.contains(where: { $0.id == defaultAction.id }) {
                     orderedActions.append(defaultAction)
                 }
@@ -70,7 +70,7 @@ final class QuickActionsManager {
         saveOrder()
     }
     
-    func executeAction(_ action: QuickAction, 
+    func executeAction(_ action: AppQuickAction, 
                       viewModel: DashboardViewModel,
                       openExplain: @escaping (String, String) -> Void,
                       showBreathworkSheet: @escaping () -> Void,

@@ -1,12 +1,9 @@
-//
-//  EverFormApp.swift
-//  EverForm
-//
-//  Created by Anthony Logan on 13/08/2025.
-//
 
 import SwiftUI
 import Observation
+#if os(iOS)
+import UIKit
+#endif
 
 @main
 struct EverFormApp: App {
@@ -22,6 +19,10 @@ struct EverFormApp: App {
     @State private var notesStore         = ProfileNotesStore()
     @State private var attachmentStore    = AttachmentStore()
 
+
+    init() {
+        // Initial setup if needed
+    }
 
     var body: some Scene {
         WindowGroup {
@@ -42,10 +43,21 @@ struct EverFormApp: App {
                 .environmentObject(CoachCoordinator.shared)
                 .background(themeManager.beigeBackground.ignoresSafeArea())
                 .preferredColorScheme(themeManager.selectedTheme.colorScheme)
+                .onAppear {
+                    updateUIKitAppearance()
+                }
+                .onChange(of: themeManager.selectedTheme) { _, _ in
+                    updateUIKitAppearance()
+                }
 
-                .onAppear { 
+                .task {
                     print("EverForm launched; stores injected")
                     checkOnboardingStatus()
+                }
+                .onChange(of: profileStore.hasCompletedOnboarding) { _, completed in
+                    if !completed {
+                        appRouter.fullScreen = .expressOnboarding
+                    }
                 }
         }
     }
@@ -53,9 +65,44 @@ struct EverFormApp: App {
     private func checkOnboardingStatus() {
         // If user hasn't completed onboarding, show express onboarding
         if !profileStore.hasCompletedOnboarding {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                appRouter.fullScreen = .expressOnboarding
+            appRouter.fullScreen = .expressOnboarding
+        }
+    }
+    
+    private func updateUIKitAppearance() {
+        #if os(iOS)
+        let backgroundColor = UIColor(themeManager.backgroundPrimary)
+        let activeColor = UIColor(DesignSystem.Colors.accent)
+        let inactiveColor = UIColor(themeManager.textSecondary)
+        
+        let tabAppearance = UITabBarAppearance()
+        tabAppearance.configureWithOpaqueBackground()
+        tabAppearance.backgroundColor = backgroundColor
+        
+        let layouts = [
+            tabAppearance.stackedLayoutAppearance,
+            tabAppearance.inlineLayoutAppearance,
+            tabAppearance.compactInlineLayoutAppearance
+        ]
+        
+        layouts.forEach { appearance in
+            appearance.normal.iconColor = inactiveColor
+            appearance.normal.titleTextAttributes = [.foregroundColor: inactiveColor]
+            appearance.selected.iconColor = activeColor
+            appearance.selected.titleTextAttributes = [.foregroundColor: activeColor]
+        }
+        
+        UITabBar.appearance().standardAppearance = tabAppearance
+        UITabBar.appearance().scrollEdgeAppearance = tabAppearance
+        
+        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+           let window = windowScene.windows.first {
+            switch themeManager.selectedTheme {
+            case .dark: window.overrideUserInterfaceStyle = .dark
+            case .light: window.overrideUserInterfaceStyle = .light
+            case .system: window.overrideUserInterfaceStyle = .unspecified
             }
         }
+        #endif
     }
 }

@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct QuickAction: Identifiable, Codable, Equatable {
+struct AppQuickAction: Identifiable, Codable, Equatable {
     let id: String
     let title: String
     let icon: String
@@ -43,7 +43,7 @@ struct QuickAction: Identifiable, Codable, Equatable {
         
         // Decode color from hex string
         let colorHex = try container.decode(String.self, forKey: .colorHex)
-        color = Color(hex: colorHex) ?? .blue
+        color = Color(hex: colorHex)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -55,29 +55,29 @@ struct QuickAction: Identifiable, Codable, Equatable {
         try container.encode(color.toHex(), forKey: .colorHex)
     }
     
-    static let defaultActions: [QuickAction] = [
-        QuickAction(
+    static let defaultActions: [AppQuickAction] = [
+        AppQuickAction(
             id: "addWater",
             title: "Add Water",
             icon: "drop.fill",
             color: .cyan,
             actionType: .addWater
         ),
-        QuickAction(
+        AppQuickAction(
             id: "breathwork",
             title: "Breathwork",
             icon: "wind",
             color: .green,
             actionType: .breathwork
         ),
-        QuickAction(
+        AppQuickAction(
             id: "fixPain",
             title: "Fix Pain",
             icon: "cross.case",
             color: .red,
             actionType: .fixPain
         ),
-        QuickAction(
+        AppQuickAction(
             id: "askCoach",
             title: "Ask Coach",
             icon: "brain.head.profile",
@@ -85,6 +85,10 @@ struct QuickAction: Identifiable, Codable, Equatable {
             actionType: .askCoach
         )
     ]
+}
+
+extension AppQuickAction.CodingKeys: CustomStringConvertible {
+    var description: String { stringValue }
 }
 
 // MARK: - Color Extensions

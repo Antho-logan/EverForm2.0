@@ -8,7 +8,7 @@
 
 import SwiftUI
 
-struct BodyRegion {
+struct FixPainBodyRegion {
     let id = UUID()
     let name: String
     let icon: String
@@ -21,16 +21,16 @@ struct FixPainSheet: View {
     let onRegionSelected: (String) -> Void
     
     private let bodyRegions = [
-        BodyRegion(name: "Neck", icon: "figure.walk", color: .red, description: "Tension, stiffness, headaches"),
-        BodyRegion(name: "Shoulders", icon: "figure.arms.open", color: .orange, description: "Impingement, tightness, pain"),
-        BodyRegion(name: "Elbows", icon: "figure.flexibility", color: .yellow, description: "Tennis elbow, golfer's elbow"),
-        BodyRegion(name: "Wrists", icon: "hand.raised", color: .green, description: "Carpal tunnel, strain"),
-        BodyRegion(name: "Upper Back", icon: "figure.walk", color: .blue, description: "Thoracic spine, posture"),
-        BodyRegion(name: "Lower Back", icon: "figure.stand", color: .indigo, description: "Lumbar spine, sciatica"),
-        BodyRegion(name: "Hips", icon: "figure.walk", color: .purple, description: "Hip flexors, glutes, SI joint"),
-        BodyRegion(name: "Knees", icon: "figure.walk", color: .pink, description: "Patella, meniscus, ligaments"),
-        BodyRegion(name: "Ankles", icon: "figure.walk", color: .brown, description: "Sprains, Achilles, mobility"),
-        BodyRegion(name: "Feet", icon: "figure.walk", color: .gray, description: "Plantar fasciitis, arches")
+        FixPainBodyRegion(name: "Neck", icon: "figure.walk", color: .red, description: "Tension, stiffness, headaches"),
+        FixPainBodyRegion(name: "Shoulders", icon: "figure.arms.open", color: .orange, description: "Impingement, tightness, pain"),
+        FixPainBodyRegion(name: "Elbows", icon: "figure.flexibility", color: .yellow, description: "Tennis elbow, golfer's elbow"),
+        FixPainBodyRegion(name: "Wrists", icon: "hand.raised", color: .green, description: "Carpal tunnel, strain"),
+        FixPainBodyRegion(name: "Upper Back", icon: "figure.walk", color: .blue, description: "Thoracic spine, posture"),
+        FixPainBodyRegion(name: "Lower Back", icon: "figure.stand", color: .indigo, description: "Lumbar spine, sciatica"),
+        FixPainBodyRegion(name: "Hips", icon: "figure.walk", color: .purple, description: "Hip flexors, glutes, SI joint"),
+        FixPainBodyRegion(name: "Knees", icon: "figure.walk", color: .pink, description: "Patella, meniscus, ligaments"),
+        FixPainBodyRegion(name: "Ankles", icon: "figure.walk", color: .brown, description: "Sprains, Achilles, mobility"),
+        FixPainBodyRegion(name: "Feet", icon: "figure.walk", color: .gray, description: "Plantar fasciitis, arches")
     ]
     
     var body: some View {
@@ -119,7 +119,7 @@ struct FixPainSheet: View {
         }
     }
     
-    private func selectRegion(_ region: BodyRegion) {
+    private func selectRegion(_ region: FixPainBodyRegion) {
         let impact = UIImpactFeedbackGenerator(style: .medium)
         impact.impactOccurred()
         
@@ -133,7 +133,7 @@ struct FixPainSheet: View {
 
 // MARK: - Region Card
 struct RegionCard: View {
-    let region: BodyRegion
+    let region: FixPainBodyRegion
     let onTap: () -> Void
     
     @State private var isPressed = false

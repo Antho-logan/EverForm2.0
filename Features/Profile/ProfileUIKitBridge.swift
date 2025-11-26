@@ -80,8 +80,13 @@ struct ProfileUIKitScreen: UIViewControllerRepresentable {
         }
 
         // Fallback: SwiftUI profile
-        let fallback = UIHostingController(rootView: NavigationStack { EFProfileView() })
-        fallback.modalPresentationStyle = .formSheet
+        // Create a standalone store for the fallback view
+        let fallbackStore = ProfileStore()
+        let fallback = UIHostingController(rootView: NavigationStack { 
+            ProfileView()
+                .environment(fallbackStore)
+        })
+        fallback.modalPresentationStyle = UIModalPresentationStyle.formSheet
         return fallback
     }
 
@@ -92,7 +97,11 @@ struct ProfileUIKitScreen: UIViewControllerRepresentable {
 // Non-iOS platforms: always show the SwiftUI fallback
 struct ProfileUIKitScreen: View {
     var body: some View {
-        NavigationStack { ProfileFallbackView() }
+        let store = ProfileStore()
+        NavigationStack { 
+            ProfileView()
+                .environment(store)
+        }
     }
 }
 #endif

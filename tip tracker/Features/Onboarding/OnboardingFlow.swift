@@ -395,7 +395,8 @@ struct OnboardingFlow: View {
             carbsG: Int(targetCalories * 0.45 / 4),
             fatG: Int(targetCalories * 0.25 / 9),
             hydrationMl: 2500,
-            sleepHours: 8.0
+            sleepHours: 8.0,
+            steps: 10000
         )
     }
 }

@@ -10,7 +10,7 @@ import SwiftUI
 
 struct MobilityRunView: View {
     @Environment(\.dismiss) private var dismiss
-    let routine: MobilityRoutine
+    let routine: QuickActionMobilityRoutine
     let onComplete: () -> Void
     
     @State private var currentStepIndex = 0
@@ -20,7 +20,7 @@ struct MobilityRunView: View {
     @State private var isPaused = false
     @State private var showCompletionSheet = false
     
-    private var currentStep: MobilityStep? {
+    private var currentStep: QuickActionMobilityStep? {
         guard currentStepIndex < routine.steps.count else { return nil }
         return routine.steps[currentStepIndex]
     }
@@ -299,7 +299,7 @@ struct MobilityRunView: View {
 
 // MARK: - Mobility Completion Sheet
 struct MobilityCompletionSheet: View {
-    let routine: MobilityRoutine
+    let routine: QuickActionMobilityRoutine
     let totalTime: Int
     let onDismiss: () -> Void
     
@@ -372,18 +372,18 @@ struct MobilityCompletionSheet: View {
 
 // MARK: - Preview
 #Preview {
-    let routine = MobilityRoutine(
-        title: "Daily Flow",
-        duration: 10,
-        description: "Full-body mobility",
-        steps: [
-            MobilityStep(name: "Cat-Cow", description: "Spinal mobility", duration: 60, instructions: "Move spine")
-        ],
-        icon: "figure.walk",
-        color: .green
-    )
-    
-    return MobilityRunView(routine: routine) {
+    MobilityRunView(
+        routine: QuickActionMobilityRoutine(
+            title: "Daily Flow",
+            duration: 10,
+            description: "Full-body mobility",
+            steps: [
+                QuickActionMobilityStep(name: "Cat-Cow", description: "Spinal mobility", duration: 60, instructions: "Move spine")
+            ],
+            icon: "figure.walk",
+            color: .green
+        )
+    ) {
         print("Completed")
     }
 }

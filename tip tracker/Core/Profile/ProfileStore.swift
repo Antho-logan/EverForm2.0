@@ -233,7 +233,8 @@ final class ProfileStore {
             carbsG: 270,
             fatG: 67,
             hydrationMl: 2500,
-            sleepHours: 8.0
+            sleepHours: 8.0,
+            steps: 10000
         )
         
         // Create demo advanced profile with correct enum values

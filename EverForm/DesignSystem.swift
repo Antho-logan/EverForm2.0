@@ -36,10 +36,25 @@ struct DesignSystem {
         static let error = Color(hex: "EF4444")       // #EF4444
         static let info = Color(hex: "3B82F6")        // #3B82F6
         
-        // Dynamic Colors (Light/Dark adaptive)
-        static let background = Color(.systemBackground)
-        static let backgroundSecondary = Color(.secondarySystemBackground)
-        static let backgroundTertiary = Color(.tertiarySystemBackground)
+        // NOTE: Usage of static dynamic colors is deprecated in favor of ThemeManager
+        // Retaining strictly for backward compatibility where refactor hasn't touched yet
+        
+        private static func dynamicColor(light: UIColor, dark: UIColor) -> Color {
+            Color(UIColor { traitCollection in
+                traitCollection.userInterfaceStyle == .dark ? dark : light
+            })
+        }
+
+        private static let lightBackground      = UIColor(red: 0.95, green: 0.91, blue: 0.86, alpha: 1.0) // warm beige
+        private static let lightBackgroundSoft  = UIColor(red: 0.97, green: 0.94, blue: 0.90, alpha: 1.0) // lighter beige
+        private static let lightBackgroundPale  = UIColor(red: 0.99, green: 0.97, blue: 0.94, alpha: 1.0) // palest beige
+        private static let darkBackground       = UIColor(red: 0.07, green: 0.07, blue: 0.07, alpha: 1.0) // Dark grey/black
+        private static let darkBackgroundSoft   = UIColor(red: 0.11, green: 0.11, blue: 0.12, alpha: 1.0)
+        private static let darkBackgroundPale   = UIColor(red: 0.17, green: 0.17, blue: 0.18, alpha: 1.0)
+
+        static let background = dynamicColor(light: lightBackground, dark: darkBackground)
+        static let backgroundSecondary = dynamicColor(light: lightBackgroundSoft, dark: darkBackgroundSoft)
+        static let backgroundTertiary = dynamicColor(light: lightBackgroundPale, dark: darkBackgroundPale)
         
         static let textPrimary = Color(.label)
         static let textSecondary = Color(.secondaryLabel)
@@ -50,37 +65,15 @@ struct DesignSystem {
         
         // Premium Card Colors (Better contrast for light/dark)
         static var cardBackground: Color {
-            Color(.systemBackground).opacity(0.8)
+            dynamicColor(light: lightBackgroundPale, dark: darkBackgroundPale)
         }
-        
+
         static var cardBackgroundSecondary: Color {
-            #if os(iOS)
-            return Color(UIColor { traitCollection in
-                switch traitCollection.userInterfaceStyle {
-                case .dark:
-                    return UIColor.secondarySystemBackground
-                default:
-                    return UIColor.systemGray6
-                }
-            })
-            #else
-            return Color(.secondarySystemBackground)
-            #endif
+            dynamicColor(light: lightBackgroundSoft, dark: darkBackgroundSoft)
         }
-        
+
         static var cardBackgroundElevated: Color {
-            #if os(iOS)
-            return Color(UIColor { traitCollection in
-                switch traitCollection.userInterfaceStyle {
-                case .dark:
-                    return UIColor.tertiarySystemBackground
-                default:
-                    return UIColor.white
-                }
-            })
-            #else
-            return Color(.tertiarySystemBackground)
-            #endif
+            dynamicColor(light: UIColor.white, dark: darkBackgroundPale)
         }
         
         // Button Colors (White buttons with dark icons)

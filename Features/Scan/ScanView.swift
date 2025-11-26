@@ -4,44 +4,45 @@ struct ScanView: View {
     @Environment(\.colorScheme) private var scheme
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 20) {
-                Text("Scan Food")
-                    .font(.system(size: 34, weight: .bold))
-                    .foregroundStyle(EFTheme.text(scheme))
-                    .frame(maxWidth: .infinity, alignment: .leading)
+        EFScreenContainer {
+            ScrollView {
+                VStack(spacing: 20) {
+                    EFHeader(title: "Scan Food")
 
-                SegmentedTabs()
+                    SegmentedTabs()
+                        .padding(.horizontal, 20)
 
-                EFCard {
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Calorie & Macros").font(.headline).foregroundStyle(EFTheme.text(scheme))
-                        Text("Scan barcode or nutrition label for accurate calorie and macro information")
-                            .font(.subheadline).foregroundStyle(EFTheme.muted(scheme))
-                        Button("Generate Mock Result") {}
-                            .frame(maxWidth: .infinity).padding(.vertical, 12)
-                            .background(Color.green)
-                            .foregroundStyle(Color.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
-                        Button("Import Photo") {}
-                            .frame(maxWidth: .infinity).padding(.vertical, 12)
-                            .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.green))
-                            .foregroundStyle(Color.green)
+                    EFCard {
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Calorie & Macros").font(.headline).foregroundStyle(EFTheme.text(scheme))
+                            Text("Scan barcode or nutrition label for accurate calorie and macro information")
+                                .font(.subheadline).foregroundStyle(EFTheme.muted(scheme))
+                            Button("Generate Mock Result") {}
+                                .frame(maxWidth: .infinity).padding(.vertical, 12)
+                                .background(Color.green)
+                                .foregroundStyle(Color.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 14))
+                            Button("Import Photo") {}
+                                .frame(maxWidth: .infinity).padding(.vertical, 12)
+                                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.green))
+                                .foregroundStyle(Color.green)
+                        }
                     }
-                }
+                    .padding(.horizontal, 20)
 
-                EFCard {
-                    VStack(spacing: 12) {
-                        Image(systemName: "viewfinder").font(.largeTitle).foregroundStyle(EFTheme.muted(scheme))
-                        Text("Nothing scanned yet").font(.headline).foregroundStyle(EFTheme.text(scheme))
-                        Text("Try a mock result to see how it works").font(.subheadline).foregroundStyle(EFTheme.muted(scheme))
-                    }.frame(maxWidth: .infinity)
+                    EFCard {
+                        VStack(spacing: 12) {
+                            Image(systemName: "viewfinder").font(.largeTitle).foregroundStyle(EFTheme.muted(scheme))
+                            Text("Nothing scanned yet").font(.headline).foregroundStyle(EFTheme.text(scheme))
+                            Text("Try a mock result to see how it works").font(.subheadline).foregroundStyle(EFTheme.muted(scheme))
+                        }.frame(maxWidth: .infinity)
+                    }
+                    .padding(.horizontal, 20)
                 }
+                .padding(.top, 8)
+                .padding(.bottom, 24)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 8)
         }
-        .background(EFTheme.background(scheme).ignoresSafeArea())
     }
 }
 

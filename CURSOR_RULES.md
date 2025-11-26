@@ -18,6 +18,9 @@ See `CURSOR_RULES.md` for the authoritative rules.
 - **(R-TRACE)** When you apply any rule(s) from this document, echo the rule tags (e.g., `Applied: R-LOGS, S-OBS1`) in your output.
 - **(R-95%)** Do not modify code until you are ≥95% confident you understand the request. Ask clarifying questions until you reach that threshold.
 
+## Environment & Build
+- **(E-SWEETPAD)** CRITICAL: Do NOT touch the Sweeppad connection or related build scripts/configuration. Ensure all changes compile to avoid breaking the connection.
+
 ## Project
 - **(P-ROOT)** All files live under: `/EverForm`
 - **(P-ENTRY)** App entry file: `EverFormApp.swift` with `@main` and SwiftUI `App`.

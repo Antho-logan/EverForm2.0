@@ -83,6 +83,10 @@ private struct ChartCard: View {
     @Environment(\.colorScheme) private var scheme
     let title: String, tint: Color
     let range: RangeOpt
+    
+    // Animation state
+    @State private var progress: CGFloat = 0
+    @State private var drawingKey = UUID()
 
     var data: [Double] {
         switch range {
@@ -95,20 +99,88 @@ private struct ChartCard: View {
 
     var body: some View {
         EFCard {
-            VStack(alignment: .leading, spacing: 8) {
-                Text(title).font(.headline).foregroundStyle(EFTheme.text(scheme))
+            VStack(alignment: .leading, spacing: 12) {
+                HStack {
+                    Text(title)
+                        .font(.headline)
+                        .foregroundStyle(EFTheme.text(scheme))
+                    Spacer()
+                    if progress < 1 {
+                        ProgressView()
+                            .controlSize(.mini)
+                            .tint(tint)
+                    }
+                }
+                
                 #if canImport(Charts)
                 Chart {
                     ForEach(data.indices, id: \.self) { i in
-                        LineMark(x: .value("x", i), y: .value("y", data[i]))
-                            .foregroundStyle(tint)
+                        // Area gradient for "authentic" professional look
+                        AreaMark(
+                            x: .value("x", i),
+                            y: .value("y", data[i])
+                        )
+                        .interpolationMethod(.catmullRom)
+                        .foregroundStyle(
+                            LinearGradient(
+                                colors: [tint.opacity(0.2), tint.opacity(0.0)],
+                                startPoint: .top,
+                                endPoint: .bottom
+                            )
+                        )
+                        
+                        // Main line
+                        LineMark(
+                            x: .value("x", i),
+                            y: .value("y", data[i])
+                        )
+                        .interpolationMethod(.catmullRom)
+                        .foregroundStyle(tint)
+                        .lineStyle(StrokeStyle(lineWidth: 3, lineCap: .round))
+                    }
+                }
+                .chartPlotStyle { plotContent in
+                    plotContent
+                        .mask(
+                            GeometryReader { proxy in
+                                Rectangle()
+                                    .fill(Color.black)
+                                    .frame(width: proxy.size.width * progress)
+                            }
+                        )
+                }
+                .chartXAxis {
+                    AxisMarks(values: .automatic) { _ in
+                        AxisGridLine().foregroundStyle(Color.secondary.opacity(0.1))
+                        AxisTick().foregroundStyle(Color.secondary.opacity(0.2))
+                        AxisValueLabel()
+                    }
+                }
+                .chartYAxis {
+                    AxisMarks(position: .leading) { _ in
+                        AxisGridLine().foregroundStyle(Color.secondary.opacity(0.1))
+                        AxisValueLabel()
                     }
                 }
                 .frame(height: 220)
+                .id(drawingKey) // Force redraw on range change
                 #else
                 Text("Charts unavailable on this SDK").foregroundStyle(EFTheme.muted(scheme)).frame(height: 120)
                 #endif
             }
+        }
+        .onChange(of: range) { _, _ in animateGraph() }
+        .onAppear { animateGraph() }
+    }
+    
+    private func animateGraph() {
+        // Reset
+        drawingKey = UUID()
+        progress = 0
+        
+        // Animate
+        withAnimation(.easeInOut(duration: 1.2)) {
+            progress = 1.0
         }
     }
 }

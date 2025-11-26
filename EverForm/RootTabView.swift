@@ -1,23 +1,36 @@
 import SwiftUI
 
 struct RootTabView: View {
-    @StateObject private var theme = EFThemeManager()
+    @Environment(ThemeManager.self) private var themeManager
+    @Environment(\.colorScheme) private var systemScheme
+    @State private var selection: Int = EverFormTab.overview.rawValue
 
     var body: some View {
-        TabView {
+        let resolvedScheme = themeManager.selectedTheme.colorScheme ?? systemScheme
+
+        TabView(selection: $selection) {
             OverviewView()
-                .tabItem { Label("Overview", systemImage: "house.fill") }
+                .tag(EverFormTab.overview.rawValue)
+                .toolbar(.hidden, for: .tabBar)
 
             CoachView()
-                .tabItem { Label("Coach", systemImage: "brain.head.profile") }
+                .tag(EverFormTab.coach.rawValue)
+                .toolbar(.hidden, for: .tabBar)
 
             ScanView()
-                .tabItem { Label("Scan", systemImage: "camera.viewfinder") }
+                .tag(EverFormTab.scan.rawValue)
+                .toolbar(.hidden, for: .tabBar)
 
             ProgressViewEF()
-                .tabItem { Label("Progress", systemImage: "chart.bar.fill") }
+                .tag(EverFormTab.progress.rawValue)
+                .toolbar(.hidden, for: .tabBar)
         }
-        .environmentObject(theme)
-        .preferredColorScheme(theme.overrideScheme) // keeps manual Light/Dark working
+        .safeAreaInset(edge: .bottom) {
+            EverFormTabBar(selection: $selection)
+                .padding(.horizontal, 12)
+                .ignoresSafeArea(edges: .bottom)
+        }
+        .ignoresSafeArea(.keyboard, edges: .bottom)
+        .environment(\.colorScheme, resolvedScheme)
     }
 }

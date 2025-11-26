@@ -99,10 +99,20 @@ enum Calculators {
             sleepHours = 7.5
         }
         
+        // Steps target based on activity level
+        let stepsTarget: Int
+        switch activity {
+        case .sedentary: stepsTarget = 6000
+        case .light: stepsTarget = 8000
+        case .moderate: stepsTarget = 10000
+        case .high: stepsTarget = 12000
+        case .athlete: stepsTarget = 14000
+        }
+        
         // Heart rate estimates
         let maxHR = 220 - age
         let restingHR = sex == .female ? 78 : 72  // Average estimates
-        
+
         return UserTargets(
             targetCalories: targetCalories,
             proteinG: proteinG,
@@ -110,6 +120,7 @@ enum Calculators {
             fatG: fatG,
             hydrationMl: hydrationMl,
             sleepHours: sleepHours,
+            steps: stepsTarget,
             restingHeartRate: restingHR,
             maxHeartRate: maxHR
         )
@@ -131,4 +142,3 @@ enum Calculators {
         }
     }
 }
-

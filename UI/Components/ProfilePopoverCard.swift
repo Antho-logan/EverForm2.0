@@ -201,42 +201,22 @@ private struct DisplaySettingsSheet: View {
     
     var body: some View {
         let palette = Theme.palette(colorScheme)
-        
+
         NavigationView {
             VStack(spacing: Theme.Spacing.lg) {
                 VStack(spacing: Theme.Spacing.sm) {
-                    ForEach(ThemeManager.ThemeMode.allCases, id: \.self) { mode in
-                        Button(action: {
+                    ForEach(ThemeMode.allCases, id: \.self) { mode in
+                        ThemeOptionRow(
+                            mode: mode,
+                            palette: palette,
+                            isSelected: themeManager.selectedTheme == mode
+                        ) {
                             themeManager.setTheme(mode)
-                            let impact = UIImpactFeedbackGenerator(style: .light)
-                            impact.impactOccurred()
-                        }) {
-                            HStack {
-                                Text(mode.displayName)
-                                    .font(.system(size: 16, weight: .medium))
-                                    .foregroundStyle(palette.textPrimary)
-
-                                Spacer()
-
-                                if themeManager.selectedTheme == mode {
-                                    Image(systemName: "checkmark")
-                                        .font(.system(size: 16, weight: .semibold))
-                                        .foregroundStyle(palette.accent)
-                                }
-                            }
-                            .padding(.horizontal, Theme.Spacing.lg)
-                            .padding(.vertical, Theme.Spacing.md)
-                            .background(
-                                themeManager.selectedTheme == mode ?
-                                palette.accent.opacity(0.1) :
-                                Color.clear
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
                         }
-                        .buttonStyle(.plain)
                     }
                 }
-                
+
                 Spacer()
             }
             .padding(Theme.Spacing.lg)
@@ -252,6 +232,36 @@ private struct DisplaySettingsSheet: View {
                 }
             }
         }
+    }
+}
+
+private struct ThemeOptionRow: View {
+    let mode: ThemeMode
+    let palette: Theme.Palette
+    let isSelected: Bool
+    let onSelect: () -> Void
+
+    var body: some View {
+        Button(action: onSelect) {
+            HStack {
+                Text(mode.displayName)
+                    .font(.system(size: 16, weight: .medium))
+                    .foregroundStyle(palette.textPrimary)
+
+                Spacer()
+
+                if isSelected {
+                    Image(systemName: "checkmark")
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundStyle(palette.accent)
+                }
+            }
+            .padding(.horizontal, Theme.Spacing.lg)
+            .padding(.vertical, Theme.Spacing.md)
+            .background(isSelected ? palette.accent.opacity(0.1) : Color.clear)
+            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
+        }
+        .buttonStyle(.plain)
     }
 }
 

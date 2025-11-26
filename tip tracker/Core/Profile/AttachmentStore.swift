@@ -90,7 +90,7 @@ public final class AttachmentStore: @unchecked Sendable {
     private func uniqueDestination(for proposedName: String) -> URL {
         var dest = baseFolderURL.appendingPathComponent(proposedName)
         let ext = dest.pathExtension
-        var stem = dest.deletingPathExtension().lastPathComponent
+        let stem = dest.deletingPathExtension().lastPathComponent
         var counter = 1
         while fm.fileExists(atPath: dest.path) {
             counter += 1

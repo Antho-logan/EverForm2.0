@@ -2,159 +2,154 @@
 //  FixPainView.swift
 //  EverForm
 //
-//  Full-screen pain relief with body region selection
+//  Created by Gemini on 19/11/2025.
 //
 
 import SwiftUI
 
 struct FixPainView: View {
-    @Environment(\.dismiss) private var dismiss
-    @Environment(\.colorScheme) private var colorScheme
-    @State private var selectedRegion: PainRegion?
-    @State private var showingDetail = false
-    
-    enum PainRegion: String, CaseIterable {
-        case back = "Back"
-        case neck = "Neck"
-        case knees = "Knees"
-        case shoulders = "Shoulders"
-        case hips = "Hips"
-        case wrists = "Wrists"
-        
-        var icon: String {
-            switch self {
-            case .back: return "figure.stand"
-            case .neck: return "head.profile"
-            case .knees: return "figure.walk"
-            case .shoulders: return "figure.arms.open"
-            case .hips: return "figure.flexibility"
-            case .wrists: return "hand.raised"
-            }
-        }
-        
-        var description: String {
-            switch self {
-            case .back: return "Lower or upper back discomfort"
-            case .neck: return "Neck tension or stiffness"
-            case .knees: return "Knee pain or soreness"
-            case .shoulders: return "Shoulder tension or pain"
-            case .hips: return "Hip tightness or discomfort"
-            case .wrists: return "Wrist pain or strain"
-            }
-        }
-    }
+    @State private var viewModel = FixPainViewModel()
+    @State private var showAssessment = false
     
     var body: some View {
-        let palette = Theme.palette(colorScheme)
-        let semantic = Theme.semantic(colorScheme)
-        
-        NavigationView {
-            VStack(spacing: Theme.Spacing.xl) {
-                // Header
-                VStack(spacing: Theme.Spacing.sm) {
-                    Text("Fix Pain")
-                        .font(.system(size: 32, weight: .bold))
-                        .foregroundStyle(palette.textPrimary)
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 32) {
                     
-                    Text("Select the area where you're experiencing discomfort")
-                        .font(.system(size: 16, weight: .regular))
-                        .foregroundStyle(palette.textSecondary)
-                        .multilineTextAlignment(.center)
-                }
-                
-                // Body region grid
-                LazyVGrid(columns: [
-                    GridItem(.flexible(), spacing: Theme.Spacing.md),
-                    GridItem(.flexible(), spacing: Theme.Spacing.md)
-                ], spacing: Theme.Spacing.md) {
-                    ForEach(PainRegion.allCases, id: \.self) { region in
-                        Button(action: {
-                            selectedRegion = region
-                            let impact = UIImpactFeedbackGenerator(style: .light)
-                            impact.impactOccurred()
-                        }) {
-                            EFCard {
-                                VStack(spacing: Theme.Spacing.md) {
-                                    Image(systemName: region.icon)
-                                        .font(.system(size: 32, weight: .medium))
-                                        .foregroundStyle(
-                                            selectedRegion == region ?
-                                            .white : semantic.danger
-                                        )
-                                        .frame(width: 48, height: 48)
-                                    
-                                    VStack(spacing: 4) {
-                                        Text(region.rawValue)
-                                            .font(.system(size: 16, weight: .semibold))
-                                            .foregroundStyle(
-                                                selectedRegion == region ?
-                                                .white : palette.textPrimary
-                                            )
-                                        
-                                        Text(region.description)
-                                            .font(.system(size: 12, weight: .regular))
-                                            .foregroundStyle(
-                                                selectedRegion == region ?
-                                                .white.opacity(0.8) : palette.textSecondary
-                                            )
-                                            .multilineTextAlignment(.center)
-                                            .lineLimit(2)
-                                    }
-                                }
-                                .frame(height: 120)
-                            }
-                            .background(
-                                selectedRegion == region ?
-                                semantic.danger : Color.clear
-                            )
-                            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
+                    // Hero Card
+                    VStack(alignment: .leading, spacing: 24) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Fix Pain")
+                                .font(.system(size: 34, weight: .bold))
+                                .foregroundStyle(.white)
+                            
+                            Text("Identify your issue and get a personalized recovery plan in minutes.")
+                                .font(.system(size: 17))
+                                .foregroundStyle(.white.opacity(0.9))
+                                .lineLimit(2)
                         }
-                        .buttonStyle(.plain)
-                    }
-                }
-                
-                Spacer()
-                
-                // Continue button
-                if let selectedRegion = selectedRegion {
-                    Button(action: {
-                        showingDetail = true
-                        let impact = UIImpactFeedbackGenerator(style: .medium)
-                        impact.impactOccurred()
-                    }) {
-                        Text("Get Relief Plan")
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(.white)
+                        
+                        Button {
+                            viewModel.startNewAssessment()
+                            showAssessment = true
+                        } label: {
+                            HStack {
+                                Text("Start Assessment")
+                                    .font(.system(size: 17, weight: .semibold))
+                                Image(systemName: "arrow.right")
+                                    .font(.system(size: 16, weight: .bold))
+                            }
+                            .foregroundStyle(FixPainTheme.primary)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, Theme.Spacing.md)
-                            .background(semantic.danger)
-                            .clipShape(RoundedRectangle(cornerRadius: Theme.Radius.card))
+                            .frame(height: 50)
+                            .background(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
                     }
-                    .buttonStyle(.plain)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                }
-            }
-            .padding(Theme.Spacing.lg)
-            .background(palette.background)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Done") {
-                        dismiss()
+                    .padding(24)
+                    .background(FixPainTheme.primaryGradient())
+                    .clipShape(RoundedRectangle(cornerRadius: FixPainTheme.radiusLarge))
+                    .shadow(color: FixPainTheme.primary.opacity(0.3), radius: FixPainTheme.shadowRadius, x: 0, y: FixPainTheme.shadowY)
+                    
+                    // Recent Section
+                    if !viewModel.recentAssessments.isEmpty {
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Recent Checks")
+                                .font(.title3)
+                                .fontWeight(.bold)
+                                .foregroundStyle(FixPainTheme.textPrimary)
+                            
+                            ForEach(viewModel.recentAssessments) { assessment in
+                                RecentAssessmentRow(assessment: assessment)
+                            }
+                        }
+                    } else {
+                        // Placeholder or Education
+                        VStack(alignment: .leading, spacing: 16) {
+                            Text("Common Issues")
+                                .font(.title3)
+                                .fontWeight(.bold)
+                                .foregroundStyle(FixPainTheme.textPrimary)
+                            
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 16) {
+                                    CommonIssueCard(title: "Knee Pain", icon: "figure.walk")
+                                    CommonIssueCard(title: "Lower Back", icon: "figure.core.training")
+                                    CommonIssueCard(title: "Shoulder", icon: "figure.cooldown")
+                                }
+                            }
+                        }
                     }
-                    .foregroundStyle(palette.accent)
                 }
+                .padding(20)
             }
-        }
-        .interactiveDismissDisabled(false)
-        .fullScreenCover(isPresented: $showingDetail) {
-            if let region = selectedRegion {
-                FixPainDetailView(region: region)
+            .background(FixPainTheme.background)
+            .fullScreenCover(isPresented: $showAssessment) {
+                FixPainAssessmentFlowView(viewModel: viewModel, isPresented: $showAssessment)
             }
         }
     }
 }
 
-#Preview {
-    FixPainView()
+struct RecentAssessmentRow: View {
+    let assessment: FixPainAssessment
+    
+    var body: some View {
+        HStack(spacing: 16) {
+            ZStack {
+                Circle()
+                    .fill(FixPainTheme.cardBackgroundSecondary)
+                    .frame(width: 48, height: 48)
+                
+                Image(systemName: "cross.case.fill")
+                    .foregroundStyle(FixPainTheme.primary)
+                    .font(.system(size: 20))
+            }
+            
+            VStack(alignment: .leading, spacing: 4) {
+                Text(assessment.region?.rawValue ?? "Unknown Region")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundStyle(FixPainTheme.textPrimary)
+                
+                Text(assessment.createdAt.formatted(date: .abbreviated, time: .omitted))
+                    .font(.caption)
+                    .foregroundStyle(FixPainTheme.textSecondary)
+            }
+            
+            Spacer()
+            
+            Image(systemName: "chevron.right")
+                .font(.caption)
+                .foregroundStyle(FixPainTheme.textSecondary)
+        }
+        .padding()
+        .background(FixPainTheme.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: FixPainTheme.radiusMedium))
+        .shadow(color: FixPainTheme.shadowColor.opacity(0.05), radius: 5, x: 0, y: 2)
+    }
+}
+
+struct CommonIssueCard: View {
+    let title: String
+    let icon: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Image(systemName: icon)
+                .font(.title)
+                .foregroundStyle(FixPainTheme.primary)
+                .frame(width: 40, height: 40)
+                .background(FixPainTheme.cardBackgroundSecondary)
+                .clipShape(Circle())
+            
+            Text(title)
+                .font(.system(size: 15, weight: .semibold))
+                .foregroundStyle(FixPainTheme.textPrimary)
+        }
+        .padding(16)
+        .frame(width: 120, height: 120)
+        .background(FixPainTheme.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: FixPainTheme.radiusMedium))
+        .shadow(color: FixPainTheme.shadowColor.opacity(0.05), radius: 5, x: 0, y: 2)
+    }
 }

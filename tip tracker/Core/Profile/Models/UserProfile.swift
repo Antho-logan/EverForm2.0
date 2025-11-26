@@ -42,13 +42,21 @@ struct UserProfile: Codable, Equatable {
         case lowCarb = "Low Carb"
         case highProtein = "High Protein"
     }
+
+    enum UnitSystem: String, Codable, CaseIterable {
+        case metric = "Metric"
+        case imperial = "Imperial"
+    }
     
     // Basic info
     var name: String
+    var email: String
+    var phone: String
     var sex: Sex
     var birthdate: Date
     var heightCm: Double
     var weightKg: Double
+    var unitSystem: UnitSystem
     
     // Lifestyle
     var goal: Goal
@@ -66,10 +74,13 @@ struct UserProfile: Codable, Equatable {
     
     init(
         name: String = "",
+        email: String = "",
+        phone: String = "",
         sex: Sex = .male,
         birthdate: Date = Calendar.current.date(byAdding: .year, value: -28, to: Date()) ?? Date(),
         heightCm: Double = 178,
         weightKg: Double = 78,
+        unitSystem: UnitSystem = .metric,
         goal: Goal = .recomposition,
         diet: Diet = .omnivore,
         activity: Activity = .moderate,
@@ -80,10 +91,13 @@ struct UserProfile: Codable, Equatable {
         usualWake: Date? = nil
     ) {
         self.name = name
+        self.email = email
+        self.phone = phone
         self.sex = sex
         self.birthdate = birthdate
         self.heightCm = heightCm
         self.weightKg = weightKg
+        self.unitSystem = unitSystem
         self.goal = goal
         self.diet = diet
         self.activity = activity
@@ -103,6 +117,7 @@ struct UserTargets: Codable, Equatable {
     var fatG: Int
     var hydrationMl: Int
     var sleepHours: Double
+    var steps: Int
     var restingHeartRate: Int?
     var maxHeartRate: Int?
     
@@ -112,7 +127,8 @@ struct UserTargets: Codable, Equatable {
         carbsG: 220,
         fatG: 80,
         hydrationMl: 2500,
-        sleepHours: 8.0
+        sleepHours: 8.0,
+        steps: 10000
     )
 }
 
