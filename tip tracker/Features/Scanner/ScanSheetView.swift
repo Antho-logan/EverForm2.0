@@ -29,79 +29,84 @@ struct ScanSheetView: View {
     @State private var errorMessage: String? = nil
     
     var body: some View {
+        mainView
+    }
+    
+    // Split out main body to aid type-checking
+    private var mainView: some View {
         NavigationView {
-            VStack(spacing: 0) {
-                // Mode Selector
-                modeSelector
-                
-                // Camera View or Simulator Fallback
-                ZStack {
-                    if DataScannerViewController.isSupported && DataScannerViewController.isAvailable {
-                        if selectedMode == .plateAI {
-                            imageCaptureView
-                        } else {
-                            dataScannerView
-                        }
-                    } else {
-                        simulatorFallbackView
+            contentStack
+                .navigationTitle("Scan Food")
+                .navigationBarTitleDisplayMode(.inline)
+                .navigationBarBackButtonHidden()
+                .toolbar {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button("Cancel") { dismiss() }
                     }
-                    
-                    // Overlay Instructions
-                    VStack {
-                        Spacer()
-                        instructionOverlay
-                        Spacer()
-                        captureButton
-                    }
-                    .padding()
                 }
+                .onAppear {
+                    checkCameraPermission()
+                    TelemetryService.shared.track("scan_open")
+                }
+                .onChange(of: selectedMode) { newMode in
+                    TelemetryService.shared.track("scan_mode_change_\(newMode.rawValue)")
+                }
+                .onChange(of: selectedImage) { image in
+                    if let image = image {
+                        Task { await handlePlateImage(image) }
+                    }
+                }
+                .sheet(isPresented: $showingImagePicker) {
+                    ImagePicker(
+                        image: $selectedImage,
+                        isPresented: $showingImagePicker,
+                        sourceType: .camera
+                    )
+                }
+                .sheet(isPresented: $showingResult) {
+                    if let result = scanResult {
+                        ScanResultView(result: result)
+                    }
+                }
+                .alert("Camera Error", isPresented: .constant(errorMessage != nil)) {
+                    Button("OK") { errorMessage = nil }
+                } message: {
+                    if let error = errorMessage {
+                        Text(error)
+                    }
+                }
+        }
+    }
+    
+    @ViewBuilder
+    private var contentStack: some View {
+        VStack(spacing: 0) {
+            modeSelector
+            scannerContainer
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }
-            .navigationTitle("Scan Food")
-            .navigationBarTitleDisplayMode(.inline)
-            .navigationBarBackButtonHidden()
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
+        }
+    }
+    
+    @ViewBuilder
+    private var scannerContainer: some View {
+        ZStack {
+            if DataScannerViewController.isSupported && DataScannerViewController.isAvailable {
+                if selectedMode == .plateAI {
+                    imageCaptureView
+                } else {
+                    dataScannerView
                 }
+            } else {
+                simulatorFallbackView
             }
-            .onAppear {
-                checkCameraPermission()
-                TelemetryService.shared.track("scan_open")
+            
+            VStack {
+                Spacer()
+                instructionOverlay
+                Spacer()
+                captureButton
             }
-            .onChange(of: selectedMode) { newMode in
-                TelemetryService.shared.track("scan_mode_change_\(newMode.rawValue)")
-            }
-            .onChange(of: selectedImage) { image in
-                if let image = image {
-                    Task {
-                        await handlePlateImage(image)
-                    }
-                }
-            }
-            .sheet(isPresented: $showingImagePicker) {
-                ImagePicker(
-                    image: $selectedImage,
-                    isPresented: $showingImagePicker,
-                    sourceType: .camera
-                )
-            }
-            .sheet(isPresented: $showingResult) {
-                if let result = scanResult {
-                    ScanResultView(result: result)
-                }
-            }
-            .alert("Camera Error", isPresented: .constant(errorMessage != nil)) {
-                Button("OK") {
-                    errorMessage = nil
-                }
-            } message: {
-                if let error = errorMessage {
-                    Text(error)
-                }
-            }
+            .padding()
         }
     }
     
