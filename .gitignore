@@ -26,3 +26,8 @@ fastlane/screenshots
 *.swp
 *.zip
 .derived/
+# Xcode build artifacts and caches
+.derived/
+DerivedData/
+xcuserdata/
+*.xcuserstate
