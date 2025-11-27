@@ -1,3 +1,4 @@
+// TODO: Candidate for removal – appears unused in current EverForm flow.
 import SwiftUI
 
 struct EFSecurityView: View {

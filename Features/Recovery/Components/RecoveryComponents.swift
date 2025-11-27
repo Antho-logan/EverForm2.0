@@ -121,6 +121,7 @@ struct WeeklyRecoverySummaryCard: View {
 
 struct SleepStagesCard: View {
   let stages: SleepStageBreakdown
+  @State private var showAnimation = false
 
   var body: some View {
     EFCard {
@@ -132,16 +133,27 @@ struct SleepStagesCard: View {
         // Hypnogram Bar
         GeometryReader { geo in
           HStack(spacing: 0) {
-            StageSegment(color: Color.indigo, width: geo.size.width * ratio(stages.deepMinutes))
-            StageSegment(color: Color.purple, width: geo.size.width * ratio(stages.remMinutes))
             StageSegment(
-              color: Color.blue.opacity(0.6), width: geo.size.width * ratio(stages.lightMinutes))
+              color: Color.indigo,
+              width: showAnimation ? geo.size.width * ratio(stages.deepMinutes) : 0)
             StageSegment(
-              color: Color.orange.opacity(0.8), width: geo.size.width * ratio(stages.awakeMinutes))
+              color: Color.purple,
+              width: showAnimation ? geo.size.width * ratio(stages.remMinutes) : 0)
+            StageSegment(
+              color: Color.blue.opacity(0.6),
+              width: showAnimation ? geo.size.width * ratio(stages.lightMinutes) : 0)
+            StageSegment(
+              color: Color.orange.opacity(0.8),
+              width: showAnimation ? geo.size.width * ratio(stages.awakeMinutes) : 0)
           }
         }
         .frame(height: 24)
         .clipShape(RoundedRectangle(cornerRadius: 12))
+        .onAppear {
+          withAnimation(.spring(response: 1.2, dampingFraction: 0.8)) {
+            showAnimation = true
+          }
+        }
 
         // Legend
         VStack(spacing: 8) {
@@ -218,6 +230,7 @@ struct StageLegendRow: View {
 
 struct WeeklySleepChart: View {
   let weekLogs: [DailyRecoveryLog]
+  @State private var showAnimation = false
 
   var body: some View {
     EFCard {
@@ -233,7 +246,7 @@ struct WeeklySleepChart: View {
         }
 
         HStack(alignment: .bottom, spacing: 8) {
-          ForEach(weekLogs) { log in
+          ForEach(Array(weekLogs.enumerated()), id: \.element.id) { index, log in
             VStack(spacing: 6) {
               let hours = Double(log.totalSleepMinutes) / 60.0
               let height = min(max(hours / 10.0 * 120, 10), 120)  // Scale to max 10h
@@ -246,7 +259,7 @@ struct WeeklySleepChart: View {
 
                 Capsule()
                   .fill(hours >= 7 ? DesignSystem.Colors.accent : DesignSystem.Colors.neutral300)
-                  .frame(height: height)
+                  .frame(height: showAnimation ? height : 0)
                   .frame(width: 8)
               }
 
@@ -255,9 +268,15 @@ struct WeeklySleepChart: View {
                 .foregroundStyle(DesignSystem.Colors.textSecondary)
             }
             .frame(maxWidth: .infinity)
+            .animation(
+              .spring(response: 0.6, dampingFraction: 0.7).delay(Double(index) * 0.05),
+              value: showAnimation)
           }
         }
       }
+    }
+    .onAppear {
+      showAnimation = true
     }
   }
 
@@ -282,12 +301,12 @@ struct ActiveRecoveryGrid: View {
 
   var body: some View {
     LazyVGrid(columns: columns, spacing: 12) {
-        ForEach(RecoveryAction.allCases) { action in
-            HabitTile(
-                action: action,
-                isCompleted: completedActions.contains(action)
-            ) {
-                onToggle(action)
+      ForEach(RecoveryAction.allCases) { action in
+        HabitTile(
+          action: action,
+          isCompleted: completedActions.contains(action)
+        ) {
+          onToggle(action)
         }
       }
     }

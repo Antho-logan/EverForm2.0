@@ -28,6 +28,7 @@ struct KPIItem: Identifiable {
 struct KPICard: View {
   @Environment(\.colorScheme) private var scheme
   let item: KPIItem
+  @State private var animatedProgress: CGFloat = 0
 
   var body: some View {
     EFCard(style: .tinted(item.accent)) {
@@ -50,10 +51,33 @@ struct KPICard: View {
             .foregroundStyle(EFTheme.muted(scheme))
         }
 
-        ProgressView(value: item.progress)
-          .tint(item.accent)
-          .scaleEffect(x: 1, y: 1.2, anchor: .center)
-          .padding(.top, 4)
+        GeometryReader { geo in
+          ZStack(alignment: .leading) {
+            Capsule()
+              .fill(item.accent.opacity(0.2))
+
+            Capsule()
+              .fill(item.accent)
+              .frame(width: animatedProgress * geo.size.width)
+          }
+        }
+        .frame(height: 6)
+        .padding(.top, 4)
+      }
+    }
+    .onAppear {
+      // Reset first to ensure animation plays if view was kept in memory but not fully disappeared
+      animatedProgress = 0
+      withAnimation(.spring(response: 1.0, dampingFraction: 0.8)) {
+        animatedProgress = CGFloat(item.progress)
+      }
+    }
+    .onDisappear {
+      animatedProgress = 0
+    }
+    .onChange(of: item.progress) { _, newValue in
+      withAnimation(.spring(response: 1.0, dampingFraction: 0.8)) {
+        animatedProgress = CGFloat(newValue)
       }
     }
   }

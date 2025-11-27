@@ -5,6 +5,7 @@
 //  Created by Assistant on 24/11/2025.
 //
 
+// TODO: Candidate for removal – appears unused in current EverForm flow.
 import Foundation
 import SwiftUI
 

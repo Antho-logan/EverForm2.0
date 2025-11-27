@@ -1,3 +1,4 @@
+// TODO: Candidate for removal – appears unused in current EverForm flow.
 import SwiftUI
 
 // Charts framework is iOS 16+; we guard import for safety

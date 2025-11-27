@@ -56,14 +56,9 @@ struct CoachView: View {
   }
 
   private func calculateBottomPadding(geo: GeometryProxy) -> CGFloat {
-    // Distance from bottom of this view to bottom of screen
-    // Since this view is inset by the TabBar (via safeAreaInset in RootTabView),
-    // this distance is roughly the TabBar height.
-    let viewBottomToScreenBottom = UIScreen.main.bounds.height - geo.frame(in: .global).maxY
-
-    // We only need to pad if the keyboard is taller than the gap below us (the tab bar)
-    let overlap = keyboardHeight - viewBottomToScreenBottom
-    return max(0, overlap)
+    // When keyboard is visible, use its height.
+    // When hidden, use the TabBar height (approx 90pt including safe area) so the input isn't covered.
+    return keyboardHeight > 0 ? keyboardHeight : 90
   }
 }
 

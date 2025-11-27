@@ -27,8 +27,7 @@ struct RootTabView: View {
         }
         .safeAreaInset(edge: .bottom) {
             EverFormTabBar(selection: $selection)
-                .padding(.horizontal, 12)
-                .ignoresSafeArea(edges: .bottom)
+                .background(themeManager.beigeBackground.ignoresSafeArea(edges: .bottom))
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .environment(\.colorScheme, resolvedScheme)

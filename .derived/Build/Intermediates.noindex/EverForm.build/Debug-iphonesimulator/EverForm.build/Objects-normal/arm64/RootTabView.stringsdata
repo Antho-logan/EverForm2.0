@@ -1,40 +1,5 @@
 {
   "source": "/Users/antho/Desktop/Everform 2.0/EverForm/RootTabView.swift",
-  "tables": {
-    "Localizable": [
-      {
-        "comment": "",
-        "key": "Overview",
-        "location": {
-          "startingColumn": 34,
-          "startingLine": 9
-        }
-      },
-      {
-        "comment": "",
-        "key": "Coach",
-        "location": {
-          "startingColumn": 34,
-          "startingLine": 12
-        }
-      },
-      {
-        "comment": "",
-        "key": "Scan",
-        "location": {
-          "startingColumn": 34,
-          "startingLine": 15
-        }
-      },
-      {
-        "comment": "",
-        "key": "Progress",
-        "location": {
-          "startingColumn": 34,
-          "startingLine": 18
-        }
-      }
-    ]
-  },
+  "tables": {},
   "version": 1
 }

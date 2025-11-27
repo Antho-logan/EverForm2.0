@@ -1,51 +1,14 @@
 /Users/antho/Desktop/Everform 2.0/EverForm/Components.swift
-/Users/antho/Desktop/Everform 2.0/EverForm/ContentView.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Core/AppShell/AppRouter.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Core/AppShell/CustomTabBar.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Core/AppShell/CustomTopBar.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Core/AppShell/DrawerMenu.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Core/AppShell/SideMenuDrawer.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Core/AppShell/TabTypes.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Coordinators/AppMenuCoordinator.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Coordinators/WorkoutCoordinator.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/DesignSystem/Components/QuickActionChip.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/DesignSystem/Components/StatTile.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/DesignSystem/DesignTokens.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Logging/DebugLog.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Mocks/MockWorkouts.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Models/ChatTypes.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Models/Exercise.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Models/TrainingLog.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Models/Workout.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Models/WorkoutSession.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Nutrition/Models/DayNutrition.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Nutrition/Models/FoodItem.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Nutrition/Models/MealEntry.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Nutrition/Models/WeekNutritionSummary.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Nutrition/FoodDatabaseService.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Nutrition/NutritionChartsService.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Nutrition/NutritionStore.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Persistence/SafeFileIO.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Profile/Models/ProfileAdvanced.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Profile/Models/UserProfile.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Profile/AttachmentStore.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Profile/Calculators.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Profile/CoachContextBuilder.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Profile/ProfileExporter.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Profile/ProfileNotesStore.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Profile/ProfileStore.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/AIService.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/HydrationService.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/NutritionLogService.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/RestTimerService.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/ScanHistoryService.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/ScanService.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/TelemetryService.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/TrainingService.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/TrainingStore.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Training/Models/ExerciseTemplate.swift
 /Users/antho/Desktop/Everform 2.0/Features/Breathwork/Components/BreathingOrbView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Breathwork/Components/BreathworkCards.swift
+/Users/antho/Desktop/Everform 2.0/Data/JournalModels.swift
+/Users/antho/Desktop/Everform 2.0/Data/JournalStore.swift
 /Users/antho/Desktop/Everform 2.0/Features/Breathwork/Models/BreathworkModels.swift
 /Users/antho/Desktop/Everform 2.0/Features/Breathwork/BreathworkHomeView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Breathwork/BreathworkInsightsView.swift
@@ -60,28 +23,43 @@
 /Users/antho/Desktop/Everform 2.0/Features/Coach/CoachView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Display/EFDisplaySettingsView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Export/EFExportDataView.swift
+/Users/antho/Desktop/Everform 2.0/Features/FixPain/Components/FixPainDesignSystem.swift
 /Users/antho/Desktop/Everform 2.0/Features/FixPain/Models/FixPainModels.swift
 /Users/antho/Desktop/Everform 2.0/Features/FixPain/FixPainAssessmentView.swift
 /Users/antho/Desktop/Everform 2.0/Features/FixPain/FixPainDetailView.swift
 /Users/antho/Desktop/Everform 2.0/Features/FixPain/FixPainResultView.swift
+/Users/antho/Desktop/Everform 2.0/Features/FixPain/FixPainRootView.swift
 /Users/antho/Desktop/Everform 2.0/Features/FixPain/FixPainStartView.swift
-/Users/antho/Desktop/Everform 2.0/Features/FixPain/FixPainView.swift
 /Users/antho/Desktop/Everform 2.0/Features/FixPain/FixPainViewModel.swift
+/Users/antho/Desktop/Everform 2.0/Features/HRV/Components/HRVCharts.swift
+/Users/antho/Desktop/Everform 2.0/Features/HRV/Components/HRVEducationSheet.swift
+/Users/antho/Desktop/Everform 2.0/Features/HRV/HRVDashboardView.swift
+/Users/antho/Desktop/Everform 2.0/Features/HRV/HRVDashboardViewModel.swift
+/Users/antho/Desktop/Everform 2.0/Features/HRV/HRVModels.swift
 /Users/antho/Desktop/Everform 2.0/Features/LookMaxing/LookMaxingStartView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Mobility/Models/MobilityModels.swift
-/Users/antho/Desktop/Everform 2.0/Features/Mobility/MobilityHomeView.swift
+/Users/antho/Desktop/Everform 2.0/Features/Mobility/Views/MobilityDashboardView.swift
+/Users/antho/Desktop/Everform 2.0/Features/Mobility/Views/MobilityLevelSheet.swift
+/Users/antho/Desktop/Everform 2.0/Features/Mobility/Views/MobilityRoutineDetailView.swift
+/Users/antho/Desktop/Everform 2.0/Features/Mobility/Views/MobilityTestDetailView.swift
+/Users/antho/Desktop/Everform 2.0/Features/Mobility/Views/MobilityTestsOverviewView.swift
+/Users/antho/Desktop/Everform 2.0/Features/Mobility/MobilityRootView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Mobility/MobilitySessionView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Mobility/MobilityStartView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Mobility/MobilityStore.swift
 /Users/antho/Desktop/Everform 2.0/Features/Mobility/MobilityView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Nutrition/Components/NutritionComponents.swift
 /Users/antho/Desktop/Everform 2.0/Features/Nutrition/Models/NutritionModels.swift
+/Users/antho/Desktop/Everform 2.0/Features/Nutrition/Models/NutritionReportModels.swift
+/Users/antho/Desktop/Everform 2.0/Features/Nutrition/Services/NutritionDataProvider.swift
 /Users/antho/Desktop/Everform 2.0/Features/Nutrition/EFNutritionStore.swift
 /Users/antho/Desktop/Everform 2.0/Features/Nutrition/NutritionHomeView.swift
+/Users/antho/Desktop/Everform 2.0/Features/Nutrition/NutritionRootView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Nutrition/NutritionView.swift
-/Users/antho/Desktop/Everform 2.0/Features/Overview/Components/FocusPanelView.swift
-/Users/antho/Desktop/Everform 2.0/Data/JournalModels.swift
-/Users/antho/Desktop/Everform 2.0/Data/JournalStore.swift
+/Users/antho/Desktop/Everform 2.0/Features/Overview/Components/ConnectedDevices/ConnectedDeviceRow.swift
+/Users/antho/Desktop/Everform 2.0/Features/Overview/Components/ConnectedDevices/ConnectedDevicesView.swift
+/Users/antho/Desktop/Everform 2.0/Features/Overview/Components/ConnectedDevices/HealthKitManager.swift
+/Users/antho/Desktop/Everform 2.0/Features/Overview/Components/FocusOverlayView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Overview/Components/KPICard.swift
 /Users/antho/Desktop/Everform 2.0/Features/Overview/Components/NotificationsMenuView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Overview/Components/NotificationsPopoverView.swift
@@ -92,7 +70,7 @@
 /Users/antho/Desktop/Everform 2.0/Features/Overview/Components/ProfileMenuView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Overview/Components/QuickActionCard.swift
 /Users/antho/Desktop/Everform 2.0/Features/Overview/Models/FocusModel.swift
-/Users/antho/Desktop/Everform 2.0/Features/Overview/OverviewView.swift
+/Users/antho/Desktop/Everform 2.0/Features/Overview/OverviewRootView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Overview/QuickActionsRow.swift
 /Users/antho/Desktop/Everform 2.0/Features/Overview/ReorderQuickActionsView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Profile/Components/ProfileHero.swift
@@ -100,12 +78,11 @@
 /Users/antho/Desktop/Everform 2.0/Features/Profile/Components/ProfileSection.swift
 /Users/antho/Desktop/Everform 2.0/Features/Profile/EditSheets/EditComponents.swift
 /Users/antho/Desktop/Everform 2.0/Features/Profile/EditSheets/ProfileQuickEditView.swift
+/Users/antho/Desktop/Everform 2.0/Models/ChatMessage.swift
+/Users/antho/Desktop/Everform 2.0/Models/CoachModels.swift
+/Users/antho/Desktop/Everform 2.0/Models/QuickAction.swift
 /Users/antho/Desktop/Everform 2.0/Features/Profile/ProfileModuleUIKit.swift
 /Users/antho/Desktop/Everform 2.0/Features/Profile/ProfileUIKitBridge.swift
-/Users/antho/Desktop/Everform 2.0/Services/LLM/LLMService.swift
-/Users/antho/Desktop/Everform 2.0/Services/Media/AudioRecorder.swift
-/Users/antho/Desktop/Everform 2.0/Services/Media/MediaPicker.swift
-/Users/antho/Desktop/Everform 2.0/Services/QuickActionsManager.swift
 /Users/antho/Desktop/Everform 2.0/Features/Profile/ProfileView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Progress/ProgressDashboardView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Progress/ProgressExports.swift
@@ -114,8 +91,9 @@
 /Users/antho/Desktop/Everform 2.0/Features/Progress/ProgressViewScreen.swift
 /Users/antho/Desktop/Everform 2.0/Features/Recovery/Components/RecoveryComponents.swift
 /Users/antho/Desktop/Everform 2.0/Features/Recovery/Models/RecoveryModels.swift
-/Users/antho/Desktop/Everform 2.0/Features/Recovery/RecoveryHomeView.swift
-/Users/antho/Desktop/Everform 2.0/Features/Recovery/RecoveryStore.swift
+/Users/antho/Desktop/Everform 2.0/Features/Recovery/RecoveryDashboardViewModel.swift
+/Users/antho/Desktop/Everform 2.0/Features/Recovery/RecoveryRootView.swift
+/Users/antho/Desktop/Everform 2.0/Features/Recovery/RecoveryStartView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Scan/ScanView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Security/EFSecurityView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Settings/AccountScreens.swift
@@ -125,8 +103,20 @@
 /Users/antho/Desktop/Everform 2.0/Features/Training/TodaysTrainingPlanView.swift
 /Users/antho/Desktop/Everform 2.0/Features/Training/TrainingModels.swift
 /Users/antho/Desktop/Everform 2.0/Features/Training/TrainingStartView.swift
-/Users/antho/Desktop/Everform 2.0/Features/Training/TrainingStyle.swift
-/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Training/Models/SetPlan.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Coordinators/AppMenuCoordinator.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Coordinators/WorkoutCoordinator.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/DesignSystem/Components/QuickActionChip.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/DesignSystem/Components/StatTile.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/DesignSystem/DesignTokens.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Logging/DebugLog.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Mocks/MockWorkouts.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Models/ChatTypes.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Models/Exercise.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Models/TrainingLog.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Models/Workout.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Models/WorkoutSession.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Nutrition/Models/DayNutrition.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Nutrition/Models/FoodItem.swift
 /Users/antho/Desktop/Everform 2.0/UI/Chat/ChatComposer.swift
 /Users/antho/Desktop/Everform 2.0/UI/Chat/ChatListView.swift
 /Users/antho/Desktop/Everform 2.0/UI/Chat/MessageRow.swift
@@ -166,6 +156,31 @@
 /Users/antho/Desktop/Everform 2.0/UI/Foundation/Theme.swift
 /Users/antho/Desktop/Everform 2.0/UI/Settings/AppearanceSettingsView.swift
 /Users/antho/Desktop/Everform 2.0/UI/Theme/EFPalette.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Nutrition/Models/MealEntry.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Nutrition/Models/WeekNutritionSummary.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Nutrition/FoodDatabaseService.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Nutrition/NutritionChartsService.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Nutrition/NutritionStore.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Persistence/SafeFileIO.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Profile/Models/ProfileAdvanced.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Profile/Models/UserProfile.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Profile/AttachmentStore.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Profile/Calculators.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Profile/CoachContextBuilder.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Profile/ProfileExporter.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Profile/ProfileNotesStore.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Profile/ProfileStore.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/AIService.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/HydrationService.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/NutritionLogService.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/RestTimerService.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/ScanHistoryService.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/ScanService.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/TelemetryService.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/TrainingService.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Services/TrainingStore.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Training/Models/ExerciseTemplate.swift
+/Users/antho/Desktop/Everform 2.0/tip tracker/Core/Training/Models/SetPlan.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Core/Training/Models/WorkoutSummary.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Core/Training/WorkoutStore.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Core/Utils/Notifications.swift
@@ -187,9 +202,6 @@
 /Users/antho/Desktop/Everform 2.0/tip tracker/Features/Nutrition/Models/NutritionEntry.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Features/Nutrition/GoalEditorSheet.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Features/Nutrition/LogMealSheet.swift
-/Users/antho/Desktop/Everform 2.0/Models/ChatMessage.swift
-/Users/antho/Desktop/Everform 2.0/Models/CoachModels.swift
-/Users/antho/Desktop/Everform 2.0/Models/QuickAction.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Features/Nutrition/MealLogView.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Features/Nutrition/NutritionDiaryView.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Features/Nutrition/NutritionIngestService.swift
@@ -204,6 +216,10 @@
 /Users/antho/Desktop/Everform 2.0/tip tracker/Features/Onboarding/Steps/StepGoalsView.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Features/Onboarding/Steps/StepLifestyleView.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Features/Onboarding/ExpressOnboardingView.swift
+/Users/antho/Desktop/Everform 2.0/Services/LLM/LLMService.swift
+/Users/antho/Desktop/Everform 2.0/Services/Media/AudioRecorder.swift
+/Users/antho/Desktop/Everform 2.0/Services/Media/MediaPicker.swift
+/Users/antho/Desktop/Everform 2.0/Services/QuickActionsManager.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Features/Onboarding/OnboardingFlow.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Features/Overview/QuickActions/FixPainSheet.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Features/Overview/QuickActions/MobilityRunView.swift
@@ -225,10 +241,13 @@
 /Users/antho/Desktop/Everform 2.0/tip tracker/Features/Training/TodayPlanSheet.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Features/Training/WorkoutFinishView.swift
 /Users/antho/Desktop/Everform 2.0/tip tracker/Features/Training/WorkoutRunnerView.swift
+/Users/antho/Desktop/Everform 2.0/EverForm/ContentView.swift
 /Users/antho/Desktop/Everform 2.0/EverForm/DesignSystem.swift
 /Users/antho/Desktop/Everform 2.0/EverForm/EverFormApp.swift
+/Users/antho/Desktop/Everform 2.0/EverForm/EverFormTabBar.swift
 /Users/antho/Desktop/Everform 2.0/EverForm/PremiumDashboard.swift
 /Users/antho/Desktop/Everform 2.0/EverForm/RootTabView.swift
 /Users/antho/Desktop/Everform 2.0/EverForm/ThemeManager.swift
+/Users/antho/Desktop/Everform 2.0/EverForm/Typography.swift
 /Users/antho/Desktop/Everform 2.0/EverForm/ViewExtensions.swift
 /Users/antho/Desktop/Everform 2.0/.derived/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/DerivedSources/GeneratedAssetSymbols.swift
