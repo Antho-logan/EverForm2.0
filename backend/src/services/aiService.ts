@@ -106,7 +106,7 @@ Be motivating but realistic.`;
   // Fallback if no key
   if (!env.DEEPSEEK_API_KEY) {
     console.log('No DEEPSEEK_API_KEY, returning echo.');
-    return \`Echo: \${message}\`;
+    return `Echo: ${message}`;
   }
 
   try {
@@ -121,7 +121,7 @@ Be motivating but realistic.`;
       },
       {
         headers: {
-          Authorization: \`Bearer \${env.DEEPSEEK_API_KEY}\`
+          Authorization: `Bearer ${env.DEEPSEEK_API_KEY}`
         },
         timeout: 10000
       }

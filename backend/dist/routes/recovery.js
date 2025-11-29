@@ -15,17 +15,26 @@ const recoverySchema = zod_1.z.object({
 router.get('/recent', async (req, res, next) => {
     try {
         const userId = req.user?.id;
-        const { data, error } = await supabaseClient_1.supabase
+        const { data: recoveryLogs, error } = await supabaseClient_1.supabase
             .from('recovery_logs')
             .select('*')
             .eq('user_id', userId)
             .order('logged_at', { ascending: false })
-            .limit(3);
-        if (error) {
-            console.error('Failed to fetch recovery logs', error);
-            return res.status(500).json({ message: 'Could not fetch recovery logs' });
+            .limit(1);
+        const { data: painChecks, error: painError } = await supabaseClient_1.supabase
+            .from('pain_checks')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
+            .limit(1);
+        if (error || painError) {
+            console.error('Failed to fetch recovery logs', error || painError);
+            return res.status(500).json({ message: 'Could not fetch recovery data' });
         }
-        return res.json({ recoveryLogs: data ?? [] });
+        return res.json({
+            recoveryLog: recoveryLogs?.[0] ?? null,
+            recentPainCheck: painChecks?.[0] ?? null
+        });
     }
     catch (err) {
         return next(err);

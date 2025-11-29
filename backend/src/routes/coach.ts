@@ -32,7 +32,7 @@ router.post('/message', async (req: AuthenticatedRequest, res, next) => {
     const fullContext = {
       ...clientContext,
       profile,
-      recentMeals
+      recentMeals: recentMeals ?? undefined
     };
 
     const reply = await generateCoachReply(message, fullContext);

@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.generatePersonalPlan = generatePersonalPlan;
+exports.generateCoachReply = generateCoachReply;
 // DeepSeek integration with a mocked fallback to keep the API usable in offline/dev environments.
 const axios_1 = __importDefault(require("axios"));
 const env_1 = require("../config/env");
@@ -76,5 +77,37 @@ async function generatePersonalPlan(profile, onboardingAnswers, recentData) {
         console.warn('DeepSeek API unavailable, returning mocked plan.');
     }
     return buildMockPlan(profile, recentData);
+}
+async function generateCoachReply(message, context) {
+    const systemPrompt = `You are EverForm, a knowledgeable and empathetic fitness and biohacking coach.
+User profile and recent data is provided in the context.
+Keep answers concise (under 3 sentences unless detailed explanation is asked).
+Be motivating but realistic.`;
+    // Fallback if no key
+    if (!env_1.env.DEEPSEEK_API_KEY) {
+        console.log('No DEEPSEEK_API_KEY, returning echo.');
+        return `Echo: ${message}`;
+    }
+    try {
+        const response = await axios_1.default.post(DEEPSEEK_URL, {
+            model: 'deepseek-chat',
+            messages: [
+                { role: 'system', content: systemPrompt },
+                { role: 'user', content: JSON.stringify({ context, message }) }
+            ]
+        }, {
+            headers: {
+                Authorization: `Bearer ${env_1.env.DEEPSEEK_API_KEY}`
+            },
+            timeout: 10000
+        });
+        const content = response.data?.choices?.[0]?.message?.content;
+        if (content)
+            return content;
+    }
+    catch (err) {
+        console.warn('DeepSeek chat failed, returning fallback.', err);
+    }
+    return "I'm having a little trouble connecting to my brain right now, but I'm here! What was that?";
 }
 //# sourceMappingURL=aiService.js.map

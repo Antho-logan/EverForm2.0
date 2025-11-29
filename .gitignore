@@ -22,6 +22,16 @@ fastlane/Preview.html
 fastlane/screenshots
 *.log
 
+# Environment files (secrets)
+.env
+.env.local
+.env.*.local
+*.env
+
+# Node.js
+node_modules/
+dist/
+
 # Misc
 *.swp
 *.zip

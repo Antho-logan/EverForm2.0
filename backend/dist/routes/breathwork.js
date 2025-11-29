@@ -10,7 +10,7 @@ const breathworkSchema = zod_1.z.object({
     durationMinutes: zod_1.z.number().int().positive().optional(),
     completedAt: zod_1.z.string().optional()
 });
-router.get('/recent', async (req, res, next) => {
+router.get('/sessions', async (req, res, next) => {
     try {
         const userId = req.user?.id;
         const { data, error } = await supabaseClient_1.supabase
@@ -29,7 +29,7 @@ router.get('/recent', async (req, res, next) => {
         return next(err);
     }
 });
-router.post('/session', async (req, res, next) => {
+router.post('/sessions', async (req, res, next) => {
     try {
         const userId = req.user?.id;
         const parsed = breathworkSchema.parse(req.body);

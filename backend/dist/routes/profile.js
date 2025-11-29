@@ -13,7 +13,9 @@ const profileSchema = zod_1.z.object({
     heightCm: zod_1.z.number().int().positive().optional(),
     weightKg: zod_1.z.number().positive().optional(),
     activityLevel: zod_1.z.string().optional(),
-    primaryGoal: zod_1.z.string().optional()
+    primaryGoal: zod_1.z.string().optional(),
+    goalType: zod_1.z.string().optional(),
+    bodyFat: zod_1.z.number().nonnegative().optional()
 });
 const onboardingSchema = zod_1.z.object({
     answers: zod_1.z
@@ -51,7 +53,7 @@ router.get('/', async (req, res, next) => {
         return next(err);
     }
 });
-router.post('/', async (req, res, next) => {
+router.put('/', async (req, res, next) => {
     try {
         const userId = req.user?.id;
         const parsed = profileSchema.parse(req.body);
@@ -64,7 +66,9 @@ router.post('/', async (req, res, next) => {
             height_cm: parsed.heightCm,
             weight_kg: parsed.weightKg,
             activity_level: parsed.activityLevel,
-            primary_goal: parsed.primaryGoal
+            primary_goal: parsed.primaryGoal,
+            goal_type: parsed.goalType,
+            body_fat: parsed.bodyFat
         };
         const { data, error } = await supabaseClient_1.supabase
             .from('profiles')

@@ -96,18 +96,17 @@ router.post('/generate-plan', async (req, res, next) => {
         const plan = await (0, aiService_1.generatePersonalPlan)(profileResult.data, onboardingResult.data ?? [], recentData);
         let storedPlan = null;
         const { error: storeError, data: stored } = await supabaseClient_1.supabase
-            .from('workout_plans')
+            .from('ai_plans')
             .insert({
             user_id: userId,
-            name: 'AI Personalized Plan',
+            type: 'full',
             goal: profileResult.data?.primary_goal ?? null,
-            weeks: 12,
-            plan_json: plan
+            payload: plan
         })
             .select()
             .maybeSingle();
         if (storeError) {
-            console.warn('Could not persist AI plan to workout_plans', storeError);
+            console.warn('Could not persist AI plan to ai_plans', storeError);
         }
         else {
             storedPlan = stored;

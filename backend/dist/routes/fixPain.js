@@ -29,7 +29,7 @@ router.get('/recent', async (req, res, next) => {
         return next(err);
     }
 });
-router.post('/check', async (req, res, next) => {
+router.post('/assess', async (req, res, next) => {
     try {
         const userId = req.user?.id;
         const parsed = painCheckSchema.parse(req.body);

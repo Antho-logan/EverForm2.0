@@ -5,12 +5,17 @@ const express_1 = require("express");
 const zod_1 = require("zod");
 const supabaseClient_1 = require("../config/supabaseClient");
 const router = (0, express_1.Router)();
-const lookmaxSchema = zod_1.z.object({
+const lookmaxRoutineSchema = zod_1.z.object({
     category: zod_1.z.enum(['hair', 'jawline', 'skin', 'posture', 'style']),
     planJson: zod_1.z.record(zod_1.z.any()).optional(),
     notes: zod_1.z.string().optional()
 });
-router.get('/recent', async (req, res, next) => {
+const lookmaxActionSchema = zod_1.z.object({
+    routineId: zod_1.z.string(),
+    action: zod_1.z.string(),
+    notes: zod_1.z.string().optional()
+});
+router.get('/routines', async (req, res, next) => {
     try {
         const userId = req.user?.id;
         const { data, error } = await supabaseClient_1.supabase
@@ -29,10 +34,10 @@ router.get('/recent', async (req, res, next) => {
         return next(err);
     }
 });
-router.post('/session', async (req, res, next) => {
+router.post('/routines', async (req, res, next) => {
     try {
         const userId = req.user?.id;
-        const parsed = lookmaxSchema.parse(req.body);
+        const parsed = lookmaxRoutineSchema.parse(req.body);
         const payload = {
             user_id: userId,
             category: parsed.category,
@@ -45,6 +50,27 @@ router.post('/session', async (req, res, next) => {
             return res.status(500).json({ message: 'Could not create lookmax session' });
         }
         return res.status(201).json({ lookmaxSession: data });
+    }
+    catch (err) {
+        return next(err);
+    }
+});
+router.post('/actions', async (req, res, next) => {
+    try {
+        const userId = req.user?.id;
+        const parsed = lookmaxActionSchema.parse(req.body);
+        const payload = {
+            user_id: userId,
+            session_id: parsed.routineId,
+            action: parsed.action,
+            notes: parsed.notes
+        };
+        const { data, error } = await supabaseClient_1.supabase.from('lookmax_actions').insert(payload).select().single();
+        if (error) {
+            console.error('Failed to create lookmax action', error);
+            return res.status(500).json({ message: 'Could not create lookmax action' });
+        }
+        return res.status(201).json({ action: data });
     }
     catch (err) {
         return next(err);

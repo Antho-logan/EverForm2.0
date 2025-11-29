@@ -10,13 +10,31 @@ const zod_1 = require("zod");
 const env_1 = require("./config/env");
 const auth_1 = require("./middleware/auth");
 const index_1 = __importDefault(require("./routes/index"));
+const publicCoach_1 = __importDefault(require("./routes/publicCoach"));
+const publicScan_1 = __importDefault(require("./routes/publicScan"));
 const app = (0, express_1.default)();
-app.use((0, cors_1.default)());
-app.use(express_1.default.json());
+// CORS configuration: relaxed for local mobile development.
+// iOS simulator and real devices may use various origins/IPs.
+app.use((0, cors_1.default)({
+    origin: true, // Reflect request origin (allows any origin in dev)
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+}));
+app.use(express_1.default.json({ limit: '10mb' })); // Increased limit for base64 images
+// Health check endpoint
 app.get('/health', (_req, res) => {
-    res.json({ status: 'ok' });
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
-// All application routes require a valid Supabase JWT via authMiddleware.
+// Debug endpoint for connectivity testing (no DB hit)
+app.get('/debug/user-test', (_req, res) => {
+    res.json({ ok: true, message: 'Backend is reachable' });
+});
+// Public API routes (no auth required for local dev)
+// These simplified endpoints are designed for the iOS app
+app.use('/api/coach', publicCoach_1.default);
+app.use('/api/scan', publicScan_1.default);
+// Authenticated routes under /api/v1 (full feature set with auth)
 app.use('/api/v1', auth_1.authMiddleware, index_1.default);
 // Centralized error handler keeps responses consistent and avoids leaking internals.
 app.use((err, _req, res, _next) => {
@@ -28,6 +46,10 @@ app.use((err, _req, res, _next) => {
 });
 const port = env_1.env.PORT;
 app.listen(port, () => {
-    console.log(`EverForm backend listening on port ${port}`);
+    console.log(`✓ EverForm backend listening on http://localhost:${port}`);
+    console.log(`  Health:     GET  http://localhost:${port}/health`);
+    console.log(`  Debug:      GET  http://localhost:${port}/debug/user-test`);
+    console.log(`  Coach Chat: POST http://localhost:${port}/api/coach/chat`);
+    console.log(`  Food Scan:  POST http://localhost:${port}/api/scan/food`);
 });
 //# sourceMappingURL=server.js.map
