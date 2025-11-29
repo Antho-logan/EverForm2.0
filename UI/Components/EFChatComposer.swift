@@ -4,6 +4,7 @@ struct EFChatComposer: View {
     @Binding var text: String
     var placeholder: String = "Message"
     var tint: Color = Color(red: 48/255, green: 196/255, blue: 103/255)
+    var onSend: (() -> Void)? = nil
 
     var body: some View {
         HStack(spacing: 12) {
@@ -27,6 +28,11 @@ struct EFChatComposer: View {
                         .foregroundStyle(.primary)
                         .textInputAutocapitalization(.sentences)
                         .disableAutocorrection(true)
+                        .onSubmit {
+                            if !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                                onSend?()
+                            }
+                        }
                 }
 
                 Button(action: {}) {
@@ -41,15 +47,20 @@ struct EFChatComposer: View {
             .clipShape(Capsule())
             .shadow(color: .black.opacity(0.05), radius: 6, x: 0, y: 3)
 
-            Button(action: {}) {
-                Image(systemName: "waveform")
+            Button(action: {
+                if !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+                    onSend?()
+                }
+            }) {
+                Image(systemName: "paperplane.fill")
                     .font(.system(size: 18, weight: .semibold))
                     .foregroundStyle(.white)
                     .frame(width: 44, height: 44)
-                    .background(tint)
+                    .background(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? Color.gray.opacity(0.5) : tint)
                     .clipShape(Circle())
                     .shadow(color: tint.opacity(0.4), radius: 8, x: 0, y: 3)
             }
+            .disabled(text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
         }
         .padding(.horizontal, 16)
     }

@@ -231,6 +231,14 @@ struct OverviewContentView: View {
                 ) {
                     DebugLog.info("Overview: Fix pain quick action tapped")
                     openExplain("fix_pain", CoachTopic.mobility.rawValue)
+                    Task {
+                        let payload = PainAssessmentRequest(area: "unspecified", severity: 3, description: "quick_action")
+                        do {
+                            let _: BackendPainCheck = try await BackendClient.shared.post("fix-pain/assess", body: payload)
+                        } catch {
+                            DebugLog.info("Failed to log pain assessment: \(error)")
+                        }
+                    }
                 }
 
                 QuickActionTile(
@@ -374,4 +382,10 @@ struct ResumeWorkoutChip: View {
         onStartMobility: {}
     )
     .environment(WorkoutStore())
+}
+
+private struct PainAssessmentRequest: Codable {
+    let area: String
+    let severity: Int
+    let description: String?
 }

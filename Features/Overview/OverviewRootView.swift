@@ -10,6 +10,7 @@ import SwiftUI
 struct OverviewView: View {
   @Environment(\.colorScheme) private var scheme
   @Environment(ThemeManager.self) private var themeManager
+  @Environment(AppRouter.self) private var router
   @State private var selectedPeriod: FocusTimeframe = .today
   @State private var isFocusPanelVisible = false
 
@@ -29,6 +30,12 @@ struct OverviewView: View {
   @State private var isPresentingFixPain = false
   @State private var isPresentingLookMaxing = false
   @State private var isPresentingConnectedDevices = false
+  @State private var isPresentingAccount = false
+  @State private var isPresentingNotificationsSettings = false
+  @State private var isPresentingPrivacy = false
+  @State private var isPresentingHelp = false
+  @State private var isPresentingFullNotifications = false
+  @State private var isPresentingFullPlan = false
   @State private var hydrationMl = 0
 
   private let kpiCards = KPIItem.mock
@@ -69,6 +76,20 @@ struct OverviewView: View {
                   {
                     ForEach(dynamicKPIs) { card in
                       KPICard(item: card)
+                        .onTapGesture {
+                            switch card.subtitle {
+                            case "Steps":
+                                router.selectedTab = .progress
+                            case "Calories":
+                                isPresentingNutrition = true
+                            case "Sleep":
+                                isPresentingRecovery = true
+                            case "Hydration":
+                                logWater(amount: 250) // Simple quick add for now
+                            default:
+                                break
+                            }
+                        }
                     }
                   }
                 }
@@ -81,6 +102,7 @@ struct OverviewView: View {
                     actionTitle: "View All"
                   ) {
                     DebugLog.info("Overview: View All plan tapped")
+                    isPresentingFullPlan = true
                   }
                   LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 12)], spacing: 12)
                   {
@@ -217,10 +239,34 @@ struct OverviewView: View {
 
             ProfileMenuPopoverView(
               isPresented: $isProfileMenuPresented,
+              onAccountTap: {
+                withAnimation {
+                    isProfileMenuPresented = false
+                    isPresentingAccount = true
+                }
+              },
               onConnectedDevicesTap: {
                 withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                   isProfileMenuPresented = false
                   isPresentingConnectedDevices = true
+                }
+              },
+              onNotificationsTap: {
+                withAnimation {
+                    isProfileMenuPresented = false
+                    isPresentingNotificationsSettings = true
+                }
+              },
+              onPrivacyTap: {
+                withAnimation {
+                    isProfileMenuPresented = false
+                    isPresentingPrivacy = true
+                }
+              },
+              onHelpTap: {
+                withAnimation {
+                    isProfileMenuPresented = false
+                    isPresentingHelp = true
                 }
               }
             )
@@ -243,7 +289,15 @@ struct OverviewView: View {
               }
               .zIndex(120)
 
-            NotificationsPopoverView(isPresented: $isNotificationsMenuPresented)
+            NotificationsPopoverView(
+                isPresented: $isNotificationsMenuPresented,
+                onViewAllTap: {
+                    withAnimation {
+                        isNotificationsMenuPresented = false
+                        isPresentingFullNotifications = true
+                    }
+                }
+            )
               .frame(width: 300)
               .padding(.top, 60)
               .padding(.trailing, 16)
@@ -261,7 +315,7 @@ struct OverviewView: View {
         RecoveryStartView()
       }
       .navigationDestination(isPresented: $isPresentingNutrition) {
-        NutritionStartView()
+        NutritionOverviewView()
       }
       .navigationDestination(isPresented: $isPresentingMobility) {
         MobilityStartView()
@@ -279,7 +333,25 @@ struct OverviewView: View {
       // Keeping as sheet for now as it's a settings-like flow, or push if desired.
       // Let's push it for consistency with the "no floating content" goal.
       .navigationDestination(isPresented: $isPresentingConnectedDevices) {
-        ConnectedDevicesView()
+        ConnectedDevicesDetailView()
+      }
+      .navigationDestination(isPresented: $isPresentingAccount) {
+        AccountDetailView()
+      }
+      .navigationDestination(isPresented: $isPresentingNotificationsSettings) {
+        NotificationSettingsView()
+      }
+      .navigationDestination(isPresented: $isPresentingPrivacy) {
+        PrivacySecurityView()
+      }
+      .navigationDestination(isPresented: $isPresentingHelp) {
+        HelpSupportView()
+      }
+      .navigationDestination(isPresented: $isPresentingFullNotifications) {
+        NotificationsListView()
+      }
+      .navigationDestination(isPresented: $isPresentingFullPlan) {
+        FullPlanView()
       }
     }
   }

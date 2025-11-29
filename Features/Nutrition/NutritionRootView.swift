@@ -12,8 +12,8 @@ import SwiftUI
 struct NutritionOverviewView: View {
   @Environment(\.dismiss) private var dismiss
 
-  @State private var selectedTab: NutritionTab = .overview
   @State private var showingQuickActions = false
+  @State private var showingFullDashboard = false
   @State private var hasLoaded = false
 
   @StateObject private var overviewModel: NutritionOverviewViewModel
@@ -42,33 +42,42 @@ struct NutritionOverviewView: View {
     EFScreenContainer {
         VStack(spacing: 0) {
           header
-          tabSelector
 
-          TabView(selection: $selectedTab) {
-            NutritionOverviewDashboardView(
-              viewModel: overviewModel,
-              reportSummary: reportModel.summary,
-              onOpenQuickActions: { showingQuickActions = true }
-            )
-            .tag(NutritionTab.overview)
-
-            NutritionDiaryTabView(
-              viewModel: diaryModel,
-              onOpenQuickAdd: { showingQuickActions = true }
-            )
-            .tag(NutritionTab.diary)
-
-            NutritionReportView(
-              viewModel: reportModel,
-              weeklySummaries: overviewModel.weekSummaries
-            )
-            .tag(NutritionTab.report)
-
-            NutritionFoodToolsView(viewModel: toolsModel)
-              .tag(NutritionTab.tools)
+          // Landing Page Content
+          ScrollView {
+              VStack(spacing: 24) {
+                  // Recent Meals
+                  FeatureHistorySection(title: "Recent Meals") {
+                      VStack(spacing: 12) {
+                          FeatureHistoryRow(
+                              title: "Breakfast",
+                              subtitle: "Oatmeal & Berries",
+                              detail: "450 kcal",
+                              icon: "cup.and.saucer.fill",
+                              iconColor: .orange
+                          ) { /* Action */ }
+                          
+                          FeatureHistoryRow(
+                              title: "Lunch",
+                              subtitle: "Chicken Salad",
+                              detail: "620 kcal",
+                              icon: "fork.knife",
+                              iconColor: .green
+                          ) { /* Action */ }
+                      }
+                  }
+              }
+              .padding(.bottom, 32)
           }
-          .tabViewStyle(.page(indexDisplayMode: .never))
         }
+    }
+    .navigationDestination(isPresented: $showingFullDashboard) {
+        NutritionDashboardView(
+            overviewModel: overviewModel,
+            diaryModel: diaryModel,
+            reportModel: reportModel,
+            toolsModel: toolsModel
+        )
     }
     .sheet(isPresented: $showingQuickActions) {
         NutritionQuickActionsSheet {
@@ -86,72 +95,30 @@ struct NutritionOverviewView: View {
   }
 
   private var header: some View {
-    HStack(alignment: .top, spacing: 12) {
-      VStack(alignment: .leading, spacing: 6) {
-        Text("Nutrition")
-          .font(.app(.largeTitle))
-          .foregroundStyle(DesignSystem.Colors.textPrimary)
-
-        Text(
-          "\(overviewModel.profile.dietGoal.rawValue) • \(overviewModel.profile.dietType.rawValue)"
-        )
-        .font(.app(.bodySecondary))
-        .foregroundStyle(DesignSystem.Colors.textSecondary)
-      }
-
-      Spacer()
-
-      Button {
-        showingQuickActions = true
-      } label: {
-        Image(systemName: "sparkles")
-          .font(.system(size: 16, weight: .semibold))
-          .padding(10)
-          .background(DesignSystem.Colors.cardBackground)
-          .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-      }
-      .accessibilityLabel("Open quick nutrition actions")
-
-      Button {
-        dismiss()
-      } label: {
-        Image(systemName: "xmark.circle.fill")
-          .font(.system(size: 24, weight: .semibold))
-          .foregroundStyle(DesignSystem.Colors.neutral400)
-      }
-      .padding(.leading, 4)
-    }
-    .padding(.horizontal, DesignSystem.Spacing.screenPadding)
-    .padding(.top, 16)
-    .padding(.bottom, 12)
-  }
-
-  private var tabSelector: some View {
-    HStack(spacing: 0) {
-      ForEach(NutritionTab.allCases) { tab in
-        Button {
-          withAnimation(.spring(response: 0.3, dampingFraction: 0.85)) {
-            selectedTab = tab
-          }
-        } label: {
-          VStack(spacing: 6) {
-            Text(tab.rawValue)
-              .font(.app(selectedTab == tab ? .button : .bodySecondary))
-              .foregroundStyle(
-                selectedTab == tab
-                  ? DesignSystem.Colors.accent : DesignSystem.Colors.textSecondary)
-
-            Rectangle()
-              .fill(selectedTab == tab ? DesignSystem.Colors.accent : Color.clear)
-              .frame(height: 2)
-          }
+    VStack(spacing: 16) {
+        HStack(alignment: .top) {
+            Spacer()
+            Button {
+                dismiss()
+            } label: {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.system(size: 24, weight: .semibold))
+                    .foregroundStyle(DesignSystem.Colors.neutral400)
+            }
         }
-        .frame(maxWidth: .infinity)
-      }
+        .padding(.horizontal, DesignSystem.Spacing.screenPadding)
+        .padding(.top, 16)
+        
+        FeatureHeroCard(
+            title: "Nutrition",
+            subtitle: "Log meals and track your macros for today.",
+            buttonTitle: "Open Nutrition",
+            onButtonTap: { showingFullDashboard = true },
+            gradientColors: [Color.orange.opacity(0.6), Color.yellow.opacity(0.3)]
+        )
+        .padding(.horizontal, DesignSystem.Spacing.screenPadding)
     }
-    .padding(.horizontal, DesignSystem.Spacing.screenPadding)
-    .padding(.vertical, 8)
-    .background(DesignSystem.Colors.backgroundSecondary)
+    .padding(.bottom, 12)
   }
 }
 
@@ -167,7 +134,7 @@ struct NutritionOverviewDashboardView: View {
       VStack(spacing: 20) {
         MacroSummaryCard(profile: viewModel.profile, summary: viewModel.todaySummary)
 
-        NutritionActionsRow(onTap: onOpenQuickActions)
+        // NutritionActionsRow removed as "Log Meal" is now in Hero Card
 
         MacroTargetsCard(targets: reportSummary.macroTargets)
 
@@ -177,8 +144,8 @@ struct NutritionOverviewDashboardView: View {
 
         WeeklyCaloriesSparkline(week: viewModel.weekSummaries)
       }
-      .padding(.horizontal, DesignSystem.Spacing.screenPadding)
       .padding(.bottom, 32)
+      .padding(.horizontal, DesignSystem.Spacing.screenPadding)
     }
   }
 }
@@ -431,22 +398,22 @@ struct MealSummaryRow: View {
   let meal: EFMeal
 
   var body: some View {
-    HStack(spacing: 12) {
+    HStack(spacing: 16) {
       ZStack {
         Circle()
           .fill(DesignSystem.Colors.backgroundSecondary)
-          .frame(width: 42, height: 42)
+          .frame(width: 48, height: 48)
         Image(systemName: meal.type.icon)
-          .font(.system(size: 18, weight: .semibold))
+          .font(.system(size: 20))
           .foregroundStyle(DesignSystem.Colors.accent)
       }
 
       VStack(alignment: .leading, spacing: 4) {
         Text(meal.type.rawValue)
-          .font(.app(.heading))
+          .font(.system(size: 16, weight: .semibold))
           .foregroundStyle(DesignSystem.Colors.textPrimary)
         Text(meal.summaryText)
-          .font(.app(.bodySecondary))
+          .font(.caption)
           .foregroundStyle(DesignSystem.Colors.textSecondary)
       }
 
@@ -454,20 +421,21 @@ struct MealSummaryRow: View {
 
       VStack(alignment: .trailing, spacing: 2) {
         Text("\(meal.totalCalories) kcal")
-          .font(.app(.button))
+          .font(.system(size: 14, weight: .medium))
           .foregroundStyle(DesignSystem.Colors.textPrimary)
         Text("P\(meal.totalProtein) • C\(meal.totalCarbs) • F\(meal.totalFat)")
-          .font(.app(.caption))
+          .font(.caption)
           .foregroundStyle(DesignSystem.Colors.textSecondary)
       }
+      
+      Image(systemName: "chevron.right")
+        .font(.caption)
+        .foregroundStyle(DesignSystem.Colors.textSecondary)
     }
-    .padding(14)
+    .padding()
     .background(DesignSystem.Colors.cardBackground)
-    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-    .overlay(
-      RoundedRectangle(cornerRadius: 16, style: .continuous)
-        .stroke(DesignSystem.Colors.border, lineWidth: 1)
-    )
+    .clipShape(RoundedRectangle(cornerRadius: 16))
+    .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
   }
 }
 
@@ -619,12 +587,12 @@ struct DiaryTotalsCard: View {
       VStack(alignment: .leading, spacing: 12) {
         NutritionSectionHeader(title: "Totals vs Goal", subtitle: "Logged today")
 
-        HStack {
+        HStack(spacing: 8) {
           TotalsPill(
-            title: "Calories", value: "\(totals.kcal) kcal", color: DesignSystem.Colors.accent)
-          TotalsPill(title: "Protein", value: "\(Int(totals.protein)) g", color: .blue)
-          TotalsPill(title: "Carbs", value: "\(Int(totals.carbs)) g", color: .green)
-          TotalsPill(title: "Fat", value: "\(Int(totals.fat)) g", color: .yellow)
+            title: "Calories", value: "\(totals.kcal)", color: DesignSystem.Colors.accent)
+          TotalsPill(title: "Protein", value: "\(Int(totals.protein))g", color: .blue)
+          TotalsPill(title: "Carbs", value: "\(Int(totals.carbs))g", color: .green)
+          TotalsPill(title: "Fat", value: "\(Int(totals.fat))g", color: .yellow)
         }
       }
     }
@@ -656,43 +624,40 @@ struct DiaryEntryRow: View {
   let entry: MealEntry
 
   var body: some View {
-    HStack(alignment: .top, spacing: 12) {
+    HStack(alignment: .top, spacing: 16) {
       ZStack {
-        RoundedRectangle(cornerRadius: 12, style: .continuous)
+        Circle()
           .fill(DesignSystem.Colors.backgroundSecondary)
-          .frame(width: 46, height: 46)
+          .frame(width: 48, height: 48)
         Image(systemName: entry.source.iconName)
-          .font(.system(size: 18, weight: .semibold))
+          .font(.system(size: 20))
           .foregroundStyle(DesignSystem.Colors.accent)
       }
 
-      VStack(alignment: .leading, spacing: 6) {
+      VStack(alignment: .leading, spacing: 4) {
         HStack {
           Text(entry.itemRef.displayName)
-            .font(.app(.heading))
+            .font(.system(size: 16, weight: .semibold))
             .foregroundStyle(DesignSystem.Colors.textPrimary)
           Spacer()
           Text(entry.formattedTime)
-            .font(.app(.caption))
+            .font(.caption)
             .foregroundStyle(DesignSystem.Colors.textSecondary)
         }
 
         Text("\(entry.formattedQuantity) • \(entry.kcal) kcal")
-          .font(.app(.bodySecondary))
+          .font(.caption)
           .foregroundStyle(DesignSystem.Colors.textSecondary)
 
         Text("P \(Int(entry.protein))g • C \(Int(entry.carbs))g • F \(Int(entry.fat))g")
-          .font(.app(.caption))
+          .font(.caption)
           .foregroundStyle(DesignSystem.Colors.textSecondary)
       }
     }
-    .padding(14)
+    .padding()
     .background(DesignSystem.Colors.cardBackground)
-    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-    .overlay(
-      RoundedRectangle(cornerRadius: 16, style: .continuous)
-        .stroke(DesignSystem.Colors.border, lineWidth: 1)
-    )
+    .clipShape(RoundedRectangle(cornerRadius: 16))
+    .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
   }
 }
 
@@ -955,38 +920,35 @@ struct CardRow: View {
   let icon: String
 
   var body: some View {
-    HStack(spacing: 12) {
+    HStack(spacing: 16) {
       ZStack {
-        RoundedRectangle(cornerRadius: 12, style: .continuous)
+        Circle()
           .fill(DesignSystem.Colors.backgroundSecondary)
-          .frame(width: 46, height: 46)
+          .frame(width: 48, height: 48)
         Image(systemName: icon)
-          .font(.system(size: 18, weight: .semibold))
+          .font(.system(size: 20))
           .foregroundStyle(DesignSystem.Colors.accent)
       }
 
       VStack(alignment: .leading, spacing: 4) {
         Text(title)
-          .font(.app(.heading))
+          .font(.system(size: 16, weight: .semibold))
           .foregroundStyle(DesignSystem.Colors.textPrimary)
         Text(subtitle)
-          .font(.app(.bodySecondary))
+          .font(.caption)
           .foregroundStyle(DesignSystem.Colors.textSecondary)
       }
 
       Spacer()
 
       Image(systemName: "chevron.right")
-        .font(.system(size: 14, weight: .semibold))
+        .font(.caption)
         .foregroundStyle(DesignSystem.Colors.textSecondary)
     }
-    .padding(14)
+    .padding()
     .background(DesignSystem.Colors.cardBackground)
-    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-    .overlay(
-      RoundedRectangle(cornerRadius: 16, style: .continuous)
-        .stroke(DesignSystem.Colors.border, lineWidth: 1)
-    )
+    .clipShape(RoundedRectangle(cornerRadius: 16))
+    .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
   }
 }
 
@@ -1267,10 +1229,11 @@ struct BiohackingMetricsRow: View {
           }
           .padding(12)
           .background(DesignSystem.Colors.cardBackground)
-          .clipShape(RoundedRectangle(cornerRadius: 12))
+          .clipShape(RoundedRectangle(cornerRadius: 16))
           .overlay(
-            RoundedRectangle(cornerRadius: 12).stroke(DesignSystem.Colors.border, lineWidth: 1)
+            RoundedRectangle(cornerRadius: 16).stroke(DesignSystem.Colors.border, lineWidth: 1)
           )
+          .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
           .transition(.scale.combined(with: .opacity))
           .animation(
             .spring(response: 0.5, dampingFraction: 0.7).delay(Double(index) * 0.1),

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StepLifestyleView: View {
-    @Binding var draft: OnboardingDraft
+    @Binding var draft: OnboardingDraftState
     @Binding var isValid: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     
@@ -181,7 +181,7 @@ struct StepLifestyleView: View {
 
 
 #Preview {
-    @Previewable @State var draft = OnboardingDraft()
+    @Previewable @State var draft = OnboardingDraftState()
     @Previewable @State var isValid = false
     
     StepLifestyleView(draft: $draft, isValid: $isValid)

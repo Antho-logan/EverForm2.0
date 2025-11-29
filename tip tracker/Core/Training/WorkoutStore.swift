@@ -15,6 +15,7 @@ final class WorkoutStore {
     // MARK: - State
     private(set) var activeSnapshot: WorkoutSessionSnapshot?
     private(set) var prService = PRService()
+    private let backend = BackendClient.shared
     
     // Rest timer
     private var restTimer: Timer?
@@ -218,6 +219,7 @@ final class WorkoutStore {
         if save {
             let summary = WorkoutHistorySummary.from(snapshot: snapshot)
             await WorkoutPersistence.shared.appendHistory(summary)
+            Task { await sendToBackend(summary: summary) }
             
             TelemetryService.shared.track("workout_finish_saved", properties: [
                 "title": summary.title,
@@ -306,6 +308,45 @@ final class WorkoutStore {
         DebugLog.info("Rest timer cleared manually")
     }
     
+    // MARK: - Backend sync
+    private func sendToBackend(summary: WorkoutHistorySummary) async {
+        let formatter = ISO8601DateFormatter()
+        let payload = BackendTrainingSessionRequest(
+            title: summary.title,
+            status: "completed",
+            durationMinutes: Int(summary.durationSec / 60),
+            performedAt: formatter.string(from: summary.date),
+            notes: nil,
+            sets: summary.exerciseSummaries.flatMap { exercise in
+                let sets: [SetSummary]
+                if let best = exercise.bestSet {
+                    sets = [best]
+                } else if exercise.totalReps > 0 {
+                    // Provide at least a single aggregate set when we have rep counts but no detailed set info
+                    sets = [SetSummary(reps: exercise.totalReps, weight: nil, rpe: nil)]
+                } else {
+                    sets = []
+                }
+                
+                return sets.map { set in
+                    BackendTrainingSetRequest(
+                        exercise: exercise.exerciseName,
+                        reps: Int(set.reps),
+                        weight: set.weight,
+                        rpe: set.rpe,
+                        notes: nil
+                    )
+                }
+            }
+        )
+        
+        do {
+            let _: BackendTrainingSession = try await backend.post("training/sessions", body: payload)
+        } catch {
+            DebugLog.info("WorkoutStore: failed to persist session to backend \(error)")
+        }
+    }
+    
     // MARK: - Persistence
     
     private func loadActiveSession() async {
@@ -325,4 +366,22 @@ final class WorkoutStore {
         guard let snapshot = activeSnapshot else { return }
         await WorkoutPersistence.shared.saveActive(snapshot)
     }
+}
+
+// MARK: - Backend DTOs
+private struct BackendTrainingSessionRequest: Codable {
+    let title: String
+    let status: String
+    let durationMinutes: Int?
+    let performedAt: String?
+    let notes: String?
+    let sets: [BackendTrainingSetRequest]
+}
+
+private struct BackendTrainingSetRequest: Codable {
+    let exercise: String
+    let reps: Int
+    let weight: Double?
+    let rpe: Double?
+    let notes: String?
 }

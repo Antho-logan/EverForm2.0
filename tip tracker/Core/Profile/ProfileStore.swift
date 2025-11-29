@@ -15,6 +15,7 @@ final class ProfileStore {
     var profile: UserProfile?
     var targets: UserTargets?
     var advanced: ProfileAdvanced = ProfileAdvanced()
+    private let backend = BackendClient.shared
     
     // File URLs for persistence
     private var profileURL: URL {
@@ -47,12 +48,16 @@ final class ProfileStore {
         Task { @MainActor in
             loadAdvanced()
         }
+        
+        // Fetch from backend as the source of truth
+        Task { await syncFromBackend() }
     }
     
     /// Save profile and targets together
     func save(profile: UserProfile, targets: UserTargets) {
         self.profile = profile
         self.targets = targets
+        Task { await persistToBackend(profile: profile) }
         persist()
         print("💾 ProfileStore: Saved profile and targets")
     }
@@ -71,6 +76,67 @@ final class ProfileStore {
         self.targets = targets
         persistTargets()
         print("💾 ProfileStore: Updated targets")
+    }
+    
+    /// Fetch profile from backend and hydrate local cache
+    @MainActor
+    func syncFromBackend() async {
+        do {
+            let decoded: BackendProfileResponse = try await backend.get("profile")
+            if let backendProfile = decoded.profile {
+                self.profile = mapBackendProfile(backendProfile)
+            }
+            persist()
+        } catch {
+            print("⚠️ ProfileStore: Failed to fetch profile from backend - \(error)")
+        }
+    }
+    
+    /// Push latest profile to backend
+    private func persistToBackend(profile: UserProfile) async {
+        let payload = BackendProfileRequest(
+            fullName: profile.name,
+            email: profile.email,
+            dateOfBirth: ISO8601DateFormatter().string(from: profile.birthdate),
+            gender: profile.sex.rawValue.lowercased(),
+            heightCm: profile.heightCm,
+            weightKg: profile.weightKg,
+            activityLevel: profile.activity.rawValue.lowercased(),
+            primaryGoal: profile.goal.rawValue,
+            goalType: profile.goal.rawValue.lowercased(),
+            bodyFat: nil
+        )
+        do {
+            let _: BackendProfileResponse = try await backend.put("profile", body: payload)
+        } catch {
+            print("⚠️ ProfileStore: Failed to persist profile to backend - \(error)")
+        }
+    }
+    
+    func submitOnboarding(answers: [BackendOnboardingAnswerRequest]) async {
+        let payload = BackendOnboardingRequest(answers: answers)
+        do {
+            let _: BackendProfileResponse = try await backend.post("profile/onboarding", body: payload)
+        } catch {
+            print("⚠️ ProfileStore: Failed to submit onboarding answers - \(error)")
+        }
+    }
+    
+    private func mapBackendProfile(_ backendProfile: BackendProfile) -> UserProfile {
+        var profile = UserProfile()
+        profile.name = backendProfile.full_name ?? ""
+        profile.email = backendProfile.email ?? ""
+        profile.heightCm = backendProfile.height_cm ?? profile.heightCm
+        profile.weightKg = backendProfile.weight_kg ?? profile.weightKg
+        profile.goal = UserProfile.Goal(rawValue: backendProfile.primary_goal ?? "") ?? profile.goal
+        profile.activity = UserProfile.Activity(rawValue: (backendProfile.activity_level ?? "").capitalized) ?? profile.activity
+        if let gender = backendProfile.gender {
+            profile.sex = UserProfile.Sex(rawValue: gender.capitalized) ?? profile.sex
+        }
+        if let dobString = backendProfile.date_of_birth, let date = ISO8601DateFormatter().date(from: dobString) {
+            profile.birthdate = date
+        }
+        return profile
     }
     
     /// Clear all profile data (for testing/reset)
@@ -255,3 +321,31 @@ final class ProfileStore {
     }
 }
 
+// MARK: - Backend payloads
+private struct BackendProfileRequest: Codable {
+    let fullName: String?
+    let email: String?
+    let dateOfBirth: String?
+    let gender: String?
+    let heightCm: Double?
+    let weightKg: Double?
+    let activityLevel: String?
+    let primaryGoal: String?
+    let goalType: String?
+    let bodyFat: Double?
+}
+
+private struct BackendProfileResponse: Codable {
+    let profile: BackendProfile?
+    let onboardingAnswers: [BackendOnboardingAnswer]?
+}
+
+struct BackendOnboardingAnswerRequest: Codable {
+    let questionKey: String
+    let answerText: String?
+    let answerNumeric: Double?
+}
+
+struct BackendOnboardingRequest: Codable {
+    let answers: [BackendOnboardingAnswerRequest]
+}

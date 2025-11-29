@@ -15,6 +15,7 @@ final class NutritionStore {
     // MARK: - State
     private(set) var today: DayNutrition
     private(set) var week: [DayNutrition] = []
+    private let backend = BackendClient.shared
     var defaultGoal: NutritionGoal = .default {
         didSet {
             // Update today's goal when default changes
@@ -23,7 +24,6 @@ final class NutritionStore {
         }
     }
     
-
     
     init() {
         // Initialize today with default goal
@@ -34,6 +34,7 @@ final class NutritionStore {
         // Load data
         Task {
             await load()
+            await syncTodayFromBackend()
         }
     }
     
@@ -59,6 +60,26 @@ final class NutritionStore {
         WeekNutritionSummary.currentWeek(from: week)
     }
     
+    // MARK: - Backend Sync
+    func syncTodayFromBackend() async {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        let dateString = formatter.string(from: Date())
+        
+        do {
+            let summary: BackendNutritionSummary = try await backend.get("nutrition/summary", query: ["date": dateString])
+            let entries = summary.meals.map { mapBackendMeal($0) }
+            
+            await MainActor.run {
+                // Replace today's entries from backend
+                today = DayNutrition(date: Date(), goal: defaultGoal)
+                entries.forEach { today.addEntry($0) }
+            }
+        } catch {
+            DebugLog.info("NutritionStore: Failed to sync from backend \(error)")
+        }
+    }
+    
     // MARK: - Entry Management
     
     /// Add a meal entry
@@ -81,7 +102,10 @@ final class NutritionStore {
             }
         }
         
-        Task { await save() }
+        Task {
+            await sendToBackend(entry)
+            await save()
+        }
         
         TelemetryService.shared.track("nutrition_entry_added", properties: [
             "source": entry.source.rawValue,
@@ -175,6 +199,59 @@ final class NutritionStore {
         ])
         
         DebugLog.info("Updated nutrition goal: \(newGoal.displayString)")
+    }
+
+    /// Persist a meal entry to the backend
+    private func sendToBackend(_ entry: MealEntry) async {
+        let formatter = ISO8601DateFormatter()
+        let payload = BackendMealRequest(
+            mealType: "snack", // Default bucket until UI collects meal type
+            title: entry.itemRef.displayName,
+            kcal: entry.kcal,
+            proteinG: entry.protein,
+            carbsG: entry.carbs,
+            fatG: entry.fat,
+            loggedAt: formatter.string(from: entry.time),
+            source: entry.source.rawValue
+        )
+        
+        do {
+            let _: BackendMeal = try await backend.post("nutrition/meals", body: payload)
+        } catch {
+            DebugLog.info("Failed to post meal to backend: \(error)")
+        }
+    }
+    
+    private func mapBackendMeal(_ meal: BackendMeal) -> MealEntry {
+        let item = FoodItem(
+            name: meal.title,
+            brand: meal.source,
+            per100g: NutritionPer100g(
+                kcal: meal.kcal ?? 0,
+                protein: meal.protein_g ?? 0,
+                carbs: meal.carbs_g ?? 0,
+                fat: meal.fat_g ?? 0
+            )
+        )
+        let entry = MealEntry(
+            time: meal.logged_at,
+            itemRef: item,
+            quantityGrams: 100,
+            source: MealEntrySource(rawValue: meal.source ?? "scan") ?? .quickAdd,
+            notes: nil
+        )
+        return entry
+    }
+
+    private struct BackendMealRequest: Codable {
+        let mealType: String
+        let title: String
+        let kcal: Int
+        let proteinG: Double
+        let carbsG: Double
+        let fatG: Double
+        let loggedAt: String
+        let source: String?
     }
     
     // MARK: - Persistence

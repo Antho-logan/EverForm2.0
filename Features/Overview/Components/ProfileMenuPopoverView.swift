@@ -2,8 +2,14 @@ import SwiftUI
 
 struct ProfileMenuPopoverView: View {
   @Binding var isPresented: Bool
+  var onAccountTap: (() -> Void)?
   var onConnectedDevicesTap: (() -> Void)?
+  var onNotificationsTap: (() -> Void)?
+  var onPrivacyTap: (() -> Void)?
+  var onHelpTap: (() -> Void)?
+  
   @Environment(ThemeManager.self) private var themeManager
+  @Environment(AppSessionStore.self) private var sessionStore
 
   var body: some View {
     VStack(alignment: .leading, spacing: 0) {
@@ -35,7 +41,9 @@ struct ProfileMenuPopoverView: View {
 
       // Menu Items
       VStack(spacing: 4) {
-        MenuButton(icon: "person", title: "Account")
+        MenuButton(icon: "person", title: "Account") {
+            onAccountTap?()
+        }
         
         MenuButton(icon: "link", title: "Connected Devices") {
             onConnectedDevicesTap?()
@@ -70,11 +78,24 @@ struct ProfileMenuPopoverView: View {
         .padding(.horizontal, 12)
         .padding(.vertical, 8)
 
-        MenuButton(icon: "bell", title: "Notifications")
-        MenuButton(icon: "lock", title: "Privacy & Security")
-        MenuButton(icon: "questionmark.circle", title: "Help & Support")
+        MenuButton(icon: "bell", title: "Notifications") {
+            onNotificationsTap?()
+        }
+        MenuButton(icon: "lock", title: "Privacy & Security") {
+            onPrivacyTap?()
+        }
+        MenuButton(icon: "questionmark.circle", title: "Help & Support") {
+            onHelpTap?()
+        }
         MenuButton(
-          icon: "rectangle.portrait.and.arrow.right", title: "Sign Out", isDestructive: true)
+          icon: "rectangle.portrait.and.arrow.right", 
+          title: "Sign Out", 
+          isDestructive: true,
+          action: {
+            sessionStore.signOut()
+            isPresented = false
+          }
+        )
       }
       .padding(8)
     }

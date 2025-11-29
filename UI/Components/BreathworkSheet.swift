@@ -193,6 +193,19 @@ struct BreathworkSheet: View {
     
     private func startBreathwork() {
         isActive = true
+        Task {
+            let formatter = ISO8601DateFormatter()
+            let payload = BreathworkSessionRequest(
+                technique: selectedPreset.rawValue,
+                durationMinutes: nil,
+                completedAt: formatter.string(from: Date())
+            )
+            do {
+                let _: BackendBreathworkSession = try await BackendClient.shared.post("breathwork/sessions", body: payload)
+            } catch {
+                DebugLog.info("Failed to log breathwork session: \(error)")
+            }
+        }
         startBreathingCycle()
     }
     
@@ -224,4 +237,10 @@ struct BreathworkSheet: View {
         
         nextPhase()
     }
+}
+
+private struct BreathworkSessionRequest: Codable {
+    let technique: String
+    let durationMinutes: Int?
+    let completedAt: String?
 }

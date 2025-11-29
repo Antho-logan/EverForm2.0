@@ -942,100 +942,143 @@ struct LookMaxHomeView: View {
     @State private var viewModel = LookMaxViewModel()
     @Environment(\.dismiss) private var dismiss
     @State private var isPresentingWizard = false
+    @State private var showingFullDashboard = false
     
     var body: some View {
         NavigationStack {
             EFScreenContainer {
                 VStack(alignment: .leading, spacing: 24) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            EFHeader(title: "Look Max")
-                            Text("Upgrade your looks, naturally.")
-                                .font(DesignSystem.Typography.subheadline())
-                                .foregroundStyle(DesignSystem.Colors.textSecondary)
-                        }
-                        Spacer()
-                        Button { dismiss() } label: {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.title2)
-                                .foregroundStyle(DesignSystem.Colors.neutral400)
-                        }
-                    }
-                    .padding(.horizontal, 20)
-                    
-                    EFCard(style: .gradient(LinearGradient(colors: [Color.black, Color(hex: "1C1C1E")], startPoint: .top, endPoint: .bottom))) {
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("Ready for your glow up?")
-                                .font(DesignSystem.Typography.displaySmall())
-                                .foregroundStyle(.white)
-                            Text("Upload photos, tell us what you want to improve, and we’ll build a personalized, healthy plan.")
-                                .font(DesignSystem.Typography.bodyMedium())
-                                .foregroundStyle(.white.opacity(0.8))
-                                .lineLimit(3)
+                    // Header
+                    VStack(spacing: 16) {
+                        HStack(alignment: .top) {
+                            Spacer()
                             Button {
-                                viewModel.startNewAssessment()
-                                isPresentingWizard = true
+                                dismiss()
                             } label: {
-                                Text("Start Session")
-                                    .font(DesignSystem.Typography.buttonLarge())
-                                    .foregroundStyle(.black)
-                                    .frame(maxWidth: .infinity)
-                                    .padding(.vertical, 14)
-                                    .background(.white)
-                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.title2)
+                                    .foregroundStyle(DesignSystem.Colors.neutral400)
                             }
-                            .buttonStyle(.plain)
                         }
-                        .padding(8)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 16)
+                        
+                        FeatureHeroCard(
+                            title: "Look Max",
+                            subtitle: "Upgrade your looks, naturally with a personalized plan.",
+                            buttonTitle: "Start Session",
+                            onButtonTap: { showingFullDashboard = true },
+                            gradientColors: [Color.purple.opacity(0.6), Color.purple.opacity(0.3)]
+                        )
+                        .padding(.horizontal, 20)
                     }
-                    .padding(.horizontal, 20)
                     
+                    // Recent Plans
                     if let lastPlan = viewModel.history.first {
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Current Plan")
-                                .font(DesignSystem.Typography.sectionHeader())
-                                .padding(.horizontal, 20)
-                            EFCard {
-                                VStack(alignment: .leading, spacing: 8) {
-                                    Text(lastPlan.summaryTitle)
-                                        .font(DesignSystem.Typography.headline())
-                                    Text("\(lastPlan.dailyHabits.count) Daily Habits • \(lastPlan.weeklyActions.count) Weekly")
-                                        .font(DesignSystem.Typography.caption())
-                                        .foregroundStyle(DesignSystem.Colors.textSecondary)
-                                }
-                                .frame(maxWidth: .infinity, alignment: .leading)
-                                .padding(8)
+                        FeatureHistorySection(title: "Recent Plans") {
+                            VStack(spacing: 12) {
+                                FeatureHistoryRow(
+                                    title: lastPlan.summaryTitle,
+                                    subtitle: "\(lastPlan.dailyHabits.count) Daily Habits",
+                                    detail: "Active",
+                                    icon: "sparkles",
+                                    iconColor: .purple
+                                ) { /* Action */ }
                             }
-                            .padding(.horizontal, 20)
                         }
                     }
                     
-                    VStack(alignment: .leading, spacing: 12) {
-                        Text("Ideas")
-                            .font(DesignSystem.Typography.sectionHeader())
-                            .padding(.horizontal, 20)
-                        ScrollView(.horizontal, showsIndicators: false) {
-                            HStack(spacing: 12) {
-                                ForEach(["Jawline", "Hair", "Skin", "Posture", "Style"], id: \.self) { tag in
-                                    Text(tag)
-                                        .font(DesignSystem.Typography.labelMedium())
-                                        .padding(.horizontal, 16)
-                                        .padding(.vertical, 8)
-                                        .background(DesignSystem.Colors.backgroundSecondary)
-                                        .clipShape(Capsule())
-                                }
-                            }
-                            .padding(.horizontal, 20)
-                        }
-                    }
                     Spacer()
                 }
                 .padding(.vertical, 20)
+            }
+            .navigationDestination(isPresented: $showingFullDashboard) {
+                LookMaxFullDashboardView(viewModel: viewModel, isPresentingWizard: $isPresentingWizard)
             }
             .fullScreenCover(isPresented: $isPresentingWizard) {
                 LookMaxWizardView(viewModel: viewModel, isPresented: $isPresentingWizard)
             }
         }
+    }
+}
+
+struct LookMaxFullDashboardView: View {
+    @Bindable var viewModel: LookMaxViewModel
+    @Binding var isPresentingWizard: Bool
+    
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 24) {
+                // Start Assessment Card
+                EFCard(style: .gradient(LinearGradient(colors: [Color.black, Color(hex: "1C1C1E")], startPoint: .top, endPoint: .bottom))) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Ready for your glow up?")
+                            .font(DesignSystem.Typography.displaySmall())
+                            .foregroundStyle(.white)
+                        Text("Upload photos, tell us what you want to improve, and we’ll build a personalized, healthy plan.")
+                            .font(DesignSystem.Typography.bodyMedium())
+                            .foregroundStyle(.white.opacity(0.8))
+                            .lineLimit(3)
+                        Button {
+                            viewModel.startNewAssessment()
+                            isPresentingWizard = true
+                        } label: {
+                            Text("Start Session")
+                                .font(DesignSystem.Typography.buttonLarge())
+                                .foregroundStyle(.black)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 14)
+                                .background(.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                    .padding(8)
+                }
+                .padding(.horizontal, 20)
+                
+                if let lastPlan = viewModel.history.first {
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Current Plan")
+                            .font(DesignSystem.Typography.sectionHeader())
+                            .padding(.horizontal, 20)
+                        EFCard {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text(lastPlan.summaryTitle)
+                                    .font(DesignSystem.Typography.headline())
+                                Text("\(lastPlan.dailyHabits.count) Daily Habits • \(lastPlan.weeklyActions.count) Weekly")
+                                    .font(DesignSystem.Typography.caption())
+                                    .foregroundStyle(DesignSystem.Colors.textSecondary)
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(8)
+                        }
+                        .padding(.horizontal, 20)
+                    }
+                }
+                
+                VStack(alignment: .leading, spacing: 12) {
+                    Text("Ideas")
+                        .font(DesignSystem.Typography.sectionHeader())
+                        .padding(.horizontal, 20)
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 12) {
+                            ForEach(["Jawline", "Hair", "Skin", "Posture", "Style"], id: \.self) { tag in
+                                Text(tag)
+                                    .font(DesignSystem.Typography.labelMedium())
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 8)
+                                    .background(DesignSystem.Colors.backgroundSecondary)
+                                    .clipShape(Capsule())
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                    }
+                }
+            }
+            .padding(.vertical, 20)
+        }
+        .navigationTitle("Look Max Dashboard")
     }
 }
 

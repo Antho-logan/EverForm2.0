@@ -9,57 +9,58 @@ import SwiftUI
 
 struct MobilityHomeView: View {
     @StateObject private var store = MobilityStore.shared
+    @Environment(\.dismiss) private var dismiss
+    @State private var showingFullDashboard = false
     
     var body: some View {
         // No NavigationStack here - pushed from Overview
         EFScreenContainer {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    // Greeting Header
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text("Hi, \(store.userName)")
-                            .font(DesignSystem.Typography.displaySmall())
-                            .foregroundStyle(DesignSystem.Colors.textPrimary)
-                        
-                        HStack {
-                            Label(store.primaryGoal.rawValue, systemImage: "target")
-                            Text("•")
-                            Label(store.primarySport.rawValue, systemImage: "figure.run")
-                        }
-                        .font(DesignSystem.Typography.caption())
-                        .foregroundStyle(DesignSystem.Colors.textSecondary)
-                    }
-                    .padding(.horizontal)
-                    .padding(.top, 16)
-                    
-                    // Hero Routines Pager
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack(spacing: 16) {
-                            ForEach(store.routines) { routine in
-                                NavigationLink(destination: MobilityRoutineDetailView(routine: routine)) {
-                                    MobilityRoutineCard(routine: routine)
-                                }
+                    // Header
+                    VStack(spacing: 16) {
+                        HStack(alignment: .top) {
+                            Spacer()
+                            Button {
+                                dismiss()
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.title2)
+                                    .foregroundStyle(DesignSystem.Colors.neutral400)
                             }
                         }
-                        .padding(.horizontal)
+                        .padding(.horizontal, 20)
+                        .padding(.top, 16)
+                        
+                        FeatureHeroCard(
+                            title: "Mobility",
+                            subtitle: "Protect your joints and stay flexible with daily routines.",
+                            buttonTitle: "Open Mobility Plan",
+                            onButtonTap: { showingFullDashboard = true },
+                            gradientColors: [Color.purple.opacity(0.6), Color.purple.opacity(0.3)]
+                        )
+                        .padding(.horizontal, 20)
                     }
                     
-                    // Dashboard Section
-                    VStack(alignment: .leading, spacing: 16) {
-                        Text("Your Dashboard")
-                            .font(DesignSystem.Typography.titleMedium())
-                            .foregroundStyle(DesignSystem.Colors.textPrimary)
-                            .padding(.horizontal)
-                        
-                        MobilityDashboardView(store: store)
-                            .padding(.horizontal)
+                    // Recent Mobility
+                    FeatureHistorySection(title: "Recent Routines") {
+                        VStack(spacing: 12) {
+                            FeatureHistoryRow(
+                                title: "Morning Flow",
+                                subtitle: "Today • 15 min",
+                                detail: "Completed",
+                                icon: "figure.flexibility",
+                                iconColor: .purple
+                            ) { /* Action */ }
+                        }
                     }
                     
                     Spacer(minLength: 40)
                 }
             }
-            .navigationTitle("Mobility")
-            .navigationBarTitleDisplayMode(.inline)
+        }
+        .navigationDestination(isPresented: $showingFullDashboard) {
+            MobilityPlanView(store: store)
         }
     }
 }
@@ -138,3 +139,4 @@ struct MobilityRoutineCard: View {
         }
     }
 }
+

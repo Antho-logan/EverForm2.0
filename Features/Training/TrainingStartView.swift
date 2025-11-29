@@ -11,9 +11,7 @@ import SwiftUI
 
 struct TrainingStartView: View {
   @StateObject private var viewModel = TrainingViewModel()
-  @State private var viewMode: TrainingViewMode = .today
-  @State private var showPlan = false
-  @State private var showingChangePlanOptions = false
+  @State private var showingSchedule = false
 
   // Navigation / Presentation
   @Environment(\.dismiss) private var dismiss
@@ -33,7 +31,6 @@ struct TrainingStartView: View {
             // Header
             VStack(alignment: .leading, spacing: 16) {
               HStack(alignment: .top) {
-                EFHeader(title: "Training")
                 Spacer()
                 Button {
                   dismiss()
@@ -45,135 +42,47 @@ struct TrainingStartView: View {
                 .padding(.trailing, 20)
                 .padding(.top, 6)
               }
-
-              // Goal Pill & Segment
-              HStack {
-                Text("Goal: Strength")
-                  .font(EverFont.label)
-                  .padding(.horizontal, 12)
-                  .padding(.vertical, 6)
-                  .background(DesignSystem.Colors.backgroundSecondary)
-                  .clipShape(Capsule())
-                  .foregroundColor(DesignSystem.Colors.textSecondary)
-
-                Spacer()
-
-                Picker("View", selection: $viewMode) {
-                  ForEach(TrainingViewMode.allCases, id: \.self) { mode in
-                    Text(mode.rawValue).tag(mode)
-                  }
-                }
-                .pickerStyle(.segmented)
-                .frame(width: 140)
-              }
-              .padding(.horizontal, 20)
-            }
-
-            if viewMode == .today {
-              // Hero Card
-              if let day = viewModel.selectedDay {
-                TrainingHeroCard(day: day) {
-                  openPlan()
-                }
-                .padding(.horizontal, 20)
-                .transition(.opacity)
-              }
-
-              // Week Selector
-              TrainingWeekRow(
-                days: viewModel.schedule,
-                selectedDay: viewModel.selectedDay,
-                onSelect: { viewModel.select(day: $0) }
+              
+              FeatureHeroCard(
+                title: "Training",
+                subtitle: "Follow your plan and stay on track with today’s workout.",
+                buttonTitle: "Go to Workout Schedule",
+                onButtonTap: { showingSchedule = true },
+                gradientColors: [Color.green.opacity(0.6), Color.green.opacity(0.3)]
               )
-
-              // Today's Plan Summary (if not rest day)
-              if let day = viewModel.selectedDay, !day.isRestDay {
-                TodayPlanSummaryCard(day: day) {
-                  openPlan()
-                }
-                .padding(.horizontal, 20)
-              }
-
-              // Change Plan Button
-              HStack {
-                Spacer()
-                Button {
-                  showingChangePlanOptions = true
-                } label: {
-                  Text("Change plan")
-                    .font(EverFont.label)
-                    .foregroundColor(DesignSystem.Colors.accent)
-                }
-                .padding(.trailing, 24)
-              }
-            } else {
-              // Week View
-              VStack(spacing: 16) {
-                ForEach(viewModel.schedule) { day in
-                  WeekListRow(day: day)
-                    .onTapGesture {
-                      viewModel.select(day: day)
-                      withAnimation {
-                        viewMode = .today
-                      }
-                    }
-                }
-              }
               .padding(.horizontal, 20)
-              .transition(.opacity)
             }
+
+            // Recent Sessions
+            FeatureHistorySection(title: "Recent Sessions") {
+                VStack(spacing: 12) {
+                    FeatureHistoryRow(
+                        title: "Upper Body Power",
+                        subtitle: "Yesterday • 45 min",
+                        detail: "Completed",
+                        icon: "dumbbell.fill",
+                        iconColor: .green
+                    ) { /* Action */ }
+                    
+                    FeatureHistoryRow(
+                        title: "Active Recovery",
+                        subtitle: "2 days ago • 20 min",
+                        detail: "Completed",
+                        icon: "figure.walk",
+                        iconColor: .blue
+                    ) { /* Action */ }
+                }
+            }
+            .padding(.bottom, 20)
 
             Spacer(minLength: 100)
           }
           .padding(.bottom, 40)
         }
-
-        // Sheet Overlay
-        if showPlan, let day = viewModel.selectedDay {
-          Color.black.opacity(0.25)
-            .ignoresSafeArea()
-            .onTapGesture { closePlan() }
-            .transition(.opacity)
-            .zIndex(1)
-
-          TodaysTrainingPlanView(show: $showPlan, day: day)
-            .transition(.move(edge: .bottom))
-            .zIndex(2)
-        }
       }
     }
-    .actionSheet(isPresented: $showingChangePlanOptions) {
-      if let day = viewModel.selectedDay {
-        return ActionSheet(
-          title: Text("Modify Schedule"),
-          buttons: [
-            .default(Text("Swap Workout")) { /* Stub */  },
-            .default(Text(day.isRestDay ? "Remove Rest Day" : "Mark as Rest Day")) {
-              withAnimation {
-                viewModel.toggleRest(for: day)
-              }
-            },
-            .cancel(),
-          ]
-        )
-      } else {
-        return ActionSheet(title: Text("Error"), buttons: [.cancel()])
-      }
-    }
-  }
-
-  // MARK: - Actions
-
-  func openPlan() {
-    UIImpactFeedbackGenerator(style: .light).impactOccurred(intensity: 0.6)
-    withAnimation(.spring(response: 0.5, dampingFraction: 0.85)) {
-      showPlan = true
-    }
-  }
-
-  func closePlan() {
-    withAnimation(.spring(response: 0.45, dampingFraction: 0.9)) {
-      showPlan = false
+    .navigationDestination(isPresented: $showingSchedule) {
+        TrainingScheduleView(viewModel: viewModel)
     }
   }
 }

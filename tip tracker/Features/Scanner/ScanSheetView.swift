@@ -199,7 +199,9 @@ struct ScanSheetView: View {
                 .padding(.horizontal)
             
             Button("Generate Mock Result") {
-                generateMockScanResult()
+                Task {
+                    await generateMockScanResult()
+                }
             }
             .buttonStyle(.borderedProminent)
         }
@@ -294,7 +296,9 @@ struct ScanSheetView: View {
         } else {
             // For barcode/OCR modes, the DataScanner handles capture automatically
             // This button can trigger manual capture if needed
-            generateMockScanResult()
+            Task {
+                await generateMockScanResult()
+            }
         }
     }
     
@@ -338,12 +342,72 @@ struct ScanSheetView: View {
         isScanning = true
         TelemetryService.shared.track("scan_plate_photo")
         
-        // Use mock service for now
-        await generateMockScanResult()
+        guard let data = image.jpegData(compressionQuality: 0.8) else {
+            await MainActor.run {
+                errorMessage = "Could not process image data"
+                isScanning = false
+            }
+            return
+        }
         
-        await MainActor.run {
-            showingResult = true
-            isScanning = false
+        do {
+            // Call backend
+            let response = try await ScanService.shared.analyze(imageData: data, mode: selectedMode)
+            let mapped = mapBackendResponse(response, mode: selectedMode)
+            
+            await MainActor.run {
+                self.scanResult = mapped
+                self.showingResult = true
+                self.isScanning = false
+            }
+        } catch {
+            await MainActor.run {
+                errorMessage = "Analysis failed: \(error.localizedDescription)"
+                isScanning = false
+            }
+        }
+    }
+    
+    private func mapBackendResponse(_ response: BackendScanResponse, mode: ScanMode) -> ScanResult {
+        switch mode {
+        case .calorie:
+            let macro = NutritionMacro(
+                calories: response.analysis.calories ?? 0,
+                protein: Double(response.analysis.protein ?? 0),
+                carbs: Double(response.analysis.carbs ?? 0),
+                fat: Double(response.analysis.fat ?? 0)
+            )
+            return .calorie(
+                product: ProductInfo(productName: response.meal?.title ?? "Scanned Food", brand: nil, barcode: nil),
+                macro: macro
+            )
+            
+        case .ingredients:
+            let assessments = response.analysis.ingredients?.map { ing in
+                IngredientAssessment(
+                    name: ing.name,
+                    verdict: .good, // Default verdict as backend doesn't provide it yet
+                    reasons: ["Confidence: \(Int(ing.confidence * 100))%"]
+                )
+            } ?? []
+            return .ingredients(
+                product: ProductInfo(productName: response.meal?.title ?? "Scanned Product", brand: nil, barcode: nil),
+                items: assessments
+            )
+            
+        case .plateAI:
+            // Backend returns total estimates for plate, map to single item for now
+            let totalCals = response.analysis.caloriesEstimate ?? response.analysis.calories ?? 0
+            let desc = response.analysis.description ?? "Scanned Plate"
+            
+            let item = PlateFood(
+                name: desc,
+                grams: 1, // Arbitrary
+                macro: NutritionMacro(calories: totalCals, protein: 0, carbs: 0, fat: 0) // We might lack full macro breakdown for plate mode from backend yet
+            )
+            
+            let total = NutritionMacro(calories: totalCals, protein: 0, carbs: 0, fat: 0)
+            return .plateAI(estimate: PlateEstimate(items: [item], total: total))
         }
     }
     
@@ -366,20 +430,44 @@ struct ScanSheetView: View {
     
     // MARK: - Mock Data (Simulator)
     
-    private func generateMockScanResult() {
+    private func generateMockScanResult() async {
         DebugLog.d("Generating mock scan result for mode: \(selectedMode)")
         
-        isScanning = true
+        await MainActor.run {
+            isScanning = true
+        }
         
-        Task {
-            let service = ScanService()
-            let result = await service.scanMock(mode: selectedMode)
-            
-            DispatchQueue.main.async {
-                self.scanResult = result
-                self.showingResult = true
-                self.isScanning = false
-            }
+        // Local mock data (fallback since backend mock requires image)
+        let result: ScanResult
+        switch selectedMode {
+        case .calorie:
+            result = .calorie(
+                product: ProductInfo(productName: "Greek Yogurt (Mock)", brand: "EverForm", barcode: "123456"),
+                macro: NutritionMacro(calories: 150, protein: 15, carbs: 10, fat: 4)
+            )
+        case .ingredients:
+            result = .ingredients(
+                product: ProductInfo(productName: "Protein Bar (Mock)", brand: "EverForm", barcode: "789012"),
+                items: [
+                    IngredientAssessment(name: "Whey protein", verdict: .good, reasons: ["High quality"]),
+                    IngredientAssessment(name: "Sugar", verdict: .caution, reasons: ["Added sugar"])
+                ]
+            )
+        case .plateAI:
+            let items: [PlateFood] = [
+                .init(name: "Chicken Breast", grams: 150, macro: .init(calories: 240, protein: 45, carbs: 0, fat: 5)),
+                .init(name: "Rice", grams: 200, macro: .init(calories: 260, protein: 5, carbs: 56, fat: 1))
+            ]
+            let total = NutritionMacro(calories: 500, protein: 50, carbs: 56, fat: 6)
+            result = .plateAI(estimate: PlateEstimate(items: items, total: total))
+        }
+        
+        try? await Task.sleep(nanoseconds: 500_000_000) // 0.5s mock delay
+        
+        await MainActor.run {
+            self.scanResult = result
+            self.showingResult = true
+            self.isScanning = false
         }
     }
     

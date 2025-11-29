@@ -2,6 +2,7 @@ import SwiftUI
 
 struct MobilityRoutineSheet: View {
     let onClose: () -> Void
+    @State private var isSaving = false
     
     var body: some View {
         VStack(spacing: 24) {
@@ -29,10 +30,26 @@ struct MobilityRoutineSheet: View {
             }
             
             Button("Start Mobility") {
-                // Handle mobility start
+                Task {
+                    isSaving = true
+                    let formatter = ISO8601DateFormatter()
+                    let payload = MobilitySessionRequest(
+                        routineId: "quick-mobility",
+                        status: "completed",
+                        performedAt: formatter.string(from: Date())
+                    )
+                    do {
+                        let _: BackendMobilitySession = try await BackendClient.shared.post("mobility/sessions", body: payload)
+                    } catch {
+                        DebugLog.info("Failed to log mobility session: \(error)")
+                    }
+                    isSaving = false
+                    onClose()
+                }
             }
             .buttonStyle(.borderedProminent)
             .frame(maxWidth: .infinity)
+            .disabled(isSaving)
             
             Spacer()
         }
@@ -45,4 +62,10 @@ struct MobilityRoutineSheet: View {
             }
         }
     }
+}
+
+private struct MobilitySessionRequest: Codable {
+    let routineId: String
+    let status: String
+    let performedAt: String?
 }

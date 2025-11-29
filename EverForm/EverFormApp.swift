@@ -1,4 +1,3 @@
-
 import SwiftUI
 import Observation
 #if os(iOS)
@@ -18,7 +17,12 @@ struct EverFormApp: App {
     @State private var profileStore       = ProfileStore()
     @State private var notesStore         = ProfileNotesStore()
     @State private var attachmentStore    = AttachmentStore()
-
+    
+    // Session State (Single Source of Truth for Auth/Onboarding gating)
+    @State private var sessionStore       = AppSessionStore()
+    
+    // Onboarding Store (Local to App root, injected into onboarding flow)
+    @State private var onboardingStore: OnboardingStore?
 
     init() {
         // Initial setup if needed
@@ -26,46 +30,58 @@ struct EverFormApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
-                .environment(appearance)
-                // Inject Observation (@Observable) stores
-                .environment(appRouter)
-                .environment(workoutStore)
-                .environment(nutritionStore)
-                .environment(hydrationService)
-                .environment(profileStore)
-                .environment(notesStore)
-                .environment(attachmentStore)
-                .environment(themeManager)
-
-                // ALSO inject as EnvironmentObject for any store that conforms to ObservableObject.
-                // CoachCoordinator uses singleton pattern, so we don't inject it here
-                .environmentObject(CoachCoordinator.shared)
-                .background(themeManager.beigeBackground.ignoresSafeArea())
-                .preferredColorScheme(themeManager.selectedTheme.colorScheme)
-                .onAppear {
-                    updateUIKitAppearance()
-                }
-                .onChange(of: themeManager.selectedTheme) { _, _ in
-                    updateUIKitAppearance()
-                }
-
-                .task {
-                    print("EverForm launched; stores injected")
-                    checkOnboardingStatus()
-                }
-                .onChange(of: profileStore.hasCompletedOnboarding) { _, completed in
-                    if !completed {
-                        appRouter.fullScreen = .expressOnboarding
+            Group {
+                if !sessionStore.isSignedIn {
+                    if let store = onboardingStore {
+                        AuthEntryView(onCreateAccount: {
+                            // Legacy callback, effectively handled by AuthEntryView internal state now
+                        })
+                        .environment(store)
+                    } else {
+                        ProgressView()
                     }
+                } else if !sessionStore.hasCompletedOnboarding {
+                    // New Unified Onboarding Entry
+                    if let store = onboardingStore {
+                        OnboardingEntryFlowView(onOnboardingFinished: {
+                            withAnimation {
+                                sessionStore.completeOnboarding()
+                            }
+                        })
+                        .environment(store)
+                    } else {
+                        ProgressView() // Should generally not happen or very briefly
+                    }
+                } else {
+                    ContentView()
                 }
-        }
-    }
-    
-    private func checkOnboardingStatus() {
-        // If user hasn't completed onboarding, show express onboarding
-        if !profileStore.hasCompletedOnboarding {
-            appRouter.fullScreen = .expressOnboarding
+            }
+            .environment(sessionStore)
+            .environment(appearance)
+            // Inject Observation (@Observable) stores
+            .environment(appRouter)
+            .environment(workoutStore)
+            .environment(nutritionStore)
+            .environment(hydrationService)
+            .environment(profileStore)
+            .environment(notesStore)
+            .environment(attachmentStore)
+            .environment(themeManager)
+
+            // ALSO inject as EnvironmentObject for any store that conforms to ObservableObject.
+            // CoachCoordinator uses singleton pattern, so we don't inject it here
+            .environmentObject(CoachCoordinator.shared)
+            .background(themeManager.beigeBackground.ignoresSafeArea())
+            .preferredColorScheme(themeManager.selectedTheme.colorScheme)
+            .onAppear {
+                updateUIKitAppearance()
+                if onboardingStore == nil {
+                    onboardingStore = OnboardingStore(profileStore: profileStore)
+                }
+            }
+            .onChange(of: themeManager.selectedTheme) { _, _ in
+                updateUIKitAppearance()
+            }
         }
     }
     

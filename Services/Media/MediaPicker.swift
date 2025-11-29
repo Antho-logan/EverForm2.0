@@ -2,6 +2,7 @@ import Foundation
 import SwiftUI
 import PhotosUI
 import UIKit
+import Observation
 
 @Observable
 class MediaPicker {
@@ -91,7 +92,6 @@ struct ImagePicker: UIViewControllerRepresentable {
         }
     }
 }
-
 
 
 

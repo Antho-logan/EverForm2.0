@@ -24,7 +24,7 @@ struct ChatMessage: Identifiable, Codable, Equatable {
     }
 }
 
-struct ImageAsset: Identifiable, Codable, Equatable {
+struct ImageAsset: Identifiable, Codable, Equatable, Sendable {
     let id: UUID
     let filename: String
     let data: Data
@@ -39,7 +39,6 @@ struct ImageAsset: Identifiable, Codable, Equatable {
         lhs.id == rhs.id
     }
 }
-
 
 
 

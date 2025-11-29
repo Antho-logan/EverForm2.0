@@ -2,6 +2,7 @@ import SwiftUI
 
 struct NotificationsPopoverView: View {
   @Binding var isPresented: Bool
+  var onViewAllTap: (() -> Void)?
   @Environment(ThemeManager.self) private var themeManager
 
   var body: some View {
@@ -70,7 +71,7 @@ struct NotificationsPopoverView: View {
 
       // Footer
       Button {
-        print("View all tapped")
+        onViewAllTap?()
       } label: {
         Text("View all")
           .font(EverFont.button)

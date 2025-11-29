@@ -13,6 +13,7 @@ import SwiftUI
 final class TrainingStore {
     private(set) var activeSession: WorkoutSession?
     private(set) var workoutLogs: [WorkoutLog] = []
+    private let backend = BackendClient.shared
     
     private let userDefaults = UserDefaults.standard
     private let activeSessionKey = "training.activeSession"
@@ -70,6 +71,8 @@ final class TrainingStore {
         // Clear active session
         activeSession = nil
         clearActiveSession()
+        
+        Task { await sendToBackend(log: workoutLog) }
         
         TelemetryService.shared.track("workout_completed", properties: [
             "workout_id": session.workout.id.uuidString,
@@ -139,6 +142,33 @@ final class TrainingStore {
         // Data is loaded in init, so this is mostly for explicit resume calls
         if activeSession != nil {
             DebugLog.info("Resuming existing workout session")
+        }
+    }
+
+    // MARK: - Backend sync
+    private func sendToBackend(log: WorkoutLog) async {
+        let formatter = ISO8601DateFormatter()
+        let payload = BackendTrainingSessionRequest(
+            title: log.title,
+            status: "completed",
+            durationMinutes: log.duration.map { Int($0 / 60) },
+            performedAt: formatter.string(from: log.startedAt),
+            notes: log.notes,
+            sets: log.sets.map { set in
+                BackendTrainingSetRequest(
+                    exercise: set.exerciseId.uuidString,
+                    reps: set.reps,
+                    weight: set.weight,
+                    rpe: set.rpe,
+                    notes: nil
+                )
+            }
+        )
+        
+        do {
+            let _: BackendTrainingSession = try await backend.post("training/sessions", body: payload)
+        } catch {
+            DebugLog.info("TrainingStore: failed to persist session to backend \(error)")
         }
     }
     
@@ -215,4 +245,20 @@ final class TrainingStore {
     }
 }
 
+// MARK: - Backend DTOs
+private struct BackendTrainingSessionRequest: Codable {
+    let title: String
+    let status: String
+    let durationMinutes: Int?
+    let performedAt: String?
+    let notes: String?
+    let sets: [BackendTrainingSetRequest]
+}
 
+private struct BackendTrainingSetRequest: Codable {
+    let exercise: String
+    let reps: Int
+    let weight: Double?
+    let rpe: Double?
+    let notes: String?
+}

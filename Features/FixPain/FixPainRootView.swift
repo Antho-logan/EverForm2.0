@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct FixPainView: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var viewModel = FixPainViewModel()
     @State private var showAssessment = false
     
@@ -15,53 +16,46 @@ struct FixPainView: View {
         // No NavigationStack here - pushed from Overview
         EFScreenContainer {
             ScrollView {
-                VStack(alignment: .leading, spacing: 32) {
+                VStack(alignment: .leading, spacing: 24) {
                     
-                    // Hero Card
-                    VStack(alignment: .leading, spacing: 24) {
-                        VStack(alignment: .leading, spacing: 8) {
-                            Text("Fix Pain")
-                                .font(.system(size: 34, weight: .bold))
-                                .foregroundStyle(.white)
-                            
-                            Text("Identify your issue and get a personalized recovery plan in minutes.")
-                                .font(.system(size: 17))
-                                .foregroundStyle(.white.opacity(0.9))
-                                .lineLimit(2)
-                        }
-                        
-                        Button {
-                            viewModel.startNewAssessment()
-                            showAssessment = true
-                        } label: {
-                            HStack {
-                                Text("Start Assessment")
-                                .font(.system(size: 17, weight: .semibold))
-                                Image(systemName: "arrow.right")
-                                .font(.system(size: 16, weight: .bold))
+                    // Header
+                    VStack(spacing: 16) {
+                        HStack(alignment: .top) {
+                            Spacer()
+                            Button {
+                                dismiss()
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.title2)
+                                    .foregroundStyle(DesignSystem.Colors.neutral400)
                             }
-                            .foregroundStyle(FixPainTheme.primary)
-                            .frame(maxWidth: .infinity)
-                            .frame(height: 50)
-                            .background(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 16)
+                        
+                        FeatureHeroCard(
+                            title: "Fix Pain",
+                            subtitle: "Identify your issue and get a personalized recovery plan in minutes.",
+                            buttonTitle: "Start Assessment",
+                            onButtonTap: {
+                                viewModel.startNewAssessment()
+                                showAssessment = true
+                            },
+                            gradientColors: [
+                                Color.blue.opacity(0.55),
+                                Color.purple.opacity(0.5)
+                            ]
+                        )
+                        .padding(.horizontal, 20)
                     }
-                    .padding(24)
-                    .background(FixPainTheme.primaryGradient())
-                    .clipShape(RoundedRectangle(cornerRadius: FixPainTheme.radiusLarge))
-                    .shadow(color: FixPainTheme.primary.opacity(0.3), radius: FixPainTheme.shadowRadius, x: 0, y: FixPainTheme.shadowY)
                     
                     // Recent Section
                     if !viewModel.recentAssessments.isEmpty {
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("Recent Checks")
-                                .font(.title3)
-                                .fontWeight(.bold)
-                                .foregroundStyle(FixPainTheme.textPrimary)
-                            
-                            ForEach(viewModel.recentAssessments) { assessment in
-                                RecentAssessmentRow(assessment: assessment)
+                        FeatureHistorySection(title: "Recent Checks") {
+                            VStack(spacing: 12) {
+                                ForEach(viewModel.recentAssessments) { assessment in
+                                    RecentAssessmentRow(assessment: assessment)
+                                }
                             }
                         }
                     } else {
@@ -80,9 +74,11 @@ struct FixPainView: View {
                                 }
                             }
                         }
+                        .padding(.horizontal, 20)
                     }
+                    
+                    Spacer(minLength: 40)
                 }
-                .padding(20)
             }
             // Background handled by EFScreenContainer
             .fullScreenCover(isPresented: $showAssessment) {

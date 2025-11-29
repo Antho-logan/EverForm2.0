@@ -16,6 +16,30 @@ final class BreathworkStore {
     var programs: [BreathworkProgram] = []
     var activeProgramId: UUID?
     var selectedPatternType: BreathworkPatternType = .wimHof
+    var activeSessionPattern: BreathworkPattern? // Tracks the currently running session
+    
+    // MARK: - Safe Defaults
+    
+    var defaultPattern: BreathworkPattern? {
+        patterns.first { $0.type == .box } ?? patterns.first
+    }
+    
+    func makeFallbackPattern() -> BreathworkPattern {
+        BreathworkPattern(
+            id: UUID(),
+            type: .box,
+            displayName: "Box Breathing (Fallback)",
+            description: "Fallback pattern",
+            targetEffect: "Calm",
+            defaultRounds: 4,
+            phases: [
+                BreathPhase(type: .inhale, durationSeconds: 4, instruction: "Inhale"),
+                BreathPhase(type: .hold, durationSeconds: 4, instruction: "Hold"),
+                BreathPhase(type: .exhale, durationSeconds: 4, instruction: "Exhale"),
+                BreathPhase(type: .hold, durationSeconds: 4, instruction: "Hold")
+            ]
+        )
+    }
     
     init() {}
     
@@ -60,6 +84,23 @@ final class BreathworkStore {
     }
     
     // MARK: - Mock Data
+    
+    func makeFallbackPattern() -> BreathworkPattern? {
+        BreathworkPattern(
+            id: UUID(),
+            type: .box,
+            displayName: "Box Breathing (Fallback)",
+            description: "Fallback pattern",
+            targetEffect: "Calm",
+            defaultRounds: 4,
+            phases: [
+                BreathPhase(type: .inhale, durationSeconds: 4, instruction: "Inhale"),
+                BreathPhase(type: .hold, durationSeconds: 4, instruction: "Hold"),
+                BreathPhase(type: .exhale, durationSeconds: 4, instruction: "Exhale"),
+                BreathPhase(type: .hold, durationSeconds: 4, instruction: "Hold")
+            ]
+        )
+    }
     
     static func mock() -> BreathworkStore {
         let store = BreathworkStore()
