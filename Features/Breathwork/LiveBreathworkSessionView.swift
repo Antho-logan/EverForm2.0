@@ -26,17 +26,7 @@ struct LiveBreathworkSessionView: View {
     private var totalRounds: Int { pattern.defaultRounds }
     
     private var currentPhase: BreathPhase {
-        // SAFETY CHECK: Prevent crash if pattern has no phases
-        if pattern.phases.isEmpty {
-            print("[Breathwork] ERROR: Pattern has no phases. Returning fallback.")
-            return BreathPhase(type: .inhale, durationSeconds: 4, instruction: "Breathe")
-        }
-        // SAFETY CHECK: Prevent index out of bounds
-        if currentPhaseIndex >= pattern.phases.count {
-            print("[Breathwork] ERROR: Index \(currentPhaseIndex) out of bounds. Returning last phase.")
-            return pattern.phases.last ?? BreathPhase(type: .exhale, durationSeconds: 4, instruction: "Exhale")
-        }
-        return pattern.phases[currentPhaseIndex]
+        pattern.phases[currentPhaseIndex]
     }
     
     var body: some View {
@@ -169,7 +159,6 @@ struct LiveBreathworkSessionView: View {
             closeObserver
         }
         .onAppear {
-            print("[Breathwork] LiveSession appeared. Pattern: \(pattern.displayName), Phases: \(pattern.phases.count)")
             startBreathingAnimationLoop()
         }
         .onDisappear {
