@@ -392,3 +392,345 @@ struct TabBarItemPrimary: View {
     .accessibilityHint(accessibilityHint)
   }
 }
+
+// MARK: - Restored Components (for Overview rollback)
+
+public struct EFCard<Content: View>: View {
+    public enum Style {
+        case standard
+        case tinted(Color)
+        case gradient(LinearGradient)
+    }
+
+    @Environment(\.colorScheme) private var scheme
+    private let style: Style
+    private let content: () -> Content
+
+    public init(style: Style = .standard, @ViewBuilder content: @escaping () -> Content) {
+        self.style = style
+        self.content = content
+    }
+
+    public var body: some View {
+        content()
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(cardBackground)
+            .overlay(
+                RoundedRectangle(cornerRadius: 18)
+                    .stroke(borderColor, lineWidth: 1)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+            .shadow(color: shadowColor, radius: 12, x: 0, y: 6)
+    }
+
+    @ViewBuilder
+    private var cardBackground: some View {
+        let base = RoundedRectangle(cornerRadius: 18, style: .continuous)
+        switch style {
+        case .standard:
+            base.fill(EFTheme.surface(scheme))
+        case .tinted(let color):
+            ZStack {
+                base.fill(EFTheme.surface(scheme))
+                base.fill(color.opacity(scheme == .light ? 0.12 : 0.25))
+            }
+        case .gradient(let gradient):
+            ZStack {
+                base.fill(EFTheme.surface(scheme))
+                base.fill(gradient)
+            }
+        }
+    }
+
+    private var borderColor: Color {
+        switch style {
+        case .standard:
+            return EFTheme.cardStroke(scheme)
+        case .tinted(let color):
+            return color.opacity(scheme == .light ? 0.45 : 0.7)
+        case .gradient:
+            return EFTheme.cardStroke(scheme).opacity(0.35)
+        }
+    }
+
+    private var shadowColor: Color {
+        switch scheme {
+        case .dark:
+            return .black.opacity(0.4)
+        default:
+            return .black.opacity(styleShadowOpacity)
+        }
+    }
+
+    private var styleShadowOpacity: Double {
+        switch style {
+        case .standard:
+            return 0.08
+        case .tinted:
+            return 0.12
+        case .gradient:
+            return 0.15
+        }
+    }
+}
+
+public struct EFSectionHeader: View {
+    @Environment(\.colorScheme) private var scheme
+    let title: String
+    var subtitle: String? = nil
+    var actionTitle: String? = nil
+    var action: (() -> Void)? = nil
+    
+    public init(title: String, subtitle: String? = nil, actionTitle: String? = nil, action: (() -> Void)? = nil) {
+        self.title = title
+        self.subtitle = subtitle
+        self.actionTitle = actionTitle
+        self.action = action
+    }
+
+    public var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            HStack(alignment: .firstTextBaseline) {
+                Text(title)
+                    .font(.system(.title2, weight: .bold))
+                    .foregroundStyle(EFTheme.text(scheme))
+
+                Spacer()
+
+                if let actionTitle, let action {
+                    Button(actionTitle, action: action)
+                        .font(.footnote.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .buttonStyle(.borderless)
+                }
+            }
+
+            if let subtitle {
+                Text(subtitle)
+                    .font(.footnote)
+                    .foregroundStyle(EFTheme.muted(scheme))
+            }
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.top, 8)
+    }
+}
+
+public struct EFScreenContainer<Content: View>: View {
+    private let content: Content
+
+    public init(@ViewBuilder content: () -> Content) {
+        self.content = content()
+    }
+
+    public var body: some View {
+        ZStack(alignment: .top) {
+            DesignSystem.Colors.background
+                .ignoresSafeArea()
+
+            content
+        }
+        .toolbar(.hidden, for: .navigationBar)
+    }
+}
+
+// MARK: - Compatibility Components (for other features)
+
+public struct EFPrimaryButton: View {
+    let title: String
+    let icon: String?
+    let color: Color?
+    let action: () -> Void
+    
+    public init(_ title: String, icon: String? = nil, color: Color? = nil, action: @escaping () -> Void) {
+        self.title = title
+        self.icon = icon
+        self.color = color
+        self.action = action
+    }
+    
+    public var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                if let icon {
+                    Image(systemName: icon)
+                        .font(.system(size: 16, weight: .semibold))
+                }
+                Text(title)
+                    .font(EverFormTheme.Typography.button)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 56)
+            .background(backgroundColor)
+            .foregroundStyle(foregroundColor)
+            .clipShape(RoundedRectangle(cornerRadius: EverFormTheme.Radius.pill))
+            .shadow(color: backgroundColor.opacity(0.3), radius: 8, x: 0, y: 4)
+        }
+    }
+    
+    private var backgroundColor: Color {
+        color ?? EverFormTheme.Colors.textPrimary
+    }
+    
+    private var foregroundColor: Color {
+        if color != nil { return .white }
+        return EverFormTheme.Colors.background
+    }
+}
+
+public struct EFSecondaryButton: View {
+    let title: String
+    let icon: String?
+    let action: () -> Void
+    
+    public init(_ title: String, icon: String? = nil, action: @escaping () -> Void) {
+        self.title = title
+        self.icon = icon
+        self.action = action
+    }
+    
+    public var body: some View {
+        Button(action: action) {
+            HStack(spacing: 8) {
+                if let icon {
+                    Image(systemName: icon)
+                        .font(.system(size: 16, weight: .semibold))
+                }
+                Text(title)
+                    .font(EverFormTheme.Typography.button)
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 56)
+            .background(Color.clear)
+            .foregroundStyle(EverFormTheme.Colors.textPrimary)
+            .overlay(
+                RoundedRectangle(cornerRadius: EverFormTheme.Radius.pill)
+                    .stroke(EverFormTheme.Colors.textPrimary.opacity(0.3), lineWidth: 1)
+            )
+        }
+    }
+}
+
+public struct EFPillChip: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    public init(_ title: String, isSelected: Bool, action: @escaping () -> Void) {
+        self.title = title
+        self.isSelected = isSelected
+        self.action = action
+    }
+    
+    public var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(EverFormTheme.Typography.label)
+                .padding(.horizontal, 16)
+                .padding(.vertical, 8)
+                .background(isSelected ? EverFormTheme.Colors.textPrimary : EverFormTheme.Colors.card)
+                .foregroundStyle(isSelected ? EverFormTheme.Colors.background : EverFormTheme.Colors.textPrimary)
+                .clipShape(Capsule())
+                .overlay(
+                    Capsule()
+                        .stroke(EverFormTheme.Colors.cardStroke, lineWidth: isSelected ? 0 : 1)
+                )
+        }
+    }
+}
+
+public struct EFSegmentedControl<T: Hashable>: View {
+    let items: [T]
+    @Binding var selection: T
+    let titleFor: (T) -> String
+    
+    public init(items: [T], selection: Binding<T>, titleFor: @escaping (T) -> String) {
+        self.items = items
+        self._selection = selection
+        self.titleFor = titleFor
+    }
+    
+    public var body: some View {
+        HStack(spacing: 0) {
+            ForEach(items, id: \.self) { item in
+                Button {
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        selection = item
+                    }
+                } label: {
+                    Text(titleFor(item))
+                        .font(EverFormTheme.Typography.label)
+                        .fontWeight(selection == item ? .semibold : .medium)
+                        .foregroundStyle(selection == item ? EverFormTheme.Colors.textPrimary : EverFormTheme.Colors.textSecondary)
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 8)
+                        .background(
+                            ZStack {
+                                if selection == item {
+                                    RoundedRectangle(cornerRadius: EverFormTheme.Radius.segmented - 2)
+                                        .fill(EverFormTheme.Colors.card)
+                                        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+                                        .padding(2)
+                                }
+                            }
+                        )
+                }
+                .buttonStyle(PlainButtonStyle())
+            }
+        }
+        .padding(2)
+        .background(EverFormTheme.Colors.surface.opacity(0.5))
+        .clipShape(RoundedRectangle(cornerRadius: EverFormTheme.Radius.segmented))
+        .overlay(
+            RoundedRectangle(cornerRadius: EverFormTheme.Radius.segmented)
+                .stroke(EverFormTheme.Colors.cardStroke, lineWidth: 0.5)
+        )
+    }
+}
+
+// MARK: - Legacy Header Compatibility
+
+public struct EFHeader: View {
+    private let title: String
+    private let showBack: Bool
+    private let action: (() -> Void)?
+    private let extraTop: CGFloat = 6
+    
+    @Environment(\.dismiss) private var dismiss
+
+    public init(title: String, showBack: Bool = false, action: (() -> Void)? = nil) {
+        self.title = title
+        self.showBack = showBack
+        self.action = action
+    }
+
+    public var body: some View {
+        HStack {
+            if showBack {
+                Button(action: {
+                    if let action { action() } else { dismiss() }
+                }) {
+                    Image(systemName: "chevron.left")
+                        .font(.system(size: 20, weight: .semibold))
+                        .foregroundColor(DesignSystem.Colors.textPrimary)
+                }
+                .padding(.trailing, 8)
+            }
+            
+            Text(title)
+                .font(.system(.largeTitle, design: .rounded).weight(.bold))
+                .kerning(-0.5)
+                .foregroundStyle(DesignSystem.Colors.textPrimary)
+            
+            Spacer()
+        }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(.horizontal, 20)
+        .padding(.top, extraTop)
+        .accessibilityAddTraits(.isHeader)
+        .safeAreaPadding(.top)
+    }
+}
+
+public typealias EFScreenHeader = EFHeader

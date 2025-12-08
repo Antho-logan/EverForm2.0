@@ -5,7 +5,6 @@
 //  Created by Gemini on 18/11/2025.
 //  Updated by Assistant on 21/11/2025.
 //
-//
 
 import SwiftUI
 
@@ -14,28 +13,23 @@ struct ExerciseDetailSheet: View {
   @Binding var isPresented: Bool
 
   var body: some View {
-    VStack(spacing: 0) {
-      // Drag handle
-      Capsule()
-        .fill(Color.secondary.opacity(0.3))
-        .frame(width: 36, height: 5)
-        .padding(.top, 8)
-        .padding(.bottom, 20)
-
+    EFScreenContainer {
       ScrollView {
         VStack(alignment: .leading, spacing: 24) {
           // Header
           VStack(alignment: .leading, spacing: 8) {
             Text(exercise.name)
-              .font(DesignSystem.Typography.displaySmall())
-              .foregroundStyle(DesignSystem.Colors.textPrimary)
+              .font(EverFormTheme.Typography.screenTitle)
+              .foregroundStyle(EverFormTheme.Colors.textPrimary)
 
             HStack {
               ForEach(exercise.primaryMuscles, id: \.self) { muscle in
-                Tag(text: muscle.label, color: DesignSystem.Colors.accent)
+                EFPillChip(muscle.label, isSelected: true) {}
+                  .disabled(true)
               }
               ForEach(exercise.secondaryMuscles, id: \.self) { muscle in
-                Tag(text: muscle.label, color: DesignSystem.Colors.textSecondary)
+                EFPillChip(muscle.label, isSelected: false) {}
+                  .disabled(true)
               }
             }
           }
@@ -43,21 +37,12 @@ struct ExerciseDetailSheet: View {
           // Video Placeholder
           ZStack {
             RoundedRectangle(cornerRadius: 16)
-              .fill(DesignSystem.Colors.neutral100)
+              .fill(EverFormTheme.Colors.surface)
               .aspectRatio(16 / 9, contentMode: .fit)
 
-            if let url = exercise.videoURL {
-              // Placeholder for actual video player
-              Link(destination: url) {
-                Image(systemName: "play.circle.fill")
-                  .font(.system(size: 48))
-                  .foregroundStyle(DesignSystem.Colors.accent.opacity(0.8))
-              }
-            } else {
-              Image(systemName: "play.circle.fill")
-                .font(.system(size: 48))
-                .foregroundStyle(DesignSystem.Colors.accent.opacity(0.8))
-            }
+            Image(systemName: "play.circle.fill")
+              .font(.system(size: 48))
+              .foregroundStyle(EverFormTheme.Colors.trainingGreen.opacity(0.8))
           }
 
           // Details Grid
@@ -72,22 +57,22 @@ struct ExerciseDetailSheet: View {
           if !exercise.technique.isEmpty {
             VStack(alignment: .leading, spacing: 12) {
               Text("Technique")
-                .font(EverFont.cardTitle)
-                .foregroundStyle(DesignSystem.Colors.textPrimary)
+                .font(EverFormTheme.Typography.cardTitle)
+                .foregroundStyle(EverFormTheme.Colors.textPrimary)
 
               ForEach(Array(exercise.technique.enumerated()), id: \.offset) { index, step in
                 HStack(alignment: .top, spacing: 12) {
                   Text("\(index + 1)")
-                    .font(EverFont.label)
+                    .font(EverFormTheme.Typography.label)
                     .foregroundStyle(.white)
                     .frame(width: 20, height: 20)
-                    .background(DesignSystem.Colors.neutral400)
+                    .background(EverFormTheme.Colors.textSecondary)
                     .clipShape(Circle())
                     .padding(.top, 2)
 
                   Text(step)
-                    .font(EverFont.body)
-                    .foregroundStyle(DesignSystem.Colors.textPrimary)
+                    .font(EverFormTheme.Typography.body)
+                    .foregroundStyle(EverFormTheme.Colors.textPrimary)
                 }
               }
             }
@@ -97,34 +82,28 @@ struct ExerciseDetailSheet: View {
           if let cue = exercise.coachCue {
             VStack(alignment: .leading, spacing: 8) {
               Text("Coach Cue")
-                .font(EverFont.cardTitle)
-                .foregroundStyle(DesignSystem.Colors.textPrimary)
+                .font(EverFormTheme.Typography.cardTitle)
+                .foregroundStyle(EverFormTheme.Colors.textPrimary)
 
-              HStack(spacing: 12) {
-                Image(systemName: "brain.head.profile")
-                  .foregroundStyle(DesignSystem.Colors.accent)
-                  .font(.title2)
+              EFCard {
+                  HStack(spacing: 12) {
+                    Image(systemName: "brain.head.profile")
+                      .foregroundStyle(EverFormTheme.Colors.trainingGreen)
+                      .font(.title2)
 
-                Text("\"\(cue)\"")
-                  .font(EverFont.bodySecondary.italic())
-                  .foregroundStyle(DesignSystem.Colors.textPrimary)
+                    Text("\"\(cue)\"")
+                      .font(EverFormTheme.Typography.body.italic())
+                      .foregroundStyle(EverFormTheme.Colors.textPrimary)
+                  }
               }
-              .padding()
-              .frame(maxWidth: .infinity, alignment: .leading)
-              .background(DesignSystem.Colors.backgroundSecondary)
-              .clipShape(RoundedRectangle(cornerRadius: 12))
-              .overlay(
-                RoundedRectangle(cornerRadius: 12)
-                  .stroke(DesignSystem.Colors.border, lineWidth: 1)
-              )
             }
           }
         }
         .padding(.horizontal, 20)
         .padding(.bottom, 40)
+        .padding(.top, 24)
       }
     }
-    .background(DesignSystem.Colors.cardBackground)
   }
 }
 
@@ -136,38 +115,22 @@ private struct DetailCell: View {
   let icon: String
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 8) {
-      HStack {
-        Image(systemName: icon)
-          .foregroundStyle(DesignSystem.Colors.accent)
-        Text(title)
-          .font(EverFont.label)
-          .foregroundStyle(DesignSystem.Colors.textSecondary)
-      }
+    EFCard {
+        VStack(alignment: .leading, spacing: 8) {
+          HStack {
+            Image(systemName: icon)
+              .foregroundStyle(EverFormTheme.Colors.trainingGreen)
+            Text(title)
+              .font(EverFormTheme.Typography.label)
+              .foregroundStyle(EverFormTheme.Colors.textSecondary)
+          }
 
-      Text(value)
-        .font(EverFont.bodySecondary.weight(.semibold))
-        .foregroundStyle(DesignSystem.Colors.textPrimary)
-        .fixedSize(horizontal: false, vertical: true)
+          Text(value)
+            .font(EverFormTheme.Typography.body)
+            .fontWeight(.semibold)
+            .foregroundStyle(EverFormTheme.Colors.textPrimary)
+            .fixedSize(horizontal: false, vertical: true)
+        }
     }
-    .padding(12)
-    .frame(maxWidth: .infinity, alignment: .leading)
-    .background(DesignSystem.Colors.backgroundSecondary)
-    .clipShape(RoundedRectangle(cornerRadius: 12))
-  }
-}
-
-private struct Tag: View {
-  let text: String
-  var color: Color = .blue
-
-  var body: some View {
-    Text(text)
-      .font(EverFont.smallCaption)
-      .padding(.horizontal, 8)
-      .padding(.vertical, 4)
-      .background(color.opacity(0.1))
-      .foregroundStyle(color)
-      .clipShape(Capsule())
   }
 }

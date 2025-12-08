@@ -90,33 +90,21 @@ struct BreathworkSessionSummaryView: View {
     }
     
     private func saveAndClose() {
-        let log = BreathworkSessionLog(
-            id: UUID(),
-            date: Date(),
-            templateId: nil, // Could be linked if started from template
-            patternName: pattern.displayName,
-            durationMinutes: totalMinutes,
-            roundsCompleted: roundsCompleted,
-            longestHoldSeconds: 0, // Placeholder
-            notes: note.isEmpty ? nil : note
-        )
-        
-        store.logSession(log)
+        // Log session to backend asynchronously
+        Task {
+            await store.logCompletedSession(
+                pattern: pattern,
+                roundsCompleted: roundsCompleted,
+                durationSeconds: totalMinutes * 60,
+                longestHoldSeconds: 0,
+                notes: note.isEmpty ? nil : note
+            )
+        }
         
         // Dismiss the summary (sheet)
         dismiss()
         
-        // We also need to dismiss the underlying LiveSessionView. 
-        // In the HomeView, showingLiveSession is bound. 
-        // Since this summary is presented FROM LiveSessionView, dismissing this 
-        // just reveals LiveSessionView again unless we handle the flow differently.
-        // Best practice: LiveSessionView handles the "End" state by showing this view, 
-        // and when this view dismisses, it tells LiveSessionView to dismiss itself.
-        // For simplicity here, we might need a shared binding or a notification.
-        // In LiveBreathworkSessionView, showingSummary is a local sheet.
-        // When this dismisses, LiveBreathworkSessionView is still there.
-        // We should pass a closure or binding to dismiss parent.
-        
+        // Notify LiveSessionView to close
         NotificationCenter.default.post(name: .closeBreathworkSession, object: nil)
     }
 }

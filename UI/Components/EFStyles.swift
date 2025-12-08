@@ -1,39 +1,40 @@
 import SwiftUI
 
 struct EFCardStyle: ViewModifier {
-    @Environment(\.colorScheme) private var scheme
+  @Environment(\.colorScheme) private var scheme
 
-    func body(content: Content) -> some View {
-        let p = EFPalette.current(scheme)
-        return content
-            .background(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(p.card)
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .stroke(p.stroke, lineWidth: scheme == .light ? 1 : 0)
-            )
-            .shadow(color: p.shadow, radius: scheme == .light ? 16 : 8, x: 0, y: 8)
-    }
+  func body(content: Content) -> some View {
+    content
+      .background(
+        RoundedRectangle(cornerRadius: EverFormTheme.Radius.card, style: .continuous)
+          .fill(EverFormTheme.Colors.card)
+      )
+      .overlay(
+        RoundedRectangle(cornerRadius: EverFormTheme.Radius.card, style: .continuous)
+          .stroke(EverFormTheme.Colors.cardStroke, lineWidth: 1)
+      )
+      .shadow(
+        color: scheme == .dark ? EverFormTheme.Shadows.dark() : EverFormTheme.Shadows.light(),
+        radius: EverFormTheme.Shadows.radius, x: 0, y: EverFormTheme.Shadows.y)
+  }
 }
 
-extension View { 
-    func efCard() -> some View { 
-        modifier(EFCardStyle()) 
-    } 
+extension View {
+  func efCard() -> some View {
+    modifier(EFCardStyle())
+  }
 }
 
 struct EFChip: View {
-    let title: String
+  let title: String
 
-    var body: some View {
-        Text(title)
-            .font(.footnote.weight(.semibold))
-            .padding(.horizontal, 12)
-            .padding(.vertical, 6)
-            .background(Theme.Colors.surface)
-            .clipShape(Capsule())
-            .overlay(Capsule().stroke(Theme.Colors.border))
-    }
+  var body: some View {
+    Text(title)
+      .font(EverFormTheme.Typography.label)
+      .padding(.horizontal, 12)
+      .padding(.vertical, 6)
+      .background(EverFormTheme.Colors.surface)
+      .clipShape(Capsule())
+      .overlay(Capsule().stroke(EverFormTheme.Colors.cardStroke))
+  }
 }

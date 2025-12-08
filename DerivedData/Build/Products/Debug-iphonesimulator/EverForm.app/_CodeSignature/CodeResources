@@ -6,15 +6,23 @@
 	<dict>
 		<key>EverForm.debug.dylib</key>
 		<data>
-		Xikr0wHRm5nTzTfkET6bmSbhZIE=
+		YQ/cTrGjqXWntN0AYHLaI/GhBTw=
 		</data>
 		<key>Info.plist</key>
 		<data>
 		5nkrBl3ZpgyoQZtO4tn6j5SNtzA=
 		</data>
+		<key>OpenSans.ttf</key>
+		<data>
+		XWon5RAxqCbOoLCcAxGhbE0/OYI=
+		</data>
 		<key>PkgInfo</key>
 		<data>
 		n57qDP4tZfLD1rCS43W0B4LQjzE=
+		</data>
+		<key>ScienceGothic.ttf</key>
+		<data>
+		0CWZmFWLcX6Ny6GyHSY8AZRJ+0k=
 		</data>
 		<key>__preview.dylib</key>
 		<data>
@@ -27,7 +35,21 @@
 		<dict>
 			<key>hash2</key>
 			<data>
-			ZatP0mQVSqr5cSv/GjERmBaSGEneyv1YzWmsmWqhKGQ=
+			TyPWcgKkyMO3KrSBKy7aisgmpuWptd56Awdn2NAdqxo=
+			</data>
+		</dict>
+		<key>OpenSans.ttf</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			NmQ2RPMYqBKqstLtO7mPjPCHJSf4Nf6TmNlf5rmtuHg=
+			</data>
+		</dict>
+		<key>ScienceGothic.ttf</key>
+		<dict>
+			<key>hash2</key>
+			<data>
+			UKI36cnwBPOJu1b+n+oqj3G1khncnmD74OCl6vCkmL8=
 			</data>
 		</dict>
 		<key>__preview.dylib</key>

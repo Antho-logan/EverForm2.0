@@ -1,8 +1,8 @@
 /**
  * Public Coach Chat API
  *
- * Simplified chat endpoint for the iOS app that doesn't require authentication.
- * Uses the DeepSeek API for LLM responses.
+ * Chat endpoint for the iOS app.
+ * Now requires authentication and includes rate limiting.
  *
  * POST /api/coach/chat
  */
@@ -10,8 +10,16 @@ import { Router, Request, Response } from 'express';
 import { z } from 'zod';
 import axios from 'axios';
 import { env } from '../config/env';
+import { authMiddleware } from '../middleware/auth';
+import { aiChatLimiter } from '../middleware/rateLimit';
+import { getKnowledgeContext } from '../services/knowledgeService';
+import { sanitizePrompt, sanitizeMessages } from '../utils/promptSanitizer';
 
 const router = Router();
+
+// Apply auth and rate limiting to all routes
+router.use(authMiddleware);
+router.use(aiChatLimiter);
 
 // Request schema matching iOS app expectations
 const chatRequestSchema = z.object({
@@ -20,16 +28,20 @@ const chatRequestSchema = z.object({
       role: z.enum(['user', 'assistant', 'system']),
       content: z.string(),
     })
-  ),
-});
+  ).optional(),
+  prompt: z.string().optional(),
+}).refine(
+  (data) => data.messages !== undefined || data.prompt !== undefined,
+  { message: 'Either messages or prompt must be provided' }
+);
 
-// DeepSeek API endpoint
 const DEEPSEEK_URL = 'https://api.deepseek.com/v1/chat/completions';
 
-// Default system prompt for EverForm coach
 const DEFAULT_SYSTEM_PROMPT = `You are EverForm, a knowledgeable and empathetic fitness and biohacking coach.
 Keep answers concise (under 3 sentences unless detailed explanation is asked).
 Be motivating but realistic. Focus on evidence-based advice.`;
+
+const NO_KNOWLEDGE_ADDENDUM = `\n\nNote: No internal knowledge documents are available for this question. Answer based on general coaching principles and evidence-based fitness/health guidance.`;
 
 interface ChatResponse {
   reply: string;
@@ -42,23 +54,9 @@ interface ChatResponse {
 
 /**
  * POST /api/coach/chat
- *
- * Request body:
- * {
- *   "messages": [
- *     { "role": "user" | "assistant" | "system", "content": "..." }
- *   ]
- * }
- *
- * Response:
- * {
- *   "reply": "<assistant_text>",
- *   "usage": { prompt_tokens, completion_tokens, total_tokens } | null
- * }
  */
 router.post('/chat', async (req: Request, res: Response) => {
   try {
-    // Validate request body
     const parseResult = chatRequestSchema.safeParse(req.body);
     if (!parseResult.success) {
       return res.status(400).json({
@@ -67,17 +65,56 @@ router.post('/chat', async (req: Request, res: Response) => {
       });
     }
 
-    const { messages } = parseResult.data;
+    const { messages: rawMessages, prompt: rawPrompt } = parseResult.data;
+    
+    // Sanitize prompt to remove extra quotes, braces, JSON wrappers, etc.
+    const cleanPrompt = rawPrompt ? sanitizePrompt(rawPrompt) : '';
+    
+    // Build messages array, sanitizing user message content
+    const rawMsgArray = rawMessages ?? (cleanPrompt ? [{ role: 'user' as const, content: cleanPrompt }] : []);
+    const messages = sanitizeMessages(rawMsgArray);
+    
+    if (messages.length === 0) {
+      return res.status(400).json({
+        error: 'No messages provided',
+        message: 'Please provide either a messages array or a prompt string.',
+      });
+    }
 
-    // Add system prompt if not provided
+    // Extract the last user message for RAG lookup
+    const lastUserMessage = messages.filter((m) => m.role === 'user').pop()?.content ?? '';
+
+    // Attempt RAG lookup for knowledge-based questions
+    let knowledgeContext: string | null = null;
+    try {
+      knowledgeContext = await getKnowledgeContext(lastUserMessage);
+      if (knowledgeContext) {
+        console.log('[coach/chat] RAG: Found relevant knowledge chunks');
+      }
+    } catch (ragErr) {
+      console.warn('[coach/chat] RAG lookup failed, continuing without knowledge context:', ragErr);
+    }
+
+    // Build system prompt with optional knowledge context
     const hasSystemPrompt = messages.some((m) => m.role === 'system');
-    const fullMessages = hasSystemPrompt
-      ? messages
-      : [{ role: 'system' as const, content: DEFAULT_SYSTEM_PROMPT }, ...messages];
+    let systemContent = hasSystemPrompt 
+      ? messages.find((m) => m.role === 'system')!.content 
+      : DEFAULT_SYSTEM_PROMPT;
 
-    // Check for API key
+    // Inject knowledge context or add fallback note
+    if (knowledgeContext) {
+      systemContent = `${systemContent}\n\n---\n\n${knowledgeContext}\n\n---\n\nUse the above knowledge to inform your response when relevant. Cite specific information from the excerpts when applicable.`;
+    } else if (lastUserMessage.length > 30) {
+      // Only add fallback note for substantial questions
+      systemContent = `${systemContent}${NO_KNOWLEDGE_ADDENDUM}`;
+    }
+
+    const fullMessages = hasSystemPrompt
+      ? [{ role: 'system' as const, content: systemContent }, ...messages.filter((m) => m.role !== 'system')]
+      : [{ role: 'system' as const, content: systemContent }, ...messages];
+
     if (!env.DEEPSEEK_API_KEY) {
-      console.warn('[coach/chat] No DEEPSEEK_API_KEY configured, returning echo response');
+      console.warn('[coach/chat] No DEEPSEEK_API_KEY configured');
       const lastUserMessage = messages.filter((m) => m.role === 'user').pop();
       return res.json({
         reply: `Echo: ${lastUserMessage?.content ?? 'No message'}`,
@@ -85,7 +122,6 @@ router.post('/chat', async (req: Request, res: Response) => {
       } satisfies ChatResponse);
     }
 
-    // Call DeepSeek API
     try {
       const response = await axios.post(
         DEEPSEEK_URL,
@@ -112,13 +148,11 @@ router.post('/chat', async (req: Request, res: Response) => {
         } satisfies ChatResponse);
       }
     } catch (apiErr) {
-      // Log the API error but continue to fallback
-      console.warn('[coach/chat] DeepSeek API error, using fallback:', 
+      console.warn('[coach/chat] DeepSeek API error:', 
         apiErr instanceof Error ? apiErr.message : 'Unknown error');
     }
 
-    // Fallback response when API fails
-    const lastUserMessage = messages.filter((m) => m.role === 'user').pop();
+    // Fallback when API fails
     const fallbackReplies = [
       "I'm having trouble connecting to my full capabilities right now, but I'm here to help! Could you rephrase that?",
       "Let me give you a quick tip: consistency beats intensity. Start small, stay committed, and results will follow.",
@@ -133,8 +167,6 @@ router.post('/chat', async (req: Request, res: Response) => {
     } satisfies ChatResponse);
   } catch (err) {
     console.error('[coach/chat] Error:', err);
-
-    // Return friendly error response
     return res.status(500).json({
       error: 'Failed to process chat request',
       message: 'An unexpected error occurred. Please try again.',
@@ -143,4 +175,3 @@ router.post('/chat', async (req: Request, res: Response) => {
 });
 
 export default router;
-

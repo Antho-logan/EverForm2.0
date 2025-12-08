@@ -133,17 +133,15 @@ struct MobilityView: View {
                                 .foregroundStyle(palette.textPrimary)
 
                             HStack(spacing: Theme.Spacing.md) {
-                                EFPillButton(
-                                    title: "Pause",
-                                    style: .secondary
+                                EFSecondaryButton(
+                                    "Pause"
                                 ) {
                                     pauseSession()
                                 }
 
-                                EFPillButton(
-                                    title: "Complete",
-                                    style: .primary,
-                                    color: .green
+                                EFPrimaryButton(
+                                    "Complete",
+                                    color: EverFormTheme.Colors.successGreen
                                 ) {
                                     completeSession()
                                 }
@@ -171,10 +169,9 @@ struct MobilityView: View {
                             }
                         }
 
-                        EFPillButton(
-                            title: "Start Session",
-                            style: .primary,
-                            color: .purple
+                        EFPrimaryButton(
+                            "Start Session",
+                            color: EverFormTheme.Colors.mobilityPurple
                         ) {
                             startSession()
                         }
@@ -182,9 +179,8 @@ struct MobilityView: View {
                     }
 
                     if !isSessionActive {
-                        EFPillButton(
-                            title: "Save Routine",
-                            style: .primary
+                        EFPrimaryButton(
+                            "Save Routine"
                         ) {
                             saveMobility()
                         }

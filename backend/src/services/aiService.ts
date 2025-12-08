@@ -91,6 +91,7 @@ export interface CoachContext {
   recentMeals?: any[];
   recentWorkouts?: any[];
   profile?: Profile | null;
+  knowledgeContext?: string | null; // RAG-injected knowledge from PDF knowledge base
   [key: string]: any;
 }
 
@@ -98,10 +99,22 @@ export async function generateCoachReply(
   message: string,
   context: CoachContext
 ): Promise<string> {
-  const systemPrompt = `You are EverForm, a knowledgeable and empathetic fitness and biohacking coach.
+  // Build system prompt with optional RAG knowledge context
+  let systemPrompt = `You are EverForm, a knowledgeable and empathetic fitness and biohacking coach.
 User profile and recent data is provided in the context.
 Keep answers concise (under 3 sentences unless detailed explanation is asked).
 Be motivating but realistic.`;
+
+  // Inject knowledge context if available
+  if (context.knowledgeContext) {
+    systemPrompt += `\n\n---\n\n${context.knowledgeContext}\n\n---\n\nUse the above knowledge excerpts to inform your response when relevant. Cite specific information from the excerpts when applicable.`;
+  } else if (message.length > 30) {
+    // Add note for substantial questions without knowledge context
+    systemPrompt += `\n\nNote: No internal knowledge documents are available for this question. Answer based on general coaching principles and evidence-based fitness/health guidance.`;
+  }
+
+  // Prepare context for the prompt (exclude knowledgeContext to avoid duplication)
+  const { knowledgeContext: _kc, ...contextForPrompt } = context;
 
   // Fallback if no key
   if (!env.DEEPSEEK_API_KEY) {
@@ -116,14 +129,14 @@ Be motivating but realistic.`;
         model: 'deepseek-chat',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: JSON.stringify({ context, message }) }
+          { role: 'user', content: JSON.stringify({ context: contextForPrompt, message }) }
         ]
       },
       {
         headers: {
           Authorization: `Bearer ${env.DEEPSEEK_API_KEY}`
         },
-        timeout: 10000
+        timeout: 15000 // Increased timeout for RAG-enhanced responses
       }
     );
 

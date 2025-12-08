@@ -24,3 +24,12 @@ struct FullPlanView: View {
     }
 }
 
+
+
+
+
+
+
+
+
+

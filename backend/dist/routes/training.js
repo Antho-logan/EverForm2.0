@@ -1,111 +1,254 @@
 "use strict";
+/**
+ * Training Routes
+ * Manages workout sessions, exercises, and training logs.
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
-// Training routes: workout sessions and plans.
 const express_1 = require("express");
 const zod_1 = require("zod");
+const coachAgent_1 = require("../services/coachAgent");
+const db_1 = require("../utils/db");
 const supabaseClient_1 = require("../config/supabaseClient");
 const router = (0, express_1.Router)();
-const setSchema = zod_1.z.object({
-    exercise: zod_1.z.string(),
+// ─────────────────────────────────────────────────────────────────────────────
+// Schemas
+// ─────────────────────────────────────────────────────────────────────────────
+const completedSetSchema = zod_1.z.object({
+    exerciseName: zod_1.z.string(),
+    setNumber: zod_1.z.number().int(),
     reps: zod_1.z.number().int().nonnegative(),
     weight: zod_1.z.number().nonnegative().optional(),
-    rpe: zod_1.z.number().nonnegative().optional(),
+    rpe: zod_1.z.number().min(1).max(10).optional(),
+    notes: zod_1.z.string().optional()
+});
+const trainingLogSchema = zod_1.z.object({
+    sessionId: zod_1.z.string().uuid().optional(),
+    datePerformed: zod_1.z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    completedSets: zod_1.z.array(completedSetSchema).default([]),
+    perceivedEffort: zod_1.z.number().int().min(1).max(10),
     notes: zod_1.z.string().optional()
 });
 const sessionSchema = zod_1.z.object({
-    title: zod_1.z.string().min(1),
-    status: zod_1.z.enum(['completed', 'skipped', 'planned']).default('completed'),
-    durationMinutes: zod_1.z.number().int().positive().optional(),
-    performedAt: zod_1.z.string().optional(),
-    planId: zod_1.z.string().optional(),
-    notes: zod_1.z.string().optional(),
-    sets: zod_1.z.array(setSchema).optional()
+    templateId: zod_1.z.string().uuid().optional(),
+    datePlanned: zod_1.z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    sessionLabel: zod_1.z.string().optional()
 });
-router.get('/sessions', async (req, res, next) => {
+const exerciseSchema = zod_1.z.object({
+    sessionId: zod_1.z.string().uuid(),
+    exerciseName: zod_1.z.string(),
+    sets: zod_1.z.number().int().default(3),
+    reps: zod_1.z.number().int().default(10),
+    restSeconds: zod_1.z.number().int().default(90),
+    intensityTarget: zod_1.z.string().optional(),
+    orderIndex: zod_1.z.number().int().default(0)
+});
+// ─────────────────────────────────────────────────────────────────────────────
+// Sessions (Planned Workouts)
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * GET /api/v1/training/sessions
+ */
+router.get('/sessions', async (req, res) => {
     try {
         const userId = req.user?.id;
         const { from, to } = req.query;
-        const query = supabaseClient_1.supabase
+        // Need join, so use supabase directly with explicit user_id filter
+        let query = supabaseClient_1.supabase
             .from('training_sessions')
-            .select('*, training_sets(*)')
+            .select('*, training_exercises(*)')
             .eq('user_id', userId)
-            .order('performed_at', { ascending: false });
+            .order('date_planned', { ascending: true });
         if (from && typeof from === 'string') {
-            query.gte('performed_at', from);
+            query = query.gte('date_planned', from);
         }
         if (to && typeof to === 'string') {
-            query.lte('performed_at', to);
+            query = query.lte('date_planned', to);
         }
         const { data, error } = await query;
         if (error) {
-            console.error('Failed to fetch training sessions', error);
-            return res.status(500).json({ message: 'Could not fetch training sessions' });
+            console.error('[training] Failed to fetch sessions:', error.message);
+            return res.status(500).json({ message: 'Failed to fetch sessions', error: error.message });
         }
-        return res.json({ sessions: data ?? [] });
+        return res.json({ sessions: data ?? [], status: 'ok' });
     }
     catch (err) {
-        return next(err);
+        console.error('[training] Unexpected error:', err);
+        return res.status(500).json({ message: 'Internal server error' });
     }
 });
-router.post('/sessions', async (req, res, next) => {
+/**
+ * POST /api/v1/training/sessions
+ */
+router.post('/sessions', async (req, res) => {
     try {
         const userId = req.user?.id;
         const parsed = sessionSchema.parse(req.body);
-        const payload = {
-            user_id: userId,
-            plan_id: parsed.planId,
-            title: parsed.title,
-            status: parsed.status,
-            duration_minutes: parsed.durationMinutes,
-            performed_at: parsed.performedAt,
-            notes: parsed.notes
-        };
-        const { data: session, error } = await supabaseClient_1.supabase.from('training_sessions').insert(payload).select().single();
+        const { data, error } = await (0, db_1.userInsert)('training_sessions', userId, {
+            template_id: parsed.templateId,
+            date_planned: parsed.datePlanned,
+            session_label: parsed.sessionLabel
+        }).select().single();
         if (error) {
-            console.error('Failed to create training session', error);
-            return res.status(500).json({ message: 'Could not create training session' });
+            console.error('[training] Failed to create session:', error.message);
+            return res.status(500).json({ message: 'Failed to create session', error: error.message });
         }
-        // Insert nested sets if provided
-        if (parsed.sets && parsed.sets.length > 0 && session?.id) {
-            const setsPayload = parsed.sets.map((set) => ({
-                user_id: userId,
-                session_id: session.id,
-                exercise: set.exercise,
-                reps: set.reps,
-                weight: set.weight,
-                rpe: set.rpe,
-                notes: set.notes
-            }));
-            const { error: setError } = await supabaseClient_1.supabase.from('training_sets').insert(setsPayload);
-            if (setError) {
-                console.error('Failed to insert training sets', setError);
-            }
-        }
-        return res.status(201).json({ session });
+        return res.status(201).json({ session: data, status: 'ok' });
     }
     catch (err) {
-        return next(err);
+        if (err instanceof zod_1.z.ZodError) {
+            return res.status(400).json({ message: 'Validation failed', issues: err.issues });
+        }
+        console.error('[training] Unexpected error:', err);
+        return res.status(500).json({ message: 'Could not create session' });
     }
 });
-router.get('/plan', async (req, res, next) => {
+// ─────────────────────────────────────────────────────────────────────────────
+// Exercises (within sessions)
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * POST /api/v1/training/exercises
+ */
+router.post('/exercises', async (req, res) => {
+    try {
+        const parsed = exerciseSchema.parse(req.body);
+        // Note: exercises don't have user_id directly, they're linked through session
+        const { data, error } = await supabaseClient_1.supabase
+            .from('training_exercises')
+            .insert({
+            session_id: parsed.sessionId,
+            exercise_name: parsed.exerciseName,
+            sets: parsed.sets,
+            reps: parsed.reps,
+            rest_seconds: parsed.restSeconds,
+            intensity_target: parsed.intensityTarget,
+            order_index: parsed.orderIndex
+        })
+            .select()
+            .single();
+        if (error) {
+            console.error('[training] Failed to create exercise:', error.message);
+            return res.status(500).json({ message: 'Failed to create exercise', error: error.message });
+        }
+        return res.status(201).json({ exercise: data, status: 'ok' });
+    }
+    catch (err) {
+        if (err instanceof zod_1.z.ZodError) {
+            return res.status(400).json({ message: 'Validation failed', issues: err.issues });
+        }
+        console.error('[training] Unexpected error:', err);
+        return res.status(500).json({ message: 'Could not create exercise' });
+    }
+});
+// ─────────────────────────────────────────────────────────────────────────────
+// Training Logs (Completed Workouts)
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * GET /api/v1/training/logs
+ */
+router.get('/logs', async (req, res) => {
     try {
         const userId = req.user?.id;
+        const { from, to, limit } = req.query;
+        let query = (0, db_1.userSelect)('training_logs', userId, '*')
+            .order('date_performed', { ascending: false });
+        if (from && typeof from === 'string') {
+            query = query.gte('date_performed', from);
+        }
+        if (to && typeof to === 'string') {
+            query = query.lte('date_performed', to);
+        }
+        if (limit) {
+            query = query.limit(parseInt(limit));
+        }
+        const { data, error } = await query;
+        if (error) {
+            console.error('[training] Failed to fetch logs:', error.message);
+            return res.status(500).json({ message: 'Failed to fetch logs', error: error.message });
+        }
+        return res.json({ logs: data ?? [], status: 'ok' });
+    }
+    catch (err) {
+        console.error('[training] Unexpected error:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+});
+/**
+ * POST /api/v1/training/log
+ * Triggers daily summary recalculation
+ */
+router.post('/log', async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const parsed = trainingLogSchema.parse(req.body);
+        const { data, error } = await (0, db_1.userInsert)('training_logs', userId, {
+            session_id: parsed.sessionId,
+            date_performed: parsed.datePerformed,
+            completed_sets: parsed.completedSets,
+            perceived_effort: parsed.perceivedEffort,
+            notes: parsed.notes
+        }).select().single();
+        if (error) {
+            console.error('[training] Failed to create log:', error.message);
+            return res.status(500).json({ message: 'Failed to create training log', error: error.message });
+        }
+        // Trigger coach agent to update daily summary (fire and forget)
+        (0, coachAgent_1.runDailySummary)(userId, parsed.datePerformed).catch(err => {
+            console.error('[training] Coach agent error:', err);
+        });
+        return res.status(201).json({ log: data, status: 'ok' });
+    }
+    catch (err) {
+        if (err instanceof zod_1.z.ZodError) {
+            return res.status(400).json({ message: 'Validation failed', issues: err.issues });
+        }
+        console.error('[training] Unexpected error:', err);
+        return res.status(500).json({ message: 'Could not create training log' });
+    }
+});
+// ─────────────────────────────────────────────────────────────────────────────
+// Templates
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * GET /api/v1/training/templates
+ */
+router.get('/templates', async (req, res) => {
+    try {
         const { data, error } = await supabaseClient_1.supabase
-            .from('ai_plans')
+            .from('training_templates')
             .select('*')
-            .eq('user_id', userId)
+            .order('name', { ascending: true });
+        if (error) {
+            console.error('[training] Failed to fetch templates:', error.message);
+            return res.status(500).json({ message: 'Failed to fetch templates', error: error.message });
+        }
+        return res.json({ templates: data ?? [], status: 'ok' });
+    }
+    catch (err) {
+        console.error('[training] Unexpected error:', err);
+        return res.status(500).json({ message: 'Internal server error' });
+    }
+});
+/**
+ * GET /api/v1/training/plan
+ * Legacy compatibility endpoint
+ */
+router.get('/plan', async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const { data, error } = await (0, db_1.userSelect)('ai_plans', userId, '*')
             .eq('type', 'training')
             .order('created_at', { ascending: false })
             .limit(1)
             .maybeSingle();
         if (error) {
-            console.error('Failed to fetch training plan', error);
-            return res.status(500).json({ message: 'Could not fetch training plan' });
+            console.error('[training] Failed to fetch plan:', error.message);
+            return res.status(500).json({ message: 'Failed to fetch plan', error: error.message });
         }
-        return res.json({ plan: data ?? null });
+        return res.json({ plan: data ?? null, status: 'ok' });
     }
     catch (err) {
-        return next(err);
+        console.error('[training] Unexpected error:', err);
+        return res.status(500).json({ message: 'Internal server error' });
     }
 });
 exports.default = router;

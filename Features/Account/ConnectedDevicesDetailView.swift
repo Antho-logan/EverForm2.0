@@ -49,3 +49,12 @@ struct ConnectedDevicesDetailView: View {
     }
 }
 
+
+
+
+
+
+
+
+
+

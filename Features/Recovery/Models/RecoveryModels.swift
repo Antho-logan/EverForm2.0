@@ -17,10 +17,20 @@ enum RecoveryTimeRange: String, CaseIterable, Identifiable {
     var id: String { rawValue }
 }
 
-enum RecoveryGoal: String {
-    case optimal = "Goal: Optimal"
-    case maintenance = "Goal: Maintenance"
-    case recovery = "Goal: Recovery"
+enum RecoveryGoal: String, Codable, CaseIterable {
+    case optimal = "optimal"
+    case fixInsomnia = "fix_insomnia"
+    case postCut = "post_cut"
+    case stressControl = "stress_control"
+    
+    var displayName: String {
+        switch self {
+        case .optimal: return "Optimal Recovery"
+        case .fixInsomnia: return "Fix Insomnia"
+        case .postCut: return "Post-Cut Recovery"
+        case .stressControl: return "Stress Control"
+        }
+    }
 }
 
 // MARK: - Core Types
@@ -57,10 +67,6 @@ struct SleepStageBreakdown: Identifiable, Equatable {
     let awakeMinutes: Int
     
     var total: Int { deepMinutes + remMinutes + lightMinutes + awakeMinutes }
-    
-    // For the chart, we might need to iterate stages. 
-    // But the UI currently expects explicit properties. 
-    // We can keep the properties and add a computed property for iteration if needed.
 }
 
 struct DailyRecoveryLog: Identifiable {
@@ -102,5 +108,60 @@ struct DailyRecoveryLog: Identifiable {
     
     var efficiencyDouble: Double {
         Double(efficiencyPercent) / 100.0
+    }
 }
+
+// MARK: - API / AI Models
+
+struct RecoveryProfile: Codable {
+    let userId: String
+    var goal: RecoveryGoal
+    var targetSleepMinutes: Int
+    var preferredBedtime: String?
+    var preferredWakeTime: String?
+    var caffeineCutoffHour: Int?
+    var timezone: String
+    let createdAt: String
+    let updatedAt: String
+}
+
+struct RecoveryProfileUpdatePayload: Codable {
+    var goal: RecoveryGoal?
+    var targetSleepMinutes: Int?
+    var preferredBedtime: String?
+    var preferredWakeTime: String?
+    var caffeineCutoffHour: Int?
+    var timezone: String?
+}
+
+// MARK: - Daily Insights
+
+struct RecoveryDailyInsights: Codable {
+    let headline: String
+    let summary: String
+    let recoveryScore: Int
+    let sleepConsistency: Int
+    let nervousSystemLoad: String // 'low', 'medium', 'high'
+    let keyIssues: [String]
+    let todayFocusTags: [String]
+}
+
+// MARK: - Smart Day Plan
+
+struct RecoveryPlanStep: Codable, Identifiable {
+    var id: UUID { UUID() } // Client-side ID for SwiftUI loops
+    let title: String
+    let description: String
+    let relativeMinutes: Int?
+    
+    enum CodingKeys: String, CodingKey {
+        case title, description, relativeMinutes
+    }
+}
+
+struct RecoveryDayPlan: Codable {
+    let date: String
+    let headline: String
+    let planType: String // 'nightly', 'reset', 'maintenance'
+    let steps: [RecoveryPlanStep]
 }

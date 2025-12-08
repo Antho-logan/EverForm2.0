@@ -50,50 +50,50 @@ export async function getOrCreateDefaultTrainingProfile(userId: string): Promise
   assertValidUserId(userId);
 
   try {
-    // 1. Try to fetch existing profile
-    const { data: existing, error: selectError } = await userSelect('training_profiles', userId)
-      .maybeSingle();
+  // 1. Try to fetch existing profile
+  const { data: existing, error: selectError } = await userSelect('training_profiles', userId)
+    .maybeSingle();
 
-    if (selectError) {
+  if (selectError) {
       console.error('[TrainingProfileService] select failed', {
         userId,
         message: selectError.message,
         details: selectError.details,
       });
-      throw new Error(`Failed to fetch training profile: ${selectError.message}`);
-    }
+    throw new Error(`Failed to fetch training profile: ${selectError.message}`);
+  }
 
-    // 2. If profile exists, return it (cast via unknown for Supabase generic typing)
-    if (existing && typeof existing === 'object' && 'user_id' in existing) {
-      return existing as unknown as TrainingProfile;
-    }
+  // 2. If profile exists, return it (cast via unknown for Supabase generic typing)
+  if (existing && typeof existing === 'object' && 'user_id' in existing) {
+    return existing as unknown as TrainingProfile;
+  }
 
-    // 3. No profile exists - create default
+  // 3. No profile exists - create default
     console.log(`[TrainingProfileService] Creating default training profile for user ${userId}`);
 
-    const defaults = {
-      ...DEFAULT_TRAINING_PROFILE,
-      updated_at: new Date().toISOString(),
-    };
+  const defaults = {
+    ...DEFAULT_TRAINING_PROFILE,
+    updated_at: new Date().toISOString(),
+  };
 
-    const { data: created, error: upsertError } = await userUpsert('training_profiles', userId, defaults, 'user_id')
-      .select()
-      .single();
+  const { data: created, error: upsertError } = await userUpsert('training_profiles', userId, defaults, 'user_id')
+    .select()
+    .single();
 
-    if (upsertError) {
+  if (upsertError) {
       console.error('[TrainingProfileService] upsert failed', {
         userId,
         message: upsertError.message,
         details: upsertError.details,
       });
-      throw new Error(`Failed to create training profile: ${upsertError.message}`);
-    }
+    throw new Error(`Failed to create training profile: ${upsertError.message}`);
+  }
 
-    if (!created || typeof created !== 'object') {
-      throw new Error('Training profile was not returned after creation');
-    }
+  if (!created || typeof created !== 'object') {
+    throw new Error('Training profile was not returned after creation');
+  }
 
-    return created as unknown as TrainingProfile;
+  return created as unknown as TrainingProfile;
   } catch (err) {
     console.error('[TrainingProfileService] unexpected error', err);
     throw err;

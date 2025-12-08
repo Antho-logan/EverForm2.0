@@ -9,14 +9,25 @@ import Foundation
 import SwiftUI
 
 enum BreathworkPatternType: String, Codable, CaseIterable, Identifiable {
-    case wimHof = "Wim Hof Classic"
-    case box = "Box Breathing"
-    case fourSevenEight = "4-7-8 Sleep"
-    case coherent = "Coherent Breathing"
-    case quickReset = "Quick Reset"
-    case calm = "Calm"
+    case wimHof = "wimHof"
+    case box = "box"
+    case fourSevenEight = "fourSevenEight"
+    case coherent = "coherent"
+    case quickReset = "quickReset"
+    case calm = "calm"
     
     var id: String { rawValue }
+    
+    var displayName: String {
+        switch self {
+        case .wimHof: return "Wim Hof Classic"
+        case .box: return "Box Breathing"
+        case .fourSevenEight: return "4-7-8 Sleep"
+        case .coherent: return "Coherent Breathing"
+        case .quickReset: return "Quick Reset"
+        case .calm: return "Calm"
+        }
+    }
     
     var iconName: String {
         switch self {

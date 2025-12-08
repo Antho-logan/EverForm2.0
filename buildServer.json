@@ -12,8 +12,8 @@
 	"argv": [
 		"/opt/homebrew/bin/xcode-build-server"
 	],
-	"workspace": "/Users/antho/Documents/Biofriend/EverForm/EverForm/EverForm.xcodeproj/project.xcworkspace",
-	"build_root": "/Users/antho/Library/Developer/Xcode/DerivedData/EverForm-fiyhzmonqjitjbgzmsbmpbklhihr",
+	"workspace": "/Users/antho/Desktop/Everform 2.0/EverForm.xcodeproj/project.xcworkspace",
+	"build_root": "/Users/antho/Library/Developer/Xcode/DerivedData/EverForm-exgsqriehhmcicaofetiaygwuffv",
 	"scheme": "EverForm",
 	"kind": "xcode"
 }

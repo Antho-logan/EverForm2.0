@@ -5,6 +5,7 @@
 //  Workout history list with summary cards
 //  Applied: T-UI, S-OBS2, P-ARCH, C-SIMPLE, R-LOGS
 //
+//
 
 import SwiftUI
 
@@ -14,25 +15,47 @@ struct WorkoutHistoryListView: View {
     @State private var isLoading = true
     @State private var selectedWorkout: WorkoutHistorySummary?
     @State private var showWorkoutDetail = false
+    @Environment(AppRouter.self) private var router
     
     var body: some View {
-        NavigationStack {
-            Group {
+        EFScreenContainer {
+            VStack(spacing: 0) {
+                // Header
+                HStack {
+                    Button("Close") { onClose() }
+                        .font(EverFormTheme.Typography.button)
+                        .foregroundColor(EverFormTheme.Colors.textSecondary)
+                    
+                    Spacer()
+                    
+                    Text("History")
+                        .font(EverFormTheme.Typography.sectionTitle)
+                        .foregroundColor(EverFormTheme.Colors.textPrimary)
+                    
+                    Spacer()
+                    
+                    // Balance spacing
+                    Text("Close").hidden()
+                }
+                .padding(20)
+                .background(EverFormTheme.Colors.background)
+                
                 if isLoading {
                     ScrollView {
-                        LazyVStack(spacing: DesignSystem.Spacing.md) {
+                        LazyVStack(spacing: 16) {
                             ForEach(0..<5, id: \.self) { _ in
-                                SkeletonView.card
+                                RoundedRectangle(cornerRadius: 16)
+                                    .fill(EverFormTheme.Colors.surface)
+                                    .frame(height: 120)
                             }
                         }
-                        .padding(.horizontal, DesignSystem.Spacing.screenPadding)
-                        .padding(.vertical, DesignSystem.Spacing.lg)
+                        .padding(20)
                     }
                 } else if workoutHistory.isEmpty {
                     EmptyHistoryView()
                 } else {
                     ScrollView {
-                        LazyVStack(spacing: DesignSystem.Spacing.md) {
+                        LazyVStack(spacing: 16) {
                             ForEach(workoutHistory) { workout in
                                 WorkoutHistoryCard(
                                     workout: workout,
@@ -43,28 +66,19 @@ struct WorkoutHistoryListView: View {
                                 )
                             }
                         }
-                        .padding(.horizontal, DesignSystem.Spacing.screenPadding)
-                        .padding(.vertical, DesignSystem.Spacing.lg)
+                        .padding(20)
+                        .padding(.bottom, 40)
                     }
                 }
             }
-            .navigationTitle("Workout History")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Close") {
-                        onClose()
-                    }
-                }
+        }
+        .sheet(isPresented: $showWorkoutDetail) {
+            if let workout = selectedWorkout {
+                WorkoutHistoryDetailView(workout: workout)
             }
-            .sheet(isPresented: $showWorkoutDetail) {
-                if let workout = selectedWorkout {
-                    WorkoutHistoryDetailView(workout: workout)
-                }
-            }
-            .onAppear {
-                loadHistory()
-            }
+        }
+        .onAppear {
+            loadHistory()
         }
     }
     
@@ -91,31 +105,30 @@ struct EmptyHistoryView: View {
     @Environment(AppRouter.self) private var router
     
     var body: some View {
-        VStack(spacing: DesignSystem.Spacing.lg) {
+        VStack(spacing: 24) {
             Image(systemName: "dumbbell")
                 .font(.system(size: 60))
-                .foregroundColor(.secondary)
+                .foregroundColor(EverFormTheme.Colors.textSecondary)
             
-            VStack(spacing: DesignSystem.Spacing.sm) {
+            VStack(spacing: 8) {
                 Text("No workouts yet")
-                    .font(.system(size: 24, weight: .semibold, design: .rounded))
-                    .foregroundColor(.primary)
+                    .font(EverFormTheme.Typography.sectionTitle)
+                    .foregroundColor(EverFormTheme.Colors.textPrimary)
                 
                 Text("Complete your first workout to see it here")
-                    .font(.system(size: 16, design: .rounded))
-                    .foregroundColor(.secondary)
+                    .font(EverFormTheme.Typography.body)
+                    .foregroundColor(EverFormTheme.Colors.textSecondary)
                     .multilineTextAlignment(.center)
             }
             
-            Button("Start your first workout") {
-                UX.Haptic.light()
+            EFPrimaryButton("Start your first workout", color: EverFormTheme.Colors.trainingGreen) {
+                // UX.Haptic.light() // If available
                 router.go(.overview)
             }
-            .buttonStyle(.borderedProminent)
-            .controlSize(.large)
+            .frame(width: 240)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(DesignSystem.Spacing.lg)
+        .padding(20)
     }
 }
 
@@ -126,45 +139,45 @@ struct WorkoutHistoryCard: View {
     let onTap: () -> Void
     
     var body: some View {
-        Button(action: onTap) {
-            VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
+        EFCard {
+            VStack(alignment: .leading, spacing: 12) {
                 // Header
                 HStack {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(workout.title)
-                            .font(.system(size: 18, weight: .semibold, design: .rounded))
-                            .foregroundColor(.primary)
+                            .font(EverFormTheme.Typography.cardTitle)
+                            .foregroundColor(EverFormTheme.Colors.textPrimary)
                         
                         Text(workout.shortFormattedDate)
-                            .font(.system(size: 14, weight: .medium, design: .rounded))
-                            .foregroundColor(.secondary)
+                            .font(EverFormTheme.Typography.caption)
+                            .foregroundColor(EverFormTheme.Colors.textSecondary)
                     }
                     
                     Spacer()
                     
                     Image(systemName: "chevron.right")
-                        .font(.system(size: 14, weight: .medium))
-                        .foregroundColor(.secondary)
+                        .font(.caption)
+                        .foregroundColor(EverFormTheme.Colors.textSecondary)
                 }
                 
                 // Stats Row
-                HStack(spacing: DesignSystem.Spacing.lg) {
+                HStack(spacing: 16) {
                     StatItem(
                         icon: "clock.fill",
                         value: workout.formattedDuration,
-                        color: DesignSystem.Colors.info
+                        color: EverFormTheme.Colors.infoBlue
                     )
                     
                     StatItem(
                         icon: "scalemass.fill",
                         value: workout.formattedVolume,
-                        color: DesignSystem.Colors.success
+                        color: EverFormTheme.Colors.successGreen
                     )
                     
                     StatItem(
                         icon: "list.bullet.circle.fill",
                         value: "\(workout.totalSets) sets",
-                        color: DesignSystem.Colors.accent
+                        color: EverFormTheme.Colors.trainingGreen
                     )
                     
                     Spacer()
@@ -174,28 +187,20 @@ struct WorkoutHistoryCard: View {
                 if !workout.exerciseSummaries.isEmpty {
                     HStack {
                         Text("Exercises:")
-                            .font(.system(size: 12, weight: .medium, design: .rounded))
-                            .foregroundColor(.secondary)
+                            .font(EverFormTheme.Typography.label)
+                            .foregroundColor(EverFormTheme.Colors.textSecondary)
                         
                         Text(exerciseList)
-                            .font(.system(size: 12, weight: .regular, design: .rounded))
-                            .foregroundColor(.secondary)
+                            .font(EverFormTheme.Typography.caption)
+                            .foregroundColor(EverFormTheme.Colors.textSecondary)
                             .lineLimit(1)
                         
                         Spacer()
                     }
                 }
             }
-            .padding(DesignSystem.Spacing.md)
-            .background(DesignSystem.Colors.cardBackground)
-            .clipShape(RoundedRectangle(cornerRadius: DesignSystem.Radius.md))
-            .overlay(
-                RoundedRectangle(cornerRadius: DesignSystem.Radius.md)
-                    .stroke(DesignSystem.Border.outlineColor, lineWidth: DesignSystem.Border.outline)
-            )
         }
-        .buttonStyle(.plain)
-        .accessibilityLabel("Workout: \(workout.title), \(workout.formattedDate), \(workout.formattedDuration), \(workout.formattedVolume)")
+        .onTapGesture { onTap() }
     }
     
     private var exerciseList: String {
@@ -224,12 +229,8 @@ struct StatItem: View {
                 .foregroundColor(color)
             
             Text(value)
-                .font(.system(size: 12, weight: .medium, design: .rounded))
-                .foregroundColor(.primary)
+                .font(EverFormTheme.Typography.label)
+                .foregroundColor(EverFormTheme.Colors.textPrimary)
         }
     }
-}
-
-#Preview {
-    WorkoutHistoryListView(onClose: { print("Close") })
 }

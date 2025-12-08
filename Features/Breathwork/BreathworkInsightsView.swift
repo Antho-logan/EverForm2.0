@@ -81,6 +81,15 @@ struct BreathworkInsightsView: View {
                     .padding(.horizontal, 20)
                 }
                 
+                // AI Weekly Insight
+                VStack(alignment: .leading, spacing: 16) {
+                    BreathworkAiWeeklyCard(
+                        state: store.weeklyInsightState,
+                        data: store.weeklyInsight
+                    )
+                    .padding(.horizontal, 20)
+                }
+                
                 // Levels
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Levels")
@@ -116,6 +125,9 @@ struct BreathworkInsightsView: View {
                 Spacer(minLength: 40)
             }
             .padding(.vertical, 20)
+        }
+        .onAppear {
+            store.loadWeeklyInsightIfNeeded()
         }
     }
 }

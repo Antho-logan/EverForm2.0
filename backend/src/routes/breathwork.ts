@@ -1,60 +1,247 @@
-// Breathwork routes: breathing session logging.
+/**
+ * Breathwork Routes
+ * Patterns, session logging, and recent sessions.
+ */
+
 import { Router } from 'express';
 import { z } from 'zod';
-import { supabase } from '../config/supabaseClient';
 import { AuthenticatedRequest } from '../types';
+import { userSelect, userInsert } from '../utils/db';
+import { getTodaySuggestion, getWeeklyInsight } from '../services/breathworkAiService';
 
 const router = Router();
 
-const breathworkSchema = z.object({
-  technique: z.string().min(1),
-  durationMinutes: z.number().int().positive().optional(),
-  completedAt: z.string().optional()
+// ─────────────────────────────────────────────────────────────────────────────
+// STATIC PATTERNS
+// ─────────────────────────────────────────────────────────────────────────────
+
+interface BreathPhase {
+  type: 'Inhale' | 'Hold' | 'Exhale' | 'Retention';
+  durationSeconds: number;
+  instruction?: string;
+}
+
+interface BreathworkPatternDTO {
+  id: string;
+  type: string;
+  displayName: string;
+  description: string;
+  targetEffect: string;
+  defaultRounds: number;
+  phases: BreathPhase[];
+}
+
+const BREATHWORK_PATTERNS: BreathworkPatternDTO[] = [
+  {
+    id: 'wim-hof',
+    type: 'wimHof',
+    displayName: 'Wim Hof Method',
+    description: 'Deep breathing rounds followed by breath retention. Boosts energy and immune system.',
+    targetEffect: 'Energy & Immunity',
+    defaultRounds: 3,
+    phases: [
+      { type: 'Inhale', durationSeconds: 2.0, instruction: 'Fully in' },
+      { type: 'Exhale', durationSeconds: 1.5, instruction: 'Let go' }
+    ]
+  },
+  {
+    id: 'box-breathing',
+    type: 'box',
+    displayName: 'Box Breathing',
+    description: 'Equal duration for inhale, hold, exhale, and hold. Great for focus and stress relief.',
+    targetEffect: 'Focus & Calm',
+    defaultRounds: 4,
+    phases: [
+      { type: 'Inhale', durationSeconds: 4, instruction: 'Inhale through nose' },
+      { type: 'Hold', durationSeconds: 4, instruction: 'Hold breath' },
+      { type: 'Exhale', durationSeconds: 4, instruction: 'Exhale through mouth' },
+      { type: 'Hold', durationSeconds: 4, instruction: 'Hold empty' }
+    ]
+  },
+  {
+    id: '4-7-8-sleep',
+    type: 'fourSevenEight',
+    displayName: '4-7-8 Sleep',
+    description: 'Natural tranquilizer for the nervous system.',
+    targetEffect: 'Sleep',
+    defaultRounds: 4,
+    phases: [
+      { type: 'Inhale', durationSeconds: 4, instruction: 'Quiet inhale through nose' },
+      { type: 'Hold', durationSeconds: 7, instruction: 'Hold breath' },
+      { type: 'Exhale', durationSeconds: 8, instruction: 'Whoosh exhale through mouth' }
+    ]
+  },
+  {
+    id: 'coherent-breathing',
+    type: 'coherent',
+    displayName: 'Coherent Breathing',
+    description: '5.5-second inhale, 5.5-second exhale. Balances the nervous system.',
+    targetEffect: 'Balance',
+    defaultRounds: 5,
+    phases: [
+      { type: 'Inhale', durationSeconds: 5.5, instruction: 'Inhale 5.5s' },
+      { type: 'Exhale', durationSeconds: 5.5, instruction: 'Exhale 5.5s' }
+    ]
+  }
+];
+
+// ─────────────────────────────────────────────────────────────────────────────
+// VALIDATION SCHEMAS
+// ─────────────────────────────────────────────────────────────────────────────
+
+const createSessionSchema = z.object({
+  patternId: z.string().min(1),
+  patternName: z.string().min(1),
+  roundsCompleted: z.number().int().nonnegative(),
+  durationSeconds: z.number().int().nonnegative(),
+  longestHoldSeconds: z.number().int().nonnegative().optional(),
+  notes: z.string().optional()
 });
 
-router.get('/sessions', async (req: AuthenticatedRequest, res, next) => {
+// ─────────────────────────────────────────────────────────────────────────────
+// ROUTES
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * GET /api/v1/breathwork/patterns
+ */
+router.get('/patterns', async (_req, res) => {
+  return res.json({ patterns: BREATHWORK_PATTERNS, status: 'ok' });
+});
+
+/**
+ * GET /api/v1/breathwork/sessions/recent
+ */
+router.get('/sessions/recent', async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.user?.id as string;
-    const { data, error } = await supabase
-      .from('breathwork_sessions')
-      .select('*')
-      .eq('user_id', userId)
+    const limit = Math.min(parseInt(req.query.limit as string) || 10, 50);
+
+    const { data, error } = await userSelect('breathwork_sessions', userId, '*')
+      .order('completed_at', { ascending: false })
+      .limit(limit);
+
+    if (error) {
+      console.error('[breathwork] Failed to fetch recent sessions:', error.message);
+      return res.status(500).json({ message: 'Failed to fetch sessions', error: error.message });
+    }
+
+    const sessions = (data ?? []).map((row: any) => ({
+      id: row.id,
+      patternId: row.pattern_id ?? row.technique,
+      patternName: row.pattern_name ?? row.technique,
+      durationSeconds: (row.duration_minutes ?? 0) * 60,
+      roundsCompleted: row.rounds_completed ?? 0,
+      longestHoldSeconds: row.longest_hold_seconds ?? 0,
+      notes: row.notes ?? null,
+      createdAt: row.completed_at ?? row.created_at
+    }));
+
+    return res.json({ sessions, status: 'ok' });
+  } catch (err) {
+    console.error('[breathwork] Unexpected error:', err);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+
+/**
+ * GET /api/v1/breathwork/sessions
+ */
+router.get('/sessions', async (req: AuthenticatedRequest, res) => {
+  try {
+    const userId = req.user?.id as string;
+
+    const { data, error } = await userSelect('breathwork_sessions', userId, '*')
       .order('completed_at', { ascending: false })
       .limit(3);
 
     if (error) {
-      console.error('Failed to fetch breathwork sessions', error);
-      return res.status(500).json({ message: 'Could not fetch breathwork sessions' });
+      console.error('[breathwork] Failed to fetch sessions:', error.message);
+      return res.status(500).json({ message: 'Failed to fetch sessions', error: error.message });
     }
 
-    return res.json({ breathworkSessions: data ?? [] });
+    return res.json({ breathworkSessions: data ?? [], status: 'ok' });
   } catch (err) {
-    return next(err);
+    console.error('[breathwork] Unexpected error:', err);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-router.post('/sessions', async (req: AuthenticatedRequest, res, next) => {
+/**
+ * POST /api/v1/breathwork/sessions
+ */
+router.post('/sessions', async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.user?.id as string;
-    const parsed = breathworkSchema.parse(req.body);
+    const parsed = createSessionSchema.parse(req.body);
 
-    const payload = {
-      user_id: userId,
-      technique: parsed.technique,
-      duration_minutes: parsed.durationMinutes,
-      completed_at: parsed.completedAt
-    };
-
-    const { data, error } = await supabase.from('breathwork_sessions').insert(payload).select().single();
+    const { data, error } = await userInsert('breathwork_sessions', userId, {
+      pattern_id: parsed.patternId,
+      pattern_name: parsed.patternName,
+      technique: parsed.patternName,
+      duration_minutes: Math.round(parsed.durationSeconds / 60),
+      rounds_completed: parsed.roundsCompleted,
+      longest_hold_seconds: parsed.longestHoldSeconds ?? 0,
+      notes: parsed.notes ?? null,
+      completed_at: new Date().toISOString()
+    }).select().single();
 
     if (error) {
-      console.error('Failed to create breathwork session', error);
-      return res.status(500).json({ message: 'Could not create breathwork session' });
+      console.error('[breathwork] Failed to create session:', error.message);
+      return res.status(500).json({ message: 'Failed to create session', error: error.message });
     }
 
-    return res.status(201).json({ breathworkSession: data });
+    const session = {
+      id: data.id,
+      patternId: data.pattern_id,
+      patternName: data.pattern_name,
+      durationSeconds: (data.duration_minutes ?? 0) * 60,
+      roundsCompleted: data.rounds_completed ?? 0,
+      longestHoldSeconds: data.longest_hold_seconds ?? 0,
+      notes: data.notes,
+      createdAt: data.completed_at ?? data.created_at
+    };
+
+    return res.status(201).json({ session, status: 'ok' });
   } catch (err) {
-    return next(err);
+    if (err instanceof z.ZodError) {
+      return res.status(400).json({ message: 'Invalid request body', errors: err.errors });
+    }
+    console.error('[breathwork] Unexpected error:', err);
+    return res.status(500).json({ message: 'Could not create breathwork session' });
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────────
+// AI Coach
+// ─────────────────────────────────────────────────────────────────────────────
+
+const isoDateString = z.string().regex(/^\d{4}-\d{2}-\d{2}/);
+
+router.get('/ai/today', async (req: AuthenticatedRequest, res) => {
+  try {
+    const userId = req.user?.id as string;
+    const suggestion = await getTodaySuggestion(userId);
+    return res.json(suggestion);
+  } catch (err) {
+    console.error('[breathwork] ai/today failed', err);
+    return res.status(500).json({ message: 'Failed to generate breathwork suggestion' });
+  }
+});
+
+router.get('/ai/weekly-insight', async (req: AuthenticatedRequest, res) => {
+  try {
+    const userId = req.user?.id as string;
+    const from = req.query.from ? isoDateString.parse(String(req.query.from)) : undefined;
+    const to = req.query.to ? isoDateString.parse(String(req.query.to)) : undefined;
+    const insight = await getWeeklyInsight(userId, from, to);
+    return res.json(insight);
+  } catch (err) {
+    if (err instanceof z.ZodError) {
+      return res.status(400).json({ message: 'Validation failed', issues: err.issues });
+    }
+    console.error('[breathwork] ai/weekly-insight failed', err);
+    return res.status(500).json({ message: 'Failed to generate weekly breathwork insight' });
   }
 });
 

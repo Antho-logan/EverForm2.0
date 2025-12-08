@@ -1,58 +1,163 @@
 {
-  "/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Chat/SuggestionChipsBar.swift" : {
-    "const-values" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/SuggestionChipsBar.swiftconstvalues",
-    "dependencies" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/SuggestionChipsBar.d",
-    "diagnostics" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/SuggestionChipsBar.dia",
-    "object" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/SuggestionChipsBar.o",
-    "swift-dependencies" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/SuggestionChipsBar.swiftdeps"
+  "/Users/antho/Desktop/Everform 2.0/Features/Progress/ProgressViewEF.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ProgressViewEF.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ProgressViewEF.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ProgressViewEF.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ProgressViewEF.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ProgressViewEF.swiftdeps"
   },
-  "/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Components/EFCard.swift" : {
-    "const-values" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFCard.swiftconstvalues",
-    "dependencies" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFCard.d",
-    "diagnostics" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFCard.dia",
-    "object" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFCard.o",
-    "swift-dependencies" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFCard.swiftdeps"
+  "/Users/antho/Desktop/Everform 2.0/Features/Progress/ProgressViewScreen.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ProgressViewScreen.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ProgressViewScreen.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ProgressViewScreen.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ProgressViewScreen.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ProgressViewScreen.swiftdeps"
   },
-  "/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Components/EFKPI.swift" : {
-    "const-values" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFKPI.swiftconstvalues",
-    "dependencies" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFKPI.d",
-    "diagnostics" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFKPI.dia",
-    "object" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFKPI.o",
-    "swift-dependencies" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFKPI.swiftdeps"
+  "/Users/antho/Desktop/Everform 2.0/Features/Recovery/Components/RecoveryAiCoachSection.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryAiCoachSection.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryAiCoachSection.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryAiCoachSection.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryAiCoachSection.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryAiCoachSection.swiftdeps"
   },
-  "/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Components/EFRingGauge.swift" : {
-    "const-values" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFRingGauge.swiftconstvalues",
-    "dependencies" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFRingGauge.d",
-    "diagnostics" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFRingGauge.dia",
-    "object" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFRingGauge.o",
-    "swift-dependencies" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFRingGauge.swiftdeps"
+  "/Users/antho/Desktop/Everform 2.0/Features/Recovery/Components/RecoveryComponents.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryComponents.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryComponents.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryComponents.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryComponents.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryComponents.swiftdeps"
   },
-  "/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Components/EFTile.swift" : {
-    "const-values" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFTile.swiftconstvalues",
-    "dependencies" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFTile.d",
-    "diagnostics" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFTile.dia",
-    "object" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFTile.o",
-    "swift-dependencies" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFTile.swiftdeps"
+  "/Users/antho/Desktop/Everform 2.0/Features/Recovery/Components/RecoveryLogSheet.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryLogSheet.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryLogSheet.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryLogSheet.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryLogSheet.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryLogSheet.swiftdeps"
   },
-  "/Users/antho/Documents/Biofriend/EverForm/EverForm/UI/Settings/AppearanceSettingsView.swift" : {
-    "const-values" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/AppearanceSettingsView.swiftconstvalues",
-    "dependencies" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/AppearanceSettingsView.d",
-    "diagnostics" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/AppearanceSettingsView.dia",
-    "object" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/AppearanceSettingsView.o",
-    "swift-dependencies" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/AppearanceSettingsView.swiftdeps"
+  "/Users/antho/Desktop/Everform 2.0/Features/Recovery/Components/RecoveryPlanSheet.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryPlanSheet.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryPlanSheet.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryPlanSheet.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryPlanSheet.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryPlanSheet.swiftdeps"
   },
-  "/Users/antho/Documents/Biofriend/EverForm/EverForm/tip tracker/Features/Nutrition/LogMealSheet.swift" : {
-    "const-values" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/LogMealSheet.swiftconstvalues",
-    "dependencies" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/LogMealSheet.d",
-    "diagnostics" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/LogMealSheet.dia",
-    "object" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/LogMealSheet.o",
-    "swift-dependencies" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/LogMealSheet.swiftdeps"
+  "/Users/antho/Desktop/Everform 2.0/Features/Recovery/Data/RecoveryService.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryService.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryService.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryService.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryService.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryService.swiftdeps"
   },
-  "/Users/antho/Documents/Biofriend/EverForm/EverForm/tip tracker/Features/Nutrition/MealLogView.swift" : {
-    "const-values" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/MealLogView.swiftconstvalues",
-    "dependencies" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/MealLogView.d",
-    "diagnostics" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/MealLogView.dia",
-    "object" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/MealLogView.o",
-    "swift-dependencies" : "/Users/antho/Documents/Biofriend/EverForm/EverForm/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/MealLogView.swiftdeps"
+  "/Users/antho/Desktop/Everform 2.0/Features/Recovery/Models/RecoveryLogStore.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryLogStore.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryLogStore.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryLogStore.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryLogStore.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryLogStore.swiftdeps"
+  },
+  "/Users/antho/Desktop/Everform 2.0/Features/Recovery/Models/RecoveryModels.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryModels.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryModels.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryModels.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryModels.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryModels.swiftdeps"
+  },
+  "/Users/antho/Desktop/Everform 2.0/Features/Recovery/RecoveryDashboardView.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryDashboardView.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryDashboardView.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryDashboardView.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryDashboardView.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryDashboardView.swiftdeps"
+  },
+  "/Users/antho/Desktop/Everform 2.0/Features/Recovery/RecoveryDashboardViewModel.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryDashboardViewModel.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryDashboardViewModel.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryDashboardViewModel.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryDashboardViewModel.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryDashboardViewModel.swiftdeps"
+  },
+  "/Users/antho/Desktop/Everform 2.0/Features/Recovery/RecoveryRootView.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryRootView.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryRootView.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryRootView.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryRootView.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryRootView.swiftdeps"
+  },
+  "/Users/antho/Desktop/Everform 2.0/Features/Recovery/RecoveryStartView.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryStartView.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryStartView.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryStartView.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryStartView.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/RecoveryStartView.swiftdeps"
+  },
+  "/Users/antho/Desktop/Everform 2.0/Features/Scan/ScanView.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ScanView.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ScanView.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ScanView.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ScanView.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ScanView.swiftdeps"
+  },
+  "/Users/antho/Desktop/Everform 2.0/Features/Scan/ScanViewModel.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ScanViewModel.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ScanViewModel.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ScanViewModel.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ScanViewModel.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ScanViewModel.swiftdeps"
+  },
+  "/Users/antho/Desktop/Everform 2.0/Features/Security/EFSecurityView.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFSecurityView.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFSecurityView.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFSecurityView.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFSecurityView.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFSecurityView.swiftdeps"
+  },
+  "/Users/antho/Desktop/Everform 2.0/Features/Settings/AccountScreens.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/AccountScreens.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/AccountScreens.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/AccountScreens.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/AccountScreens.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/AccountScreens.swiftdeps"
+  },
+  "/Users/antho/Desktop/Everform 2.0/Features/Support/EFHelpView.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFHelpView.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFHelpView.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFHelpView.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFHelpView.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFHelpView.swiftdeps"
+  },
+  "/Users/antho/Desktop/Everform 2.0/Features/Support/EFReportBugView.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFReportBugView.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFReportBugView.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFReportBugView.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFReportBugView.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/EFReportBugView.swiftdeps"
+  },
+  "/Users/antho/Desktop/Everform 2.0/Features/Training/ExerciseDetailSheet.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ExerciseDetailSheet.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ExerciseDetailSheet.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ExerciseDetailSheet.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ExerciseDetailSheet.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ExerciseDetailSheet.swiftdeps"
+  },
+  "/Users/antho/Desktop/Everform 2.0/Features/Training/TodaysTrainingPlanView.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/TodaysTrainingPlanView.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/TodaysTrainingPlanView.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/TodaysTrainingPlanView.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/TodaysTrainingPlanView.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/TodaysTrainingPlanView.swiftdeps"
+  },
+  "/Users/antho/Desktop/Everform 2.0/Features/Training/TrainingModels.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/TrainingModels.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/TrainingModels.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/TrainingModels.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/TrainingModels.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/TrainingModels.swiftdeps"
+  },
+  "/Users/antho/Desktop/Everform 2.0/Models/ChatMessage.swift" : {
+    "const-values" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ChatMessage.swiftconstvalues",
+    "dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ChatMessage.d",
+    "diagnostics" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ChatMessage.dia",
+    "object" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ChatMessage.o",
+    "swift-dependencies" : "/Users/antho/Desktop/Everform 2.0/DerivedData/Build/Intermediates.noindex/EverForm.build/Debug-iphonesimulator/EverForm.build/Objects-normal/arm64/ChatMessage.swiftdeps"
   }
 }

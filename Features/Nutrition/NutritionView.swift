@@ -123,10 +123,9 @@ struct NutritionView: View {
         }
 
         // Action Button
-        EFPillButton(
-          title: "Log Meal",
-          style: .primary,
-          color: .orange
+        EFPrimaryButton(
+          "Log Meal",
+          color: EverFormTheme.Colors.nutritionOrange
         ) {
           saveMeal()
         }

@@ -1,0 +1,16 @@
+{
+  "name": "everform-2.0",
+  "version": "2.0.0",
+  "description": "EverForm - AI-powered biohacking & fitness coach (monorepo)",
+  "private": true,
+  "scripts": {
+    "backend:dev": "cd backend && npm install && npm run dev",
+    "backend:build": "cd backend && npm run build",
+    "backend:start": "cd backend && npm run start"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
+
+

@@ -5,41 +5,55 @@ struct TodayPlanSheet: View {
     let onClose: () -> Void
     
     var body: some View {
-        VStack(spacing: 24) {
-            Text("Today's Training")
-                .font(.title2.weight(.bold))
-            
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Upper Power")
-                    .font(.title3.weight(.semibold))
-                
-                Text("Duration: 75 minutes")
-                    .foregroundStyle(.secondary)
-                
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Main Exercises:")
-                        .font(.headline)
-                    Text("• Bench Press")
-                    Text("• Pull-ups")
-                    Text("• Overhead Press")
+        EFScreenContainer {
+            VStack(spacing: 0) {
+                HStack {
+                    Spacer()
+                    Text("Today's Training")
+                        .font(EverFormTheme.Typography.sectionTitle)
+                        .foregroundColor(EverFormTheme.Colors.textPrimary)
+                    Spacer()
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding()
-                .background(.thinMaterial, in: RoundedRectangle(cornerRadius: 12))
-            }
-            
-            Button("Start Workout", action: onStartWorkout)
-                .buttonStyle(.borderedProminent)
-                .frame(maxWidth: .infinity)
-            
-            Spacer()
-        }
-        .padding()
-        .navigationTitle("Training Plan")
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button("Close", action: onClose)
+                .overlay(
+                    Button("Close", action: onClose)
+                        .font(EverFormTheme.Typography.button)
+                        .foregroundColor(EverFormTheme.Colors.textSecondary),
+                    alignment: .trailing
+                )
+                .padding(20)
+                .background(EverFormTheme.Colors.background)
+                
+                ScrollView {
+                    VStack(spacing: 24) {
+                        EFCard {
+                            VStack(alignment: .leading, spacing: 16) {
+                                Text("Upper Power")
+                                    .font(EverFormTheme.Typography.cardTitle)
+                                    .foregroundStyle(EverFormTheme.Colors.textPrimary)
+                                
+                                Text("Duration: 75 minutes")
+                                    .font(EverFormTheme.Typography.body)
+                                    .foregroundStyle(EverFormTheme.Colors.textSecondary)
+                                
+                                VStack(alignment: .leading, spacing: 8) {
+                                    Text("Main Exercises:")
+                                        .font(EverFormTheme.Typography.cardTitle)
+                                        .foregroundStyle(EverFormTheme.Colors.textPrimary)
+                                    Text("• Bench Press")
+                                    Text("• Pull-ups")
+                                    Text("• Overhead Press")
+                                }
+                                .font(EverFormTheme.Typography.body)
+                                .foregroundStyle(EverFormTheme.Colors.textSecondary)
+                            }
+                        }
+                        
+                        EFPrimaryButton("Start Workout", color: EverFormTheme.Colors.trainingGreen) {
+                            onStartWorkout()
+                        }
+                    }
+                    .padding(20)
+                }
             }
         }
     }

@@ -1,13 +1,21 @@
 {
-  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/tip tracker/Features/Dashboard/Components/QuickActionsRow.swift",
+  "source": "/Users/antho/Desktop/Everform 2.0/Features/Overview/QuickActionsRow.swift",
   "tables": {
     "Localizable": [
       {
         "comment": "",
         "key": "Quick Actions",
         "location": {
-          "startingColumn": 18,
-          "startingLine": 11
+          "startingColumn": 22,
+          "startingLine": 21
+        }
+      },
+      {
+        "comment": "",
+        "key": "Reorder",
+        "location": {
+          "startingColumn": 24,
+          "startingLine": 24
         }
       }
     ]

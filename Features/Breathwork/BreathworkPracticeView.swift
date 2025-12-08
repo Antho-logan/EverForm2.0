@@ -23,15 +23,22 @@ struct BreathworkPracticeView: View {
         ScrollView {
             VStack(spacing: 24) {
                 // Hero Section
-                if let currentPattern = store.patterns.first(where: { $0.type == store.selectedPatternType }) {
+                if let currentPattern = store.activeSessionPattern {
                     HeroSessionCard(pattern: currentPattern) {
-                        sessionPattern = currentPattern
+                        // Apply configuration overrides
+                        var modified = currentPattern
+                        modified.defaultRounds = selectedRounds
+                        sessionPattern = modified
                     }
+                } else {
+                     // Safe fallback UI if no pattern found
+                    Text("No pattern selected")
+                        .foregroundStyle(DesignSystem.Colors.textSecondary)
                 }
                 
                 // Pattern Selector
                 VStack(alignment: .leading, spacing: 16) {
-                    Text("Patterns")
+                    Text("Quick Patterns")
                         .font(DesignSystem.Typography.sectionHeader())
                         .padding(.horizontal, 20)
                     
@@ -50,6 +57,20 @@ struct BreathworkPracticeView: View {
                         }
                         .padding(.horizontal, 20)
                     }
+                }
+                
+                // AI Suggestion
+                VStack(alignment: .leading, spacing: 16) {
+                    BreathworkAiTodayCard(
+                        state: store.todaySuggestionState,
+                        data: store.todaySuggestion,
+                        onApply: {
+                            withAnimation {
+                                store.applyTodaySuggestionToSession()
+                            }
+                        }
+                    )
+                    .padding(.horizontal, 20)
                 }
                 
                 // Configuration
@@ -89,6 +110,16 @@ struct BreathworkPracticeView: View {
         .fullScreenCover(item: $sessionPattern) { pattern in
             LiveBreathworkSessionView(pattern: pattern)
                 .environment(store)
+        }
+        .onAppear {
+            store.loadAiTodaySuggestionIfNeeded()
+        }
+        .onChange(of: store.suggestedRoundsOverride) { newValue in
+            if let rounds = newValue {
+                withAnimation {
+                    selectedRounds = rounds
+                }
+            }
         }
     }
 }

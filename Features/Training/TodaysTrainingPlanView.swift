@@ -5,30 +5,29 @@
 //  Created by Gemini on 18/11/2025.
 //  Updated by Assistant on 21/11/2025.
 //
-//
 
 import SwiftUI
 
 struct TodaysTrainingPlanView: View {
   @Binding var show: Bool
   let day: TrainingDay
-
+  
   @State private var selectedExercise: TrainingExercise?
 
   var body: some View {
-    GeometryReader { proxy in
+    EFScreenContainer {
       VStack(spacing: 0) {
         // Custom Sheet Header
         HStack(alignment: .center) {
           VStack(alignment: .leading, spacing: 4) {
             Text(day.isToday ? "TODAY" : day.label.uppercased())
-              .font(EverFont.label)
-              .foregroundColor(DesignSystem.Colors.accent)
+              .font(EverFormTheme.Typography.label)
+              .foregroundColor(EverFormTheme.Colors.trainingGreen)
               .tracking(1.0)
 
             Text(day.focusTitle)
-              .font(DesignSystem.Typography.titleMedium())
-              .foregroundColor(DesignSystem.Colors.textPrimary)
+              .font(EverFormTheme.Typography.cardTitle)
+              .foregroundColor(EverFormTheme.Colors.textPrimary)
               .lineLimit(1)
 
             // Chip Row
@@ -39,8 +38,8 @@ struct TodaysTrainingPlanView: View {
               Text("•")
               Text(day.style.rawValue)
             }
-            .font(EverFont.caption)
-            .foregroundColor(DesignSystem.Colors.textSecondary)
+            .font(EverFormTheme.Typography.caption)
+            .foregroundColor(EverFormTheme.Colors.textSecondary)
           }
 
           Spacer()
@@ -50,29 +49,34 @@ struct TodaysTrainingPlanView: View {
           } label: {
             Image(systemName: "xmark.circle.fill")
               .font(.system(size: 30))
-              .foregroundStyle(DesignSystem.Colors.neutral200)
+              .foregroundStyle(EverFormTheme.Colors.textSecondary.opacity(0.5))
           }
         }
         .padding(24)
-        .background(DesignSystem.Colors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 5)
-        .zIndex(1)
-
+        .background(EverFormTheme.Colors.card)
+        // No clipShape here to allow it to blend with background if needed, or rounded bottom?
+        // Keeping simple background.
+        
         ScrollView {
           VStack(alignment: .leading, spacing: 24) {
 
             // Sections
             if day.sections.isEmpty {
-              EmptyStateView(message: "No exercises planned for this session.")
+                VStack(spacing: 12) {
+                  Image(systemName: "list.bullet.clipboard")
+                    .font(.largeTitle)
+                    .foregroundColor(EverFormTheme.Colors.textSecondary)
+                  Text("No exercises planned for this session.")
+                    .font(EverFormTheme.Typography.body)
+                    .foregroundColor(EverFormTheme.Colors.textSecondary)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 40)
             } else {
               ForEach(day.sections) { section in
                 VStack(alignment: .leading, spacing: 12) {
-                  Text(section.title.uppercased())
-                    .font(EverFont.label)
-                    .fontWeight(.bold)
-                    .foregroundStyle(DesignSystem.Colors.textSecondary)
-                    .padding(.leading, 24)
+                  EFSectionHeader(title: section.title.uppercased())
+                    .padding(.horizontal, 20)
 
                   VStack(spacing: 12) {
                     ForEach(section.exercises) { exercise in
@@ -86,7 +90,7 @@ struct TodaysTrainingPlanView: View {
               }
             }
 
-            // Bottom Padding for sticky button
+            // Bottom Padding
             Spacer().frame(height: 100)
           }
           .padding(.top, 24)
@@ -96,29 +100,18 @@ struct TodaysTrainingPlanView: View {
         if !day.isRestDay {
           VStack {
             Spacer()
-            Button(action: {
-              // Start workout logic
-            }) {
-              Text("Start Workout")
-                .font(EverFont.button)
-                .fontWeight(.semibold)
-                .frame(maxWidth: .infinity)
-                .frame(height: 56)
-                .background(DesignSystem.Colors.accent)
-                .foregroundColor(.white)
-                .clipShape(RoundedRectangle(cornerRadius: 16))
-                .shadow(color: DesignSystem.Colors.accent.opacity(0.3), radius: 10, y: 5)
+            EFPrimaryButton("Start Workout", color: EverFormTheme.Colors.trainingGreen) {
+                // Start logic
             }
             .padding(.horizontal, 20)
             .padding(.bottom, 34)
           }
+          .frame(height: 100)
+          .background(
+            LinearGradient(colors: [EverFormTheme.Colors.background.opacity(0), EverFormTheme.Colors.background], startPoint: .top, endPoint: .bottom)
+          )
         }
       }
-      .background(DesignSystem.Colors.background)
-      .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-      .shadow(color: Color.black.opacity(0.2), radius: 20, x: 0, y: 10)
-      .padding(.top, 60)
-      .ignoresSafeArea(edges: .bottom)
     }
     .sheet(item: $selectedExercise) { exercise in
       ExerciseDetailSheet(
@@ -139,31 +132,31 @@ struct ExerciseCardRow: View {
   let onTap: () -> Void
 
   var body: some View {
-    Button(action: onTap) {
+    EFCard {
       HStack(alignment: .center, spacing: 16) {
-        // Icon Avatar
+        // Icon
         ZStack {
           Circle()
-            .fill(DesignSystem.Colors.backgroundSecondary)
+            .fill(EverFormTheme.Colors.surface)
             .frame(width: 44, height: 44)
 
-          Image(systemName: iconForExercise(exercise))
+          Image(systemName: "dumbbell.fill")
             .font(.system(size: 18))
-            .foregroundColor(DesignSystem.Colors.textPrimary)
+            .foregroundColor(EverFormTheme.Colors.textPrimary)
         }
 
         // Info
         VStack(alignment: .leading, spacing: 4) {
           Text(exercise.name)
-            .font(EverFont.bodySecondary)
+            .font(EverFormTheme.Typography.body)
             .fontWeight(.semibold)
-            .foregroundColor(DesignSystem.Colors.textPrimary)
+            .foregroundColor(EverFormTheme.Colors.textPrimary)
             .lineLimit(1)
 
           if let sub = exercise.sublabel {
             Text(sub)
-              .font(EverFont.caption)
-              .foregroundColor(DesignSystem.Colors.textSecondary)
+              .font(EverFormTheme.Typography.caption)
+              .foregroundColor(EverFormTheme.Colors.textSecondary)
           }
         }
 
@@ -171,58 +164,15 @@ struct ExerciseCardRow: View {
 
         // Stats
         Text(exercise.volumeString)
-          .font(EverFont.bodySecondary)
+          .font(EverFormTheme.Typography.body)
           .fontWeight(.medium)
-          .foregroundColor(DesignSystem.Colors.textPrimary)
+          .foregroundColor(EverFormTheme.Colors.textPrimary)
 
         Image(systemName: "chevron.right")
-          .font(EverFont.caption)
-          .foregroundColor(DesignSystem.Colors.neutral300)
+          .font(EverFormTheme.Typography.caption)
+          .foregroundColor(EverFormTheme.Colors.textSecondary)
       }
-      .padding(16)
-      .background(DesignSystem.Colors.cardBackground)
-      .clipShape(RoundedRectangle(cornerRadius: 16))
-      .shadow(color: Color.black.opacity(0.03), radius: 4, x: 0, y: 2)
-      .overlay(
-        RoundedRectangle(cornerRadius: 16)
-          .stroke(DesignSystem.Colors.border, lineWidth: 0.5)
-      )
     }
-    .buttonStyle(ScaleButtonStyle())
-  }
-
-  func iconForExercise(_ exercise: TrainingExercise) -> String {
-    // Simple heuristic for icons
-    let lower = exercise.name.lowercased()
-    if lower.contains("squat") || lower.contains("leg") {
-      return "figure.strengthtraining.traditional"
-    }
-    if lower.contains("run") || lower.contains("cardio") { return "figure.run" }
-    if lower.contains("yoga") || lower.contains("stretch") { return "figure.yoga" }
-    return "dumbbell.fill"
-  }
-}
-
-struct EmptyStateView: View {
-  let message: String
-  var body: some View {
-    VStack(spacing: 12) {
-      Image(systemName: "list.bullet.clipboard")
-        .font(.largeTitle)
-        .foregroundColor(DesignSystem.Colors.neutral300)
-      Text(message)
-        .font(EverFont.bodySecondary)
-        .foregroundColor(DesignSystem.Colors.textSecondary)
-    }
-    .frame(maxWidth: .infinity)
-    .padding(.vertical, 40)
-  }
-}
-
-struct ScaleButtonStyle: ButtonStyle {
-  func makeBody(configuration: Configuration) -> some View {
-    configuration.label
-      .scaleEffect(configuration.isPressed ? 0.98 : 1.0)
-      .animation(.spring(response: 0.3), value: configuration.isPressed)
+    .onTapGesture { onTap() }
   }
 }

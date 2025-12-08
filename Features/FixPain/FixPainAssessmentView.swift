@@ -9,7 +9,7 @@ import SwiftUI
 import PhotosUI
 
 struct FixPainAssessmentFlowView: View {
-    @Bindable var viewModel: FixPainViewModel
+    @ObservedObject var viewModel: FixPainViewModel
     @Binding var isPresented: Bool
     
     @State private var stepIndex = 0
@@ -89,11 +89,24 @@ struct FixPainAssessmentFlowView: View {
                             }
                         }
                     } else {
-                        FixPainPrimaryButton(title: "Generate Plan") {
-                            if let assessment = viewModel.currentAssessment {
-                                viewModel.generatePlan(for: assessment)
-                                showResult = true
+                        if viewModel.isLoadingPlan {
+                            ProgressView("Generating Plan...")
+                        } else {
+                            FixPainPrimaryButton(title: "Generate Plan") {
+                                Task {
+                                    await viewModel.submitAssessmentAndLoadPlan()
+                                    if viewModel.plan != nil {
+                                        showResult = true
+                                    }
+                                }
                             }
+                        }
+                        
+                        if let error = viewModel.submitErrorMessage {
+                            Text(error)
+                                .font(.caption)
+                                .foregroundColor(.red)
+                                .padding(.top, 4)
                         }
                     }
                 }
@@ -103,8 +116,8 @@ struct FixPainAssessmentFlowView: View {
             }
             .navigationBarHidden(true)
             .background(FixPainTheme.background.ignoresSafeArea())
-            .navigationDestination(isPresented: $showResult) {
-                if let plan = viewModel.generatedPlan {
+            .fullScreenCover(isPresented: $showResult) {
+                if let plan = viewModel.plan {
                     FixPainResultView(plan: plan, isPresented: $isPresented)
                 }
             }
@@ -131,19 +144,23 @@ struct BodyRegionStep: View {
                     ForEach(PainRegion.allCases) { region in
                         FixPainChip(title: region.rawValue, isSelected: assessment.region == region) {
                             assessment.region = region
+                            // Reset side if invalid for new region
+                            if !availableSides(for: region).contains(assessment.side ?? .left) {
+                                assessment.side = nil
+                            }
                         }
                     }
                 }
                 .padding(.horizontal, FixPainTheme.paddingLarge)
                 
-                if let _ = assessment.region {
+                if let region = assessment.region {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Which Side?")
                             .font(.headline)
                             .padding(.horizontal, FixPainTheme.paddingLarge)
                         
                         HStack(spacing: 12) {
-                            ForEach(PainSide.allCases) { side in
+                            ForEach(availableSides(for: region)) { side in
                                 FixPainChip(title: side.rawValue, isSelected: assessment.side == side) {
                                     assessment.side = side
                                 }
@@ -156,6 +173,15 @@ struct BodyRegionStep: View {
                 }
             }
             .padding(.bottom, 100) // Spacing for bottom button
+        }
+    }
+    
+    private func availableSides(for region: PainRegion) -> [PainSide] {
+        switch region {
+        case .neck, .upperBack, .lowerBack:
+            return [.left, .right, .both, .central]
+        default:
+            return [.left, .right, .both]
         }
     }
 }

@@ -1,8 +1,12 @@
-// Fix Pain routes: pain checks logging.
+/**
+ * Fix Pain Routes
+ * Pain checks logging and retrieval.
+ */
+
 import { Router } from 'express';
 import { z } from 'zod';
-import { supabase } from '../config/supabaseClient';
 import { AuthenticatedRequest } from '../types';
+import { userSelect, userInsert } from '../utils/db';
 
 const router = Router();
 
@@ -12,49 +16,61 @@ const painCheckSchema = z.object({
   description: z.string().optional()
 });
 
-router.get('/recent', async (req: AuthenticatedRequest, res, next) => {
+/**
+ * GET /api/v1/fix-pain/recent
+ */
+router.get('/recent', async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.user?.id as string;
-    const { data, error } = await supabase
-      .from('pain_checks')
-      .select('*')
-      .eq('user_id', userId)
+
+    const { data, error } = await userSelect('pain_checks', userId, '*')
       .order('created_at', { ascending: false })
       .limit(3);
 
     if (error) {
-      console.error('Failed to fetch pain checks', error);
-      return res.status(500).json({ message: 'Could not fetch pain checks' });
+      console.error('[fixPain] Failed to fetch pain checks:', error.message);
+      return res.status(500).json({ 
+        message: 'Failed to fetch pain checks',
+        error: error.message 
+      });
     }
 
-    return res.json({ painChecks: data ?? [] });
+    return res.json({ painChecks: data ?? [], status: 'ok' });
   } catch (err) {
-    return next(err);
+    console.error('[fixPain] Unexpected error in recent:', err);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-router.post('/assess', async (req: AuthenticatedRequest, res, next) => {
+/**
+ * POST /api/v1/fix-pain/assess
+ */
+router.post('/assess', async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.user?.id as string;
     const parsed = painCheckSchema.parse(req.body);
 
-    const payload = {
-      user_id: userId,
+    const { data, error } = await userInsert('pain_checks', userId, {
       area: parsed.area,
       severity: parsed.severity,
       description: parsed.description
-    };
-
-    const { data, error } = await supabase.from('pain_checks').insert(payload).select().single();
+    }).select().single();
 
     if (error) {
-      console.error('Failed to create pain check', error);
-      return res.status(500).json({ message: 'Could not create pain check' });
+      console.error('[fixPain] Failed to create pain check:', error.message);
+      return res.status(500).json({ 
+        message: 'Failed to create pain check',
+        error: error.message 
+      });
     }
 
-    return res.status(201).json({ painCheck: data });
+    return res.status(201).json({ painCheck: data, status: 'ok' });
   } catch (err) {
-    return next(err);
+    if (err instanceof z.ZodError) {
+      return res.status(400).json({ message: 'Validation failed', issues: err.issues });
+    }
+    console.error('[fixPain] Unexpected error on create:', err);
+    return res.status(500).json({ message: 'Could not create pain check' });
   }
 });
 

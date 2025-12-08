@@ -1,5 +1,5 @@
 {
-  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/tip tracker/Features/Overview/QuickActions/BreathworkSheet.swift",
+  "source": "/Users/antho/Desktop/Everform 2.0/UI/Components/BreathworkSheet.swift",
   "tables": {
     "Localizable": [
       {
@@ -7,47 +7,47 @@
         "key": "Breathwork",
         "location": {
           "startingColumn": 26,
-          "startingLine": 31
+          "startingLine": 68
         }
       },
       {
         "comment": "",
-        "key": "Breathwork",
+        "key": "Choose a breathing pattern to help you relax and focus",
         "location": {
-          "startingColumn": 18,
-          "startingLine": 8
-        }
-      },
-      {
-        "comment": "",
-        "key": "4-7-8 Breathing",
-        "location": {
-          "startingColumn": 22,
-          "startingLine": 12
-        }
-      },
-      {
-        "comment": "",
-        "key": "Inhale for 4, hold for 7, exhale for 8",
-        "location": {
-          "startingColumn": 22,
-          "startingLine": 15
+          "startingColumn": 26,
+          "startingLine": 72
         }
       },
       {
         "comment": "",
         "key": "Start Session",
         "location": {
-          "startingColumn": 24,
-          "startingLine": 19
+          "startingColumn": 30,
+          "startingLine": 129
         }
       },
       {
         "comment": "",
-        "key": "Close",
+        "key": "%lld",
         "location": {
-          "startingColumn": 24,
-          "startingLine": 35
+          "startingColumn": 38,
+          "startingLine": 158
+        }
+      },
+      {
+        "comment": "",
+        "key": "Stop Session",
+        "location": {
+          "startingColumn": 34,
+          "startingLine": 166
+        }
+      },
+      {
+        "comment": "",
+        "key": "Done",
+        "location": {
+          "startingColumn": 28,
+          "startingLine": 185
         }
       }
     ]

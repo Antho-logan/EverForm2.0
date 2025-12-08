@@ -1,61 +1,121 @@
-// Express bootstrap for EverForm backend.
+/**
+ * EverForm Backend Server
+ * 
+ * Express API with auth and rate limiting.
+ * 
+ * DEV MODE: NODE_ENV=development OR ALLOW_DEV_USER=true
+ *   → All /api/v1/* routes work without JWT
+ *   → Uses dev-user-0001 for all requests
+ * 
+ * PROD MODE: Otherwise
+ *   → All /api/v1/* routes require valid JWT
+ */
+
 import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
 import { ZodError } from 'zod';
-import { env } from './config/env';
+import { env, isDevMode, DEV_USER_ID } from './config/env';
 import { authMiddleware } from './middleware/auth';
 import routes from './routes/index';
-import publicCoachRouter from './routes/publicCoach';
-import publicScanRouter from './routes/publicScan';
+import coachRouter from './routes/publicCoach';
+import scanRouter from './routes/publicScan';
 
 const app = express();
 
-// CORS configuration: relaxed for local mobile development.
-// iOS simulator and real devices may use various origins/IPs.
-app.use(
-  cors({
-    origin: true, // Reflect request origin (allows any origin in dev)
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
-  })
-);
+// ─────────────────────────────────────────────────────────────────────────────
+// MIDDLEWARE
+// ─────────────────────────────────────────────────────────────────────────────
 
-app.use(express.json({ limit: '10mb' })); // Increased limit for base64 images
+app.use(cors({ origin: true, credentials: true }));
+app.use(express.json({ limit: '10mb' }));
 
-// Health check endpoint
+// ─────────────────────────────────────────────────────────────────────────────
+// PUBLIC HEALTH ENDPOINT (no auth)
+// ─────────────────────────────────────────────────────────────────────────────
+
 app.get('/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(), 
+    version: '2.0.0',
+    mode: isDevMode ? 'development' : 'production'
+  });
 });
 
-// Debug endpoint for connectivity testing (no DB hit)
-app.get('/debug/user-test', (_req, res) => {
-  res.json({ ok: true, message: 'Backend is reachable' });
-});
+// ─────────────────────────────────────────────────────────────────────────────
+// AI ENDPOINTS (auth + rate limited)
+// /api/coach/chat, /api/scan/food, /api/scan/test
+// ─────────────────────────────────────────────────────────────────────────────
 
-// Public API routes (no auth required for local dev)
-// These simplified endpoints are designed for the iOS app
-app.use('/api/coach', publicCoachRouter);
-app.use('/api/scan', publicScanRouter);
+app.use('/api/coach', coachRouter);
+app.use('/api/scan', scanRouter);
 
-// Authenticated routes under /api/v1 (full feature set with auth)
+// ─────────────────────────────────────────────────────────────────────────────
+// AUTHENTICATED ROUTES under /api/v1
+// All routes here go through authMiddleware
+// ─────────────────────────────────────────────────────────────────────────────
+
 app.use('/api/v1', authMiddleware, routes);
 
-// Centralized error handler keeps responses consistent and avoids leaking internals.
+// ─────────────────────────────────────────────────────────────────────────────
+// ERROR HANDLER
+// ─────────────────────────────────────────────────────────────────────────────
+
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   if (err instanceof ZodError) {
-    return res.status(400).json({ message: 'Validation failed', issues: err.issues });
+    return res.status(400).json({ 
+      error: 'Validation failed', 
+      issues: err.issues
+    });
   }
 
-  console.error('Unhandled error', err);
-  return res.status(500).json({ message: 'Internal server error' });
+  console.error('[server] Unhandled error:', err);
+  return res.status(500).json({ error: 'Internal server error' });
 });
 
+// ─────────────────────────────────────────────────────────────────────────────
+// START
+// ─────────────────────────────────────────────────────────────────────────────
+
 const port = env.PORT;
+
 app.listen(port, () => {
-  console.log(`✓ EverForm backend listening on http://localhost:${port}`);
-  console.log(`  Health:     GET  http://localhost:${port}/health`);
-  console.log(`  Debug:      GET  http://localhost:${port}/debug/user-test`);
-  console.log(`  Coach Chat: POST http://localhost:${port}/api/coach/chat`);
-  console.log(`  Food Scan:  POST http://localhost:${port}/api/scan/food`);
+  console.log('');
+  console.log('╔═══════════════════════════════════════════════════════════╗');
+  console.log('║           EverForm Backend v2.0.0                         ║');
+  console.log('╠═══════════════════════════════════════════════════════════╣');
+  console.log(`║  🌐 Server:      http://localhost:${port}                     ║`);
+  console.log(`║  📦 NODE_ENV:    ${env.NODE_ENV.padEnd(39)}║`);
+  
+  if (isDevMode) {
+    console.log('║  🔓 Auth Mode:   DEV (no JWT required)                     ║');
+    console.log(`║  👤 Dev User:    ${DEV_USER_ID.padEnd(39)}║`);
+  } else {
+    console.log('║  🔒 Auth Mode:   PRODUCTION (JWT required)                 ║');
+  }
+  
+  console.log('╠═══════════════════════════════════════════════════════════╣');
+  console.log('║  ENDPOINTS                                                ║');
+  console.log('╠═══════════════════════════════════════════════════════════╣');
+  console.log('║  Public:                                                  ║');
+  console.log('║    GET  /health                                           ║');
+  console.log('║                                                           ║');
+  console.log('║  AI (auth + rate limited):                                ║');
+  console.log('║    POST /api/coach/chat                                   ║');
+  console.log('║    POST /api/scan/food                                    ║');
+  console.log('║                                                           ║');
+  console.log('║  User Data (/api/v1/*):                                   ║');
+  console.log('║    GET  /api/v1/profile                                   ║');
+  console.log('║    GET  /api/v1/dashboard/today                           ║');
+  console.log('║    GET  /api/v1/nutrition/summary                         ║');
+  console.log('║    POST /api/v1/training/log                              ║');
+  console.log('║    POST /api/v1/recovery/log                              ║');
+  console.log('║    ... and more (see routes/index.ts)                     ║');
+  console.log('╚═══════════════════════════════════════════════════════════╝');
+  console.log('');
+  
+  if (isDevMode) {
+    console.log('  ✅ iOS app can call /api/v1/* without auth token');
+    console.log('');
+  }
 });

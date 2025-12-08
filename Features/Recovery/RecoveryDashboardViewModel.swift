@@ -8,14 +8,59 @@
 import Foundation
 import SwiftUI
 
+struct RecoveryPlanStepUI: Identifiable {
+    let id = UUID()
+    let title: String
+    let description: String
+    let relativeMinutes: Int?
+    var isCompleted: Bool = false
+}
+
+struct WeeklyRecoveryFocusArea: Identifiable {
+    let id = UUID()
+    let title: String
+    let description: String
+    let actions: [String]
+}
+
 @MainActor
 class RecoveryDashboardViewModel: ObservableObject {
 
   // MARK: - State
   @Published var selectedRange: RecoveryTimeRange = .today
-    @Published var logs: [DailyRecoveryLog] = []
-
-  // MARK: - Computed
+  @Published var logs: [DailyRecoveryLog] = []
+    
+    // MARK: - AI State
+    enum LoadState<Value> {
+        case idle
+        case loading
+        case loaded(Value)
+        case failed(Error)
+    }
+    
+    enum RecoveryPlanState {
+        case idle
+        case loading
+        case loaded(RecoveryDayPlan)
+        case error(String)
+    }
+    
+    @Published var todayInsightsState: LoadState<RecoveryDailyInsights> = .idle
+    @Published var weeklyInsightsState: LoadState<RecoveryDailyInsights> = .idle
+    @Published var planState: RecoveryPlanState = .idle
+    
+    // UI State for Sheets
+    @Published var isShowingPlanSheet: Bool = false
+    @Published var isShowingWeeklyPlanSheet: Bool = false
+    @Published var isShowingInsightDetail: Bool = false
+    
+    // Local View Models
+    @Published var smartPlanSteps: [RecoveryPlanStepUI] = []
+    @Published var weeklyFocusAreas: [WeeklyRecoveryFocusArea] = []
+    
+    private let service: RecoveryServiceProtocol
+    
+    // MARK: - Computed
     
     var todayLog: DailyRecoveryLog {
         // Return today's log or a default empty one if missing
@@ -54,11 +99,137 @@ class RecoveryDashboardViewModel: ObservableObject {
   }
 
   // MARK: - Init
-  init() {
+  init(service: RecoveryServiceProtocol = RecoveryService.shared) {
+    self.service = service
     generateMockData()
   }
 
   // MARK: - Methods
+
+    @MainActor
+    func loadTodayInsights() async {
+        // Always reload if idle or failed, but prevent duplicate loading if already loading
+        if case .loading = todayInsightsState { return }
+        
+        todayInsightsState = .loading
+        do {
+            let insights = try await service.fetchTodayInsights()
+            todayInsightsState = .loaded(insights)
+            
+            // Also generate weekly insights when today's data is fetched (simulated for now)
+            generateWeeklyInsights()
+        } catch {
+            print("Failed to load recovery insights: \(error)")
+            todayInsightsState = .failed(error)
+        }
+    }
+    
+    @MainActor
+    func reloadTodayInsights() async {
+        if case .loading = todayInsightsState { return }
+        todayInsightsState = .loading
+        do {
+            let insights = try await service.fetchTodayInsights()
+            todayInsightsState = .loaded(insights)
+            generateWeeklyInsights()
+        } catch {
+            todayInsightsState = .failed(error)
+        }
+    }
+    
+    /// Loads the nightly smart plan once per presentation, unless forced.
+    func loadDayPlan(for date: Date? = Date(), force: Bool = false) {
+        if !force {
+            if case .loading = planState { return }
+            if case .loaded = planState { return }
+        }
+        
+        let targetDate = date ?? Date()
+        print("📄 [RecoveryPlan] requesting plan for \(targetDate)")
+        planState = .loading
+        
+        let service = service
+        Task.detached(priority: .userInitiated) { [weak self] in
+            do {
+                let plan = try await service.fetchDayPlan(for: targetDate)
+                let steps = plan.steps.map { step in
+                    RecoveryPlanStepUI(
+                        title: step.title,
+                        description: step.description,
+                        relativeMinutes: step.relativeMinutes,
+                        isCompleted: false
+                    )
+                }
+                
+                await MainActor.run {
+                    guard let self else { return }
+                    self.planState = .loaded(plan)
+                    self.smartPlanSteps = steps
+                    print("✅ [RecoveryPlan] loaded \(steps.count) steps")
+                }
+            } catch {
+                await MainActor.run {
+                    guard let self else { return }
+                    self.planState = .error("We couldn't generate a plan right now. Please try again.")
+                    print("❌ [RecoveryPlan] failed: \(error)")
+                }
+            }
+        }
+    }
+    
+    func togglePlanStep(id: UUID) {
+        if let index = smartPlanSteps.firstIndex(where: { $0.id == id }) {
+            smartPlanSteps[index].isCompleted.toggle()
+        }
+    }
+    
+    @MainActor
+    private func generateWeeklyInsights() {
+        // Simulate weekly AI analysis from local logs
+        weeklyInsightsState = .loading
+        
+        // Add a small delay to simulate "thinking" if needed, or just process immediately
+        // For UX "thinking" feel, we can dispatch async after a second, but for now direct is fine.
+        
+        let avgScore = weekLogs.reduce(0) { $0 + $1.sleepScore } / max(weekLogs.count, 1)
+        let avgSleep = weekLogs.reduce(0) { $0 + $1.totalSleepMinutes } / max(weekLogs.count, 1)
+        let avgSleepHours = avgSleep / 60
+        
+        let headline = avgScore >= 80 ? "Excellent consistency this week" : 
+                       avgScore >= 60 ? "Stable recovery baseline" : "Irregular sleep pattern detected"
+        
+        let summary = "Your average sleep time is \(avgSleepHours)h \(avgSleep % 60)m with a recovery score of \(avgScore). " +
+                      (avgScore >= 80 ? "You are primed for higher training volume." : "Focus on consistent bedtimes to improve.")
+        
+        let insights = RecoveryDailyInsights(
+            headline: headline,
+            summary: summary,
+            recoveryScore: avgScore,
+            sleepConsistency: Int.random(in: 70...95), // Mock consistency
+            nervousSystemLoad: avgScore > 70 ? "low" : "medium",
+            keyIssues: avgScore < 70 ? ["Inconsistent bedtimes", "Late caffeine"] : ["None"],
+            todayFocusTags: ["Consistency", "Sleep Duration"]
+        )
+        
+        // Populate weekly focus areas based on insights
+        self.weeklyFocusAreas = [
+            WeeklyRecoveryFocusArea(
+                title: "Sleep Consistency",
+                description: "Your bedtime variability is higher than optimal.",
+                actions: ["Set a wind-down alarm for 22:00", "Aim for bed between 22:30–23:00"]
+            ),
+            WeeklyRecoveryFocusArea(
+                title: "Sleep Duration",
+                description: "You are averaging \(avgSleepHours)h, slightly below the 8h target.",
+                actions: ["Extend sleep opportunity by 30 mins", "Limit caffeine after 14:00"]
+            )
+        ]
+        
+        // Small delay to show loading state if user switches tabs quickly
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.weeklyInsightsState = .loaded(insights)
+        }
+    }
 
   func generateMockData() {
     let calendar = Calendar.current

@@ -290,8 +290,8 @@ struct WeeklySleepChart: View {
 // MARK: - Active Recovery Grid
 
 struct ActiveRecoveryGrid: View {
-  let completedActions: Set<RecoveryAction>
-  let onToggle: (RecoveryAction) -> Void
+  @Binding var selectedTypes: Set<RecoveryType>
+  let onToggle: (RecoveryType) -> Void
 
   let columns = [
     GridItem(.flexible()),
@@ -301,12 +301,13 @@ struct ActiveRecoveryGrid: View {
 
   var body: some View {
     LazyVGrid(columns: columns, spacing: 12) {
-      ForEach(RecoveryAction.allCases) { action in
+      ForEach(RecoveryType.allCases, id: \.self) { type in
+        let isSelected = selectedTypes.contains(type)
         HabitTile(
-          action: action,
-          isCompleted: completedActions.contains(action)
+          action: type, // Passing RecoveryType directly to match new usage
+          isSelected: isSelected
         ) {
-          onToggle(action)
+          onToggle(type)
         }
       }
     }
@@ -314,8 +315,8 @@ struct ActiveRecoveryGrid: View {
 }
 
 struct HabitTile: View {
-  let action: RecoveryAction
-  let isCompleted: Bool
+  let action: RecoveryType
+  let isSelected: Bool
   let onTap: () -> Void
 
   var body: some View {
@@ -326,19 +327,19 @@ struct HabitTile: View {
         ZStack {
           Circle()
             .fill(
-              isCompleted ? DesignSystem.Colors.accent : DesignSystem.Colors.backgroundSecondary
+              isSelected ? DesignSystem.Colors.accent : DesignSystem.Colors.backgroundSecondary
             )
             .frame(width: 44, height: 44)
 
-          Image(systemName: action.icon)
+          Image(systemName: iconName(for: action))
             .font(.system(size: 20))
-            .foregroundStyle(isCompleted ? .white : DesignSystem.Colors.textSecondary)
+            .foregroundStyle(isSelected ? .white : DesignSystem.Colors.textSecondary)
         }
 
         Text(action.rawValue)
           .font(.app(.caption))
           .foregroundStyle(
-            isCompleted ? DesignSystem.Colors.textPrimary : DesignSystem.Colors.textSecondary
+            isSelected ? DesignSystem.Colors.textPrimary : DesignSystem.Colors.textSecondary
           )
           .multilineTextAlignment(.center)
       }
@@ -348,10 +349,21 @@ struct HabitTile: View {
       .clipShape(RoundedRectangle(cornerRadius: 16))
       .overlay(
         RoundedRectangle(cornerRadius: 16)
-          .stroke(isCompleted ? DesignSystem.Colors.accent.opacity(0.5) : Color.clear, lineWidth: 1)
+          .stroke(isSelected ? DesignSystem.Colors.accent.opacity(0.5) : Color.clear, lineWidth: 1)
       )
     }
     .buttonStyle(.plain)
+  }
+  
+  func iconName(for type: RecoveryType) -> String {
+      switch type {
+      case .restDay: return "bed.double.fill"
+      case .mobility: return "figure.flexibility"
+      case .massage: return "hand.raised.fill"
+      case .sauna: return "thermometer.sun.fill"
+      case .coldPlunge: return "snowflake"
+      case .breathwork: return "lungs.fill"
+      }
   }
 }
 

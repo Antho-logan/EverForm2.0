@@ -150,6 +150,32 @@ struct BackendAIPlanResponse: Codable {
 struct BackendScanResponse: Decodable {
     let meal: BackendMeal?
     let analysis: BackendScanAnalysis
+    let status: String?      // "ok" | "fallback" | "error"
+    let success: Bool?       // true if analysis succeeded
+    let source: String?      // "ai" | "mock" - indicates if real AI or mock data
+    let summary: String?     // Human-readable summary
+    
+    /// Returns true if this response is using mock/estimated data
+    var isMockData: Bool {
+        return source == "mock"
+    }
+    
+    /// Memberwise initializer for programmatic construction
+    init(
+        meal: BackendMeal? = nil,
+        analysis: BackendScanAnalysis,
+        status: String? = nil,
+        success: Bool? = nil,
+        source: String? = nil,
+        summary: String? = nil
+    ) {
+        self.meal = meal
+        self.analysis = analysis
+        self.status = status
+        self.success = success
+        self.source = source
+        self.summary = summary
+    }
 }
 
 struct BackendScanAnalysis: Decodable {
@@ -164,11 +190,62 @@ struct BackendScanAnalysis: Decodable {
     let description: String?
     let mealType: String?
     let caloriesEstimate: Int?
+    // Extended Plate AI fields
+    let dishName: String?
+    let shortDescription: String?
+    let fiber: Int?
+    let healthGrade: String?
+    let warnings: [String]?
+    let suggestions: [String]?
+    
+    /// Memberwise initializer for programmatic construction
+    init(
+        mode: String,
+        calories: Int? = nil,
+        protein: Int? = nil,
+        carbs: Int? = nil,
+        fat: Int? = nil,
+        confidence: Double? = nil,
+        ingredients: [BackendScanIngredient]? = nil,
+        notes: String? = nil,
+        description: String? = nil,
+        mealType: String? = nil,
+        caloriesEstimate: Int? = nil,
+        dishName: String? = nil,
+        shortDescription: String? = nil,
+        fiber: Int? = nil,
+        healthGrade: String? = nil,
+        warnings: [String]? = nil,
+        suggestions: [String]? = nil
+    ) {
+        self.mode = mode
+        self.calories = calories
+        self.protein = protein
+        self.carbs = carbs
+        self.fat = fat
+        self.confidence = confidence
+        self.ingredients = ingredients
+        self.notes = notes
+        self.description = description
+        self.mealType = mealType
+        self.caloriesEstimate = caloriesEstimate
+        self.dishName = dishName
+        self.shortDescription = shortDescription
+        self.fiber = fiber
+        self.healthGrade = healthGrade
+        self.warnings = warnings
+        self.suggestions = suggestions
+    }
 }
 
 struct BackendScanIngredient: Decodable {
     let name: String
     let confidence: Double
+    
+    init(name: String, confidence: Double) {
+        self.name = name
+        self.confidence = confidence
+    }
 }
 
 // MARK: - Utility

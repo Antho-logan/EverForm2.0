@@ -1,12 +1,12 @@
 {
-  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/EverForm/Components.swift",
+  "source": "/Users/antho/Desktop/Everform 2.0/EverForm/Components.swift",
   "tables": {
     "Localizable": [
       {
         "comment": "",
         "key": "Button is disabled",
         "location": {
-          "startingColumn": 41,
+          "startingColumn": 37,
           "startingLine": 82
         }
       },
@@ -14,40 +14,32 @@
         "comment": "",
         "key": "Tap to %@",
         "location": {
-          "startingColumn": 64,
+          "startingColumn": 60,
           "startingLine": 82
-        }
-      },
-      {
-        "comment": "",
-        "key": "Enter your %@",
-        "location": {
-          "startingColumn": 28,
-          "startingLine": 208
         }
       },
       {
         "comment": "",
         "key": "%@: %@ %@",
         "location": {
-          "startingColumn": 29,
-          "startingLine": 327
+          "startingColumn": 25,
+          "startingLine": 201
         }
       },
       {
         "comment": "",
         "key": "Back",
         "location": {
-          "startingColumn": 41,
-          "startingLine": 371
+          "startingColumn": 31,
+          "startingLine": 247
         }
       },
       {
         "comment": "",
         "key": "Settings",
         "location": {
-          "startingColumn": 41,
-          "startingLine": 411
+          "startingColumn": 31,
+          "startingLine": 289
         }
       }
     ]

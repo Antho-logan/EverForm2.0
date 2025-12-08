@@ -1,5 +1,5 @@
 {
-  "source": "/Users/antho/Documents/Biofriend/EverForm/EverForm/tip tracker/Features/Mobility/MobilityRoutineSheet.swift",
+  "source": "/Users/antho/Desktop/Everform 2.0/tip tracker/Features/Mobility/MobilityRoutineSheet.swift",
   "tables": {
     "Localizable": [
       {
@@ -7,7 +7,7 @@
         "key": "Mobility",
         "location": {
           "startingColumn": 26,
-          "startingLine": 40
+          "startingLine": 57
         }
       },
       {
@@ -15,7 +15,7 @@
         "key": "Mobility Routine",
         "location": {
           "startingColumn": 18,
-          "startingLine": 8
+          "startingLine": 9
         }
       },
       {
@@ -23,7 +23,7 @@
         "key": "Start Mobility",
         "location": {
           "startingColumn": 20,
-          "startingLine": 31
+          "startingLine": 32
         }
       },
       {
@@ -31,7 +31,7 @@
         "key": "Today's Focus",
         "location": {
           "startingColumn": 22,
-          "startingLine": 12
+          "startingLine": 13
         }
       },
       {
@@ -39,7 +39,7 @@
         "key": "Hips & Shoulders • 8 minutes",
         "location": {
           "startingColumn": 22,
-          "startingLine": 15
+          "startingLine": 16
         }
       },
       {
@@ -47,7 +47,7 @@
         "key": "Routine steps:",
         "location": {
           "startingColumn": 26,
-          "startingLine": 19
+          "startingLine": 20
         }
       },
       {
@@ -55,7 +55,7 @@
         "key": "• Hip circles",
         "location": {
           "startingColumn": 26,
-          "startingLine": 21
+          "startingLine": 22
         }
       },
       {
@@ -63,7 +63,7 @@
         "key": "• Shoulder rolls",
         "location": {
           "startingColumn": 26,
-          "startingLine": 22
+          "startingLine": 23
         }
       },
       {
@@ -71,7 +71,7 @@
         "key": "• Cat-cow stretches",
         "location": {
           "startingColumn": 26,
-          "startingLine": 23
+          "startingLine": 24
         }
       },
       {
@@ -79,7 +79,7 @@
         "key": "• Deep hip flexor stretch",
         "location": {
           "startingColumn": 26,
-          "startingLine": 24
+          "startingLine": 25
         }
       },
       {
@@ -87,7 +87,7 @@
         "key": "Close",
         "location": {
           "startingColumn": 24,
-          "startingLine": 44
+          "startingLine": 61
         }
       }
     ]

@@ -10,6 +10,8 @@ import SwiftUI
 struct OverviewView: View {
   @Environment(\.colorScheme) private var scheme
   @Environment(ThemeManager.self) private var themeManager
+  @EnvironmentObject private var recoveryLogStore: RecoveryLogStore
+  
   @State private var selectedPeriod: FocusTimeframe = .today
   @State private var isFocusPanelVisible = false
 
@@ -84,7 +86,7 @@ struct OverviewView: View {
                   }
                   LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 12)], spacing: 12)
                   {
-                    ForEach(planCards) { card in
+                    ForEach(updatedPlanCards) { card in
                       OverviewPlanCard(item: card) {
                         switch card.title {
                         case "Training": isPresentingTraining = true
@@ -137,7 +139,9 @@ struct OverviewView: View {
               .scaleEffect(isFocusPanelVisible ? 0.98 : 1.0)
               .animation(.spring, value: isFocusPanelVisible)
             }
-            .padding(.bottom, 32)
+            // Bottom padding to ensure content scrolls fully above the tab bar
+            // Tab bar height is ~60pt + some breathing room
+            .padding(.bottom, 100)
           }
           .scrollDisabled(isFocusPanelVisible)
 
@@ -169,14 +173,14 @@ struct OverviewView: View {
           // Layer 2: Dimming Layer for Focus Panel
           if isFocusPanelVisible {
             Color.black.opacity(0.15)
-              .ignoresSafeArea()
-              .transition(.opacity)
-              .onTapGesture {
-                withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
-                  isFocusPanelVisible = false
-                }
+            .ignoresSafeArea()
+            .transition(.opacity)
+            .onTapGesture {
+              withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+                isFocusPanelVisible = false
               }
-              .zIndex(109)  // Just below menus (110+) but above content
+            }
+            .zIndex(109)  // Just below menus (110+) but above content
 
             // Layer 3: Focus Overlay
             // Position logic:
@@ -307,6 +311,30 @@ struct OverviewView: View {
         progress: progress
       )
     }
+  }
+  
+  // Dynamically update plan cards based on recent recovery logs
+  var updatedPlanCards: [PlanItem] {
+      planCards.map { card in
+          guard card.title == "Recovery" else { return card }
+          
+          // Get recent entries
+          let recentEntries = recoveryLogStore.entries.prefix(3)
+          
+          if let latest = recentEntries.first {
+              return PlanItem(
+                icon: card.icon,
+                title: card.title,
+                subtitle: "Last: \(latest.type.rawValue)",
+                accent: card.accent,
+                duration: recentEntries.count > 1 ? "+\(recentEntries.count - 1) others" : "Just now",
+                ctaTitle: "Log",
+                ctaStyle: card.ctaStyle
+              )
+          } else {
+              return card // Default state
+          }
+      }
   }
 
   var focusItemsForSelection: [FocusItem] {

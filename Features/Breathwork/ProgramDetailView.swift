@@ -10,6 +10,9 @@ import SwiftUI
 struct ProgramDetailView: View {
     let program: BreathworkProgram
     @Environment(\.dismiss) private var dismiss
+    @Environment(BreathworkStore.self) private var store
+    
+    @State private var sessionPattern: BreathworkPattern?
     
     var body: some View {
         ScrollView {
@@ -96,7 +99,7 @@ struct ProgramDetailView: View {
                             
                             if !day.locked && !day.completed {
                                 Button("Start") {
-                                    // Start logic
+                                    sessionPattern = day.template.pattern
                                 }
                                 .font(DesignSystem.Typography.labelMedium())
                                 .foregroundStyle(DesignSystem.Colors.accent)
@@ -123,11 +126,15 @@ struct ProgramDetailView: View {
                 dismiss()
             } label: {
                 Image(systemName: "xmark.circle.fill")
-                    .font(.title)
-                    .foregroundStyle(.white.opacity(0.8))
-                    .padding(20)
-                    .padding(.top, 20)
+                .font(.title)
+                .foregroundStyle(.white.opacity(0.8))
+                .padding(20)
+                .padding(.top, 20)
             }
+        }
+        .fullScreenCover(item: $sessionPattern) { pattern in
+            LiveBreathworkSessionView(pattern: pattern)
+                .environment(store)
         }
     }
 }

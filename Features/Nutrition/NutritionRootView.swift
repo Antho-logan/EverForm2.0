@@ -40,85 +40,69 @@ struct NutritionOverviewView: View {
   var body: some View {
     // No NavigationStack here - pushed from Overview
     EFScreenContainer {
-        VStack(spacing: 0) {
-          header
+      VStack(spacing: 0) {
+        EFHeader(title: "Nutrition", showBack: true)
 
-          // Landing Page Content
-          ScrollView {
-              VStack(spacing: 24) {
-                  // Recent Meals
-                  FeatureHistorySection(title: "Recent Meals") {
-                      VStack(spacing: 12) {
-                          FeatureHistoryRow(
-                              title: "Breakfast",
-                              subtitle: "Oatmeal & Berries",
-                              detail: "450 kcal",
-                              icon: "cup.and.saucer.fill",
-                              iconColor: .orange
-                          ) { /* Action */ }
-                          
-                          FeatureHistoryRow(
-                              title: "Lunch",
-                              subtitle: "Chicken Salad",
-                              detail: "620 kcal",
-                              icon: "fork.knife",
-                              iconColor: .green
-                          ) { /* Action */ }
-                      }
-                  }
+        // Landing Page Content
+        ScrollView {
+          VStack(spacing: 24) {
+            // Hero Card
+            FeatureHeroCard(
+              title: "Nutrition",
+              subtitle: "Log meals and track your macros for today.",
+              buttonTitle: "Open Nutrition",
+              onButtonTap: { showingFullDashboard = true },
+              gradientColors: [Color.orange.opacity(0.6), Color.yellow.opacity(0.3)]
+            )
+            .padding(.horizontal, DesignSystem.Spacing.screenPadding)
+            
+            // Recent Meals
+            FeatureHistorySection(title: "Recent Meals") {
+              VStack(spacing: 12) {
+                FeatureHistoryRow(
+                  title: "Breakfast",
+                  subtitle: "Oatmeal & Berries",
+                  detail: "450 kcal",
+                  icon: "cup.and.saucer.fill",
+                  iconColor: .orange
+                ) { /* Action */  }
+
+                FeatureHistoryRow(
+                  title: "Lunch",
+                  subtitle: "Chicken Salad",
+                  detail: "620 kcal",
+                  icon: "fork.knife",
+                  iconColor: .green
+                ) { /* Action */  }
               }
-              .padding(.bottom, 32)
+            }
           }
+          .padding(.bottom, 32)
         }
+      }
     }
+    .navigationBarHidden(true)
     .navigationDestination(isPresented: $showingFullDashboard) {
-        NutritionDashboardView(
-            overviewModel: overviewModel,
-            diaryModel: diaryModel,
-            reportModel: reportModel,
-            toolsModel: toolsModel
-        )
+      NutritionDashboardView(
+        overviewModel: overviewModel,
+        diaryModel: diaryModel,
+        reportModel: reportModel,
+        toolsModel: toolsModel
+      )
     }
     .sheet(isPresented: $showingQuickActions) {
-        NutritionQuickActionsSheet {
-          showingQuickActions = false
-        }
+      NutritionQuickActionsSheet {
+        showingQuickActions = false
+      }
     }
     .task {
-        guard !hasLoaded else { return }
-        hasLoaded = true
-        await overviewModel.load()
-        await diaryModel.load(for: diaryModel.date)
-        await reportModel.load()
-        await toolsModel.loadSuggestions(for: nil)
+      guard !hasLoaded else { return }
+      hasLoaded = true
+      await overviewModel.load()
+      await diaryModel.load(for: diaryModel.date)
+      await reportModel.load()
+      await toolsModel.loadSuggestions(for: nil)
     }
-  }
-
-  private var header: some View {
-    VStack(spacing: 16) {
-        HStack(alignment: .top) {
-            Spacer()
-            Button {
-                dismiss()
-            } label: {
-                Image(systemName: "xmark.circle.fill")
-                    .font(.system(size: 24, weight: .semibold))
-                    .foregroundStyle(DesignSystem.Colors.neutral400)
-            }
-        }
-        .padding(.horizontal, DesignSystem.Spacing.screenPadding)
-        .padding(.top, 16)
-        
-        FeatureHeroCard(
-            title: "Nutrition",
-            subtitle: "Log meals and track your macros for today.",
-            buttonTitle: "Open Nutrition",
-            onButtonTap: { showingFullDashboard = true },
-            gradientColors: [Color.orange.opacity(0.6), Color.yellow.opacity(0.3)]
-        )
-        .padding(.horizontal, DesignSystem.Spacing.screenPadding)
-    }
-    .padding(.bottom, 12)
   }
 }
 
@@ -134,18 +118,30 @@ struct NutritionOverviewDashboardView: View {
       VStack(spacing: 20) {
         MacroSummaryCard(profile: viewModel.profile, summary: viewModel.todaySummary)
 
-        // NutritionActionsRow removed as "Log Meal" is now in Hero Card
-
         MacroTargetsCard(targets: reportSummary.macroTargets)
 
         TodayMealsSection(meals: viewModel.todaySummary.meals)
 
-        GuidanceCard(message: viewModel.guidanceText)
+        if viewModel.isLoadingInsights {
+            EFCard {
+                HStack(spacing: 12) {
+                    ProgressView()
+                    Text("Analyzing today's intake...")
+                        .font(.app(.bodySecondary))
+                        .foregroundStyle(DesignSystem.Colors.textSecondary)
+                }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        } else {
+            GuidanceCard(message: viewModel.guidanceText)
+                .transition(.opacity)
+        }
 
         WeeklyCaloriesSparkline(week: viewModel.weekSummaries)
       }
       .padding(.bottom, 32)
       .padding(.horizontal, DesignSystem.Spacing.screenPadding)
+      .animation(.easeInOut, value: viewModel.isLoadingInsights)
     }
   }
 }
@@ -164,7 +160,7 @@ struct MacroSummaryCard: View {
       )
     ) {
       VStack(alignment: .leading, spacing: 16) {
-        NutritionSectionHeader(
+        EFSectionHeader(
           title: "Today's Fuel",
           subtitle: "\(summary.caloriesConsumed) / \(profile.dailyCalorieTarget) kcal")
 
@@ -329,7 +325,7 @@ struct MacroTargetsCard: View {
   var body: some View {
     EFCard {
       VStack(alignment: .leading, spacing: 14) {
-        NutritionSectionHeader(title: "Macronutrient Targets", subtitle: "Daily progress")
+        EFSectionHeader(title: "Macronutrient Targets", subtitle: "Daily progress")
 
         VStack(spacing: 12) {
           ForEach(targets) { target in
@@ -383,7 +379,7 @@ struct TodayMealsSection: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
-      NutritionSectionHeader(title: "Today's Meals", subtitle: "Logged items")
+      EFSectionHeader(title: "Today's Meals", subtitle: "Logged items")
 
       VStack(spacing: 10) {
         ForEach(meals) { meal in
@@ -427,7 +423,7 @@ struct MealSummaryRow: View {
           .font(.caption)
           .foregroundStyle(DesignSystem.Colors.textSecondary)
       }
-      
+
       Image(systemName: "chevron.right")
         .font(.caption)
         .foregroundStyle(DesignSystem.Colors.textSecondary)
@@ -476,7 +472,7 @@ struct WeeklyCaloriesSparkline: View {
   var body: some View {
     EFCard {
       VStack(alignment: .leading, spacing: 16) {
-        NutritionSectionHeader(title: "Weekly Snapshot", subtitle: "Calories per day")
+        EFSectionHeader(title: "Weekly Snapshot", subtitle: "Calories per day")
 
         HStack(alignment: .bottom, spacing: 10) {
           ForEach(Array(week.enumerated()), id: \.element.id) { index, day in
@@ -585,7 +581,7 @@ struct DiaryTotalsCard: View {
   var body: some View {
     EFCard {
       VStack(alignment: .leading, spacing: 12) {
-        NutritionSectionHeader(title: "Totals vs Goal", subtitle: "Logged today")
+        EFSectionHeader(title: "Totals vs Goal", subtitle: "Logged today")
 
         HStack(spacing: 8) {
           TotalsPill(
@@ -727,7 +723,7 @@ struct HighlightedNutrientsGrid: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
-      NutritionSectionHeader(title: "Key Micronutrients", subtitle: "Focus areas")
+      EFSectionHeader(title: "Key Micronutrients", subtitle: "Focus areas")
       LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
         ForEach(targets) { target in
           EFCard {
@@ -780,7 +776,7 @@ struct NutrientGroupsSection: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
-      NutritionSectionHeader(title: "Micronutrient Coverage", subtitle: "Grouped by system")
+      EFSectionHeader(title: "Micronutrient Coverage", subtitle: "Grouped by system")
 
       ForEach(Array(groups.enumerated()), id: \.element.id) { index, group in
         EFCard {
@@ -819,7 +815,7 @@ struct WeeklyAverageCard: View {
   var body: some View {
     EFCard {
       VStack(alignment: .leading, spacing: 12) {
-        NutritionSectionHeader(title: "Weekly Averages", subtitle: "Per day")
+        EFSectionHeader(title: "Weekly Averages", subtitle: "Per day")
 
         HStack(spacing: 12) {
           TotalsPill(
@@ -837,11 +833,12 @@ struct WeeklyAverageCard: View {
 
 struct NutritionFoodToolsView: View {
   @ObservedObject var viewModel: NutritionFoodToolsViewModel
+  @State private var showingSmartPlan = false
 
   var body: some View {
     ScrollView {
       VStack(spacing: 16) {
-        NutritionSectionHeader(title: "Food Tools", subtitle: "Meals, recipes, and discovery")
+        EFSectionHeader(title: "Food Tools", subtitle: "Meals, recipes, and discovery")
 
         NavigationLink {
           CustomMealsListView(meals: viewModel.customMeals)
@@ -883,14 +880,13 @@ struct NutritionFoodToolsView: View {
           )
         }
 
-        NavigationLink {
-          NutritionSuggestionsView(groups: viewModel.suggestionGroups) {
-            Task { await viewModel.loadSuggestions(for: nil) }
-          }
+        Button {
+          showingSmartPlan = true
+          Task { await viewModel.loadSmartPlan() }
         } label: {
           CardRow(
             title: "Suggest Food",
-            subtitle: "Hand-picked options by target.",
+            subtitle: "AI Smart suggestions for today.",
             icon: "wand.and.stars"
           )
         }
@@ -907,6 +903,14 @@ struct NutritionFoodToolsView: View {
       }
       .padding(.horizontal, DesignSystem.Spacing.screenPadding)
       .padding(.bottom, 24)
+    }
+    .sheet(isPresented: $showingSmartPlan) {
+      SmartDayPlanView(
+        plan: viewModel.smartDayPlan,
+        isLoading: viewModel.isLoadingPlan,
+        error: viewModel.planError,
+        onRefresh: { Task { await viewModel.loadSmartPlan() } }
+      )
     }
     .task {
       await viewModel.loadSuggestions(for: nil)
@@ -956,30 +960,34 @@ struct CustomMealsListView: View {
   let meals: [CustomMealTemplate]
 
   var body: some View {
-    List {
-      Section(header: Text("Saved Meals").font(.app(.heading))) {
-        ForEach(meals) { meal in
-          let joinedItems = meal.items.joined(separator: ", ")
-          VStack(alignment: .leading, spacing: 4) {
-            Text(meal.name)
-              .font(.app(.heading))
-            Text("\(meal.kcal) kcal • \(joinedItems)")
-              .font(.app(.bodySecondary))
-              .foregroundStyle(DesignSystem.Colors.textSecondary)
-          }
-          .listRowBackground(DesignSystem.Colors.backgroundSecondary)
+    EFScreenContainer {
+        VStack(spacing: 0) {
+            EFHeader(title: "Custom Meals", showBack: true)
+            List {
+              Section(header: Text("Saved Meals").font(.app(.heading))) {
+                ForEach(meals) { meal in
+                  let joinedItems = meal.items.joined(separator: ", ")
+                  VStack(alignment: .leading, spacing: 4) {
+                    Text(meal.name)
+                      .font(.app(.heading))
+                    Text("\(meal.kcal) kcal • \(joinedItems)")
+                      .font(.app(.bodySecondary))
+                      .foregroundStyle(DesignSystem.Colors.textSecondary)
+                  }
+                  .listRowBackground(DesignSystem.Colors.backgroundSecondary)
+                }
+              }
+              Section(header: Text("Actions").font(.app(.heading))) {
+                NavigationLink("Create Meal") {
+                  CreateMealView()
+                }
+                .font(.app(.button))
+              }
+            }
+            .scrollContentBackground(.hidden)
         }
-      }
-      Section(header: Text("Actions").font(.app(.heading))) {
-        NavigationLink("Create Meal") {
-          CreateMealView()
-        }
-        .font(.app(.button))
-      }
     }
-    .scrollContentBackground(.hidden)
-    .background(DesignSystem.Colors.background)
-    .navigationTitle("Custom Meals")
+    .navigationBarHidden(true)
   }
 }
 
@@ -989,54 +997,64 @@ struct CreateMealView: View {
   @State private var notes = ""
 
   var body: some View {
-    Form {
-      Section(header: Text("Meal Details").font(.app(.heading))) {
-        TextField("Name", text: $name)
-        TextField("Calories", text: $kcal)
-          .keyboardType(.numberPad)
-        TextField("Notes", text: $notes, axis: .vertical)
-      }
+    EFScreenContainer {
+        VStack(spacing: 0) {
+            EFHeader(title: "Create Meal", showBack: true)
+            Form {
+              Section(header: Text("Meal Details").font(.app(.heading))) {
+                TextField("Name", text: $name)
+                TextField("Calories", text: $kcal)
+                  .keyboardType(.numberPad)
+                TextField("Notes", text: $notes, axis: .vertical)
+              }
 
-      Section(header: Text("Actions").font(.app(.heading))) {
-        Button("Save (stub)") {}
-      }
+              Section(header: Text("Actions").font(.app(.heading))) {
+                Button("Save (stub)") {}
+              }
+            }
+            .scrollContentBackground(.hidden)
+        }
     }
-    .navigationTitle("Create Meal")
+    .navigationBarHidden(true)
   }
 }
 
 struct CustomRecipesView: View {
   var body: some View {
-    VStack(spacing: 16) {
-      Text("Custom Recipes")
-        .font(.app(.title))
-        .foregroundStyle(DesignSystem.Colors.textPrimary)
-      Text("Create a recipe or import from a URL. Parsing will be added later.")
-        .font(.app(.bodySecondary))
-        .foregroundStyle(DesignSystem.Colors.textSecondary)
-        .multilineTextAlignment(.center)
+    EFScreenContainer {
+        VStack(spacing: 0) {
+            EFHeader(title: "Custom Recipes", showBack: true)
+            VStack(spacing: 16) {
+              Text("Custom Recipes")
+                .font(.app(.title))
+                .foregroundStyle(DesignSystem.Colors.textPrimary)
+              Text("Create a recipe or import from a URL. Parsing will be added later.")
+                .font(.app(.bodySecondary))
+                .foregroundStyle(DesignSystem.Colors.textSecondary)
+                .multilineTextAlignment(.center)
 
-      Button("Create Recipe") {}
-        .font(.app(.button))
-        .padding()
-        .frame(maxWidth: .infinity)
-        .background(DesignSystem.Colors.accent)
-        .foregroundStyle(.white)
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+              Button("Create Recipe") {}
+                .font(.app(.button))
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(DesignSystem.Colors.accent)
+                .foregroundStyle(.white)
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
 
-      Button("Import Recipe (stub)") {}
-        .font(.app(.button))
-        .padding()
-        .frame(maxWidth: .infinity)
-        .background(DesignSystem.Colors.backgroundSecondary)
-        .foregroundStyle(DesignSystem.Colors.textPrimary)
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+              Button("Import Recipe (stub)") {}
+                .font(.app(.button))
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(DesignSystem.Colors.backgroundSecondary)
+                .foregroundStyle(DesignSystem.Colors.textPrimary)
+                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
 
-      Spacer()
+              Spacer()
+            }
+            .padding()
+        }
     }
-    .padding()
-    .background(DesignSystem.Colors.background)
-    .navigationTitle("Custom Recipes")
+    .navigationBarHidden(true)
   }
 }
 
@@ -1049,27 +1067,33 @@ struct CustomFoodsFormView: View {
   @State private var magnesium = ""
 
   var body: some View {
-    Form {
-      Section(header: Text("Basics").font(.app(.heading))) {
-        TextField("Food name", text: $name)
-        TextField("Serving size (e.g. 100g, 1 cup)", text: $serving)
-      }
+    EFScreenContainer {
+        VStack(spacing: 0) {
+            EFHeader(title: "Create Food", showBack: true)
+            Form {
+              Section(header: Text("Basics").font(.app(.heading))) {
+                TextField("Food name", text: $name)
+                TextField("Serving size (e.g. 100g, 1 cup)", text: $serving)
+              }
 
-      Section(header: Text("Macros").font(.app(.heading))) {
-        TextField("Protein (g)", text: $protein).keyboardType(.decimalPad)
-        TextField("Carbs (g)", text: $carbs).keyboardType(.decimalPad)
-        TextField("Fat (g)", text: $fat).keyboardType(.decimalPad)
-      }
+              Section(header: Text("Macros").font(.app(.heading))) {
+                TextField("Protein (g)", text: $protein).keyboardType(.decimalPad)
+                TextField("Carbs (g)", text: $carbs).keyboardType(.decimalPad)
+                TextField("Fat (g)", text: $fat).keyboardType(.decimalPad)
+              }
 
-      Section(header: Text("Key Nutrients").font(.app(.heading))) {
-        TextField("Magnesium (mg)", text: $magnesium).keyboardType(.decimalPad)
-      }
+              Section(header: Text("Key Nutrients").font(.app(.heading))) {
+                TextField("Magnesium (mg)", text: $magnesium).keyboardType(.decimalPad)
+              }
 
-      Section(header: Text("Actions").font(.app(.heading))) {
-        Button("Save Food (stub)") {}
-      }
+              Section(header: Text("Actions").font(.app(.heading))) {
+                Button("Save Food (stub)") {}
+              }
+            }
+            .scrollContentBackground(.hidden)
+        }
     }
-    .navigationTitle("Create Food")
+    .navigationBarHidden(true)
   }
 }
 
@@ -1077,24 +1101,28 @@ struct RepeatItemsView: View {
   let items: [RepeatItem]
 
   var body: some View {
-    List {
-      ForEach(items) { item in
-        VStack(alignment: .leading, spacing: 4) {
-          Text(item.title)
-            .font(.app(.heading))
-          Text(item.detail)
-            .font(.app(.bodySecondary))
-            .foregroundStyle(DesignSystem.Colors.textSecondary)
-          Text(item.schedule)
-            .font(.app(.caption))
-            .foregroundStyle(DesignSystem.Colors.textSecondary)
+    EFScreenContainer {
+        VStack(spacing: 0) {
+            EFHeader(title: "Repeat Items", showBack: true)
+            List {
+              ForEach(items) { item in
+                VStack(alignment: .leading, spacing: 4) {
+                  Text(item.title)
+                    .font(.app(.heading))
+                  Text(item.detail)
+                    .font(.app(.bodySecondary))
+                    .foregroundStyle(DesignSystem.Colors.textSecondary)
+                  Text(item.schedule)
+                    .font(.app(.caption))
+                    .foregroundStyle(DesignSystem.Colors.textSecondary)
+                }
+                .listRowBackground(DesignSystem.Colors.backgroundSecondary)
+              }
+            }
+            .scrollContentBackground(.hidden)
         }
-        .listRowBackground(DesignSystem.Colors.backgroundSecondary)
-      }
     }
-    .scrollContentBackground(.hidden)
-    .background(DesignSystem.Colors.background)
-    .navigationTitle("Repeat Items")
+    .navigationBarHidden(true)
   }
 }
 
@@ -1103,33 +1131,37 @@ struct NutritionSuggestionsView: View {
   let onRefresh: () -> Void
 
   var body: some View {
-    List {
-      ForEach(groups) { group in
-        Section(header: Text(group.title).font(.app(.heading))) {
-          if let description = group.description {
-            Text(description)
-              .font(.app(.bodySecondary))
-              .foregroundStyle(DesignSystem.Colors.textSecondary)
-          }
-          ForEach(group.foods) { food in
-            VStack(alignment: .leading, spacing: 4) {
-              Text(food.name)
-                .font(.app(.body))
-              Text("\(food.calories) kcal • \(food.macroLine)")
-                .font(.app(.caption))
-                .foregroundStyle(DesignSystem.Colors.textSecondary)
+    EFScreenContainer {
+        VStack(spacing: 0) {
+            EFHeader(title: "Suggest Food", showBack: true)
+            List {
+              ForEach(groups) { group in
+                Section(header: Text(group.title).font(.app(.heading))) {
+                  if let description = group.description {
+                    Text(description)
+                      .font(.app(.bodySecondary))
+                      .foregroundStyle(DesignSystem.Colors.textSecondary)
+                  }
+                  ForEach(group.foods) { food in
+                    VStack(alignment: .leading, spacing: 4) {
+                      Text(food.name)
+                        .font(.app(.body))
+                      Text("\(food.calories) kcal • \(food.macroLine)")
+                        .font(.app(.caption))
+                        .foregroundStyle(DesignSystem.Colors.textSecondary)
+                    }
+                    .listRowBackground(DesignSystem.Colors.backgroundSecondary)
+                  }
+                }
+              }
             }
-            .listRowBackground(DesignSystem.Colors.backgroundSecondary)
-          }
+            .toolbar {
+              Button("Refresh") { onRefresh() }
+            }
+            .scrollContentBackground(.hidden)
         }
-      }
     }
-    .toolbar {
-      Button("Refresh") { onRefresh() }
-    }
-    .scrollContentBackground(.hidden)
-    .background(DesignSystem.Colors.background)
-    .navigationTitle("Suggest Food")
+    .navigationBarHidden(true)
   }
 }
 
@@ -1138,44 +1170,63 @@ struct OracleNutrientSearchView: View {
   @State private var selectedNutrient = "Protein"
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 16) {
-      Picker("Nutrient", selection: $selectedNutrient) {
-        ForEach(["Protein", "Magnesium", "Iron", "Potassium", "Fiber"], id: \.self) { nutrient in
-          Text(nutrient).tag(nutrient)
+    EFScreenContainer {
+        VStack(spacing: 0) {
+            EFHeader(title: "Oracle Nutrient Search", showBack: true)
+            VStack(alignment: .leading, spacing: 16) {
+              Picker("Nutrient", selection: $selectedNutrient) {
+                ForEach(["Protein", "Magnesium", "Iron", "Potassium", "Fiber"], id: \.self) { nutrient in
+                  Text(nutrient).tag(nutrient)
+                }
+              }
+              .pickerStyle(.segmented)
+
+              Button("Search top foods") {
+                Task { await viewModel.searchTopFoods(by: selectedNutrient) }
+              }
+              .font(.app(.button))
+              .padding()
+              .frame(maxWidth: .infinity)
+              .background(DesignSystem.Colors.accent)
+              .foregroundStyle(.white)
+              .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+              
+              if viewModel.isLoadingSearch {
+                  ProgressView()
+                      .frame(maxWidth: .infinity, alignment: .center)
+                      .padding()
+              } else if let error = viewModel.searchError {
+                  Text(error)
+                      .foregroundStyle(DesignSystem.Colors.error)
+                      .frame(maxWidth: .infinity, alignment: .center)
+                      .padding()
+              } else if viewModel.oracleResults.isEmpty {
+                  Text("No results found.")
+                      .foregroundStyle(DesignSystem.Colors.textSecondary)
+                      .frame(maxWidth: .infinity, alignment: .center)
+                      .padding()
+              } else {
+                  List {
+                    ForEach(viewModel.oracleResults) { food in
+                      VStack(alignment: .leading, spacing: 4) {
+                        Text(food.name)
+                          .font(.app(.body))
+                        Text("\(food.calories) kcal • \(food.macroLine)")
+                          .font(.app(.caption))
+                          .foregroundStyle(DesignSystem.Colors.textSecondary)
+                      }
+                      .listRowBackground(DesignSystem.Colors.backgroundSecondary)
+                    }
+                  }
+                  .scrollContentBackground(.hidden)
+              }
+
+              Spacer()
+            }
+            .padding()
         }
-      }
-      .pickerStyle(.segmented)
-
-      Button("Search top foods") {
-        Task { await viewModel.searchTopFoods(by: selectedNutrient) }
-      }
-      .font(.app(.button))
-      .padding()
-      .frame(maxWidth: .infinity)
-      .background(DesignSystem.Colors.accent)
-      .foregroundStyle(.white)
-      .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-
-      List {
-        ForEach(viewModel.oracleResults) { food in
-          VStack(alignment: .leading, spacing: 4) {
-            Text(food.name)
-              .font(.app(.body))
-            Text("\(food.calories) kcal • \(food.macroLine)")
-              .font(.app(.caption))
-              .foregroundStyle(DesignSystem.Colors.textSecondary)
-          }
-          .listRowBackground(DesignSystem.Colors.backgroundSecondary)
-        }
-      }
-      .scrollContentBackground(.hidden)
-      .background(DesignSystem.Colors.background)
-
-      Spacer()
     }
-    .padding()
-    .background(DesignSystem.Colors.background)
-    .navigationTitle("Oracle Nutrient Search")
+    .navigationBarHidden(true)
     .task {
       await viewModel.searchTopFoods(by: selectedNutrient)
     }
@@ -1184,23 +1235,6 @@ struct OracleNutrientSearchView: View {
 
 // MARK: - Shared UI
 
-struct NutritionSectionHeader: View {
-  let title: String
-  var subtitle: String? = nil
-
-  var body: some View {
-    VStack(alignment: .leading, spacing: 4) {
-      Text(title)
-        .font(.app(.title))
-        .foregroundStyle(DesignSystem.Colors.textPrimary)
-      if let subtitle {
-        Text(subtitle)
-          .font(.app(.bodySecondary))
-          .foregroundStyle(DesignSystem.Colors.textSecondary)
-      }
-    }
-  }
-}
 
 struct BiohackingMetricsRow: View {
   let scores: [BiohackingScore]
@@ -1337,6 +1371,7 @@ class NutritionOverviewViewModel: ObservableObject {
   @Published var weekSummaries: [EFNutritionDaySummary] = []
   @Published var profile: UserNutritionProfile = .mock()
   @Published var guidanceText: String = "Loading guidance..."
+  @Published var isLoadingInsights = false
 
   private let provider: NutritionDataProvider
 
@@ -1351,7 +1386,26 @@ class NutritionOverviewViewModel: ObservableObject {
     let (today, weekData) = await (day, week)
     todaySummary = today
     weekSummaries = weekData
+    
+    // Initial fallback
     guidanceText = NutritionGuidance.message(for: profile, summary: todaySummary)
+    
+    // Fetch AI insights
+    await loadInsights()
+  }
+  
+  func loadInsights() async {
+    isLoadingInsights = true
+    do {
+      let response = try await NutritionService.shared.fetchTodayInsights()
+      withAnimation {
+        guidanceText = response.insights.headline
+      }
+    } catch {
+      print("Failed to fetch insights: \(error)")
+      // Keep fallback text
+    }
+    isLoadingInsights = false
   }
 }
 
@@ -1419,6 +1473,13 @@ class NutritionFoodToolsViewModel: ObservableObject {
 
   @Published var suggestionGroups: [NutritionRecommendationGroup] = []
   @Published var oracleResults: [NutritionSuggestedFood] = []
+  
+  @Published var smartDayPlan: SmartDayPlan?
+  @Published var isLoadingPlan = false
+  @Published var planError: String?
+  
+  @Published var isLoadingSearch = false
+  @Published var searchError: String?
 
   private let provider: NutritionDataProvider
 
@@ -1430,9 +1491,44 @@ class NutritionFoodToolsViewModel: ObservableObject {
     let groups = await provider.fetchFoodSuggestions(for: target)
     suggestionGroups = NutritionSuggestionEngine.prepare(groups: groups)
   }
+  
+  func loadSmartPlan() async {
+    isLoadingPlan = true
+    planError = nil
+    do {
+      let response = try await NutritionService.shared.fetchSmartDayPlan()
+      smartDayPlan = response.plan
+    } catch {
+      planError = "Unable to generate plan. Please try again."
+      print("Smart plan error: \(error)")
+    }
+    isLoadingPlan = false
+  }
 
   func searchTopFoods(by nutrient: String) async {
-    oracleResults = await provider.searchFoods(byNutrient: nutrient)
+    isLoadingSearch = true
+    searchError = nil
+    oracleResults = []
+    
+    do {
+        let suggestions = try await NutritionService.shared.searchTopFoods(nutrient: nutrient)
+        
+        // Map backend SuggestedMeal to frontend NutritionSuggestedFood
+        oracleResults = suggestions.map { meal in
+            NutritionSuggestedFood(
+                name: meal.name,
+                calories: meal.macros.kcal,
+                protein: Int(meal.macros.proteinG),
+                carbs: Int(meal.macros.carbsG),
+                fat: Int(meal.macros.fatG)
+            )
+        }
+    } catch {
+        searchError = "Failed to load foods. Try again."
+        print("Search error: \(error)")
+    }
+    
+    isLoadingSearch = false
   }
 }
 

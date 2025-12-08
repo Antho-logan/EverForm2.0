@@ -7,13 +7,18 @@
 
 import Foundation
 import SwiftUI
-import Observation
-
-@Observable
-final class FixPainViewModel {
-    var currentAssessment: FixPainAssessment?
-    var recentAssessments: [FixPainAssessment] = []
-    var generatedPlan: FixPainPlan?
+@MainActor
+final class FixPainViewModel: ObservableObject {
+    @Published var currentAssessment: FixPainAssessment?
+    @Published var recentAssessments: [FixPainAssessment] = []
+    @Published var generatedPlan: FixPainPlan?
+    
+    // AI-backed plan
+    @Published var plan: PainAiPlanDTO?
+    @Published var isLoadingPlan: Bool = false
+    @Published var submitErrorMessage: String?
+    
+    private let service = FixPainService()
     
     init() {
         // Mock recent assessments for demo
@@ -33,6 +38,114 @@ final class FixPainViewModel {
     func startNewAssessment() {
         currentAssessment = FixPainAssessment()
         generatedPlan = nil
+        plan = nil
+        submitErrorMessage = nil
+    }
+    
+    // MARK: - API
+    @MainActor
+    func submitAssessmentAndLoadPlan() async {
+        guard let input = makeAssessmentInput() else {
+            submitErrorMessage = "Please complete all required fields."
+            return
+        }
+        
+        isLoadingPlan = true
+        submitErrorMessage = nil
+        
+        do {
+            let newPlan = try await service.submitAssessment(input)
+            self.plan = newPlan
+            print("[FixPain] Loaded plan from backend with triageLevel: \(newPlan.triageLevel.rawValue)")
+            self.isLoadingPlan = false
+        } catch {
+            self.isLoadingPlan = false
+            self.submitErrorMessage = "We couldn’t generate a plan right now. Please try again."
+            if let backendError = error as? BackendError {
+                print("[FixPain] Backend error: \(backendError)")
+            } else {
+                print("[FixPain] Submit error:", error)
+            }
+        }
+    }
+    
+    // MARK: - Mapping to backend DTO
+    private func makeAssessmentInput() -> PainAssessmentInputDTO? {
+        guard let assessment = currentAssessment,
+              let region = assessment.region,
+              let side = assessment.side else {
+            return nil
+        }
+        
+        let regionKey = mapRegion(region)
+        let sideKey = mapSide(side)
+        
+        // Backend enum: acute (<14d), subacute (<42d), chronic (>=42d), sudden, unknown
+        let durationKey: String = {
+            if assessment.onset == .sudden { return "sudden" }
+            if assessment.durationInDays < 14 { return "acute" }
+            if assessment.durationInDays < 42 { return "subacute" }
+            return "chronic"
+        }()
+        
+        var characters: [String] = []
+        if let q = assessment.quality { characters.append(q.rawValue.lowercased()) }
+        
+        var aggravating: [String] = []
+        if assessment.movementWorse { aggravating.append("movement") }
+        if assessment.restWorse { aggravating.append("rest") }
+        if assessment.postureStrain { aggravating.append("posture/desk") }
+        
+        var redFlags: [String] = []
+        if assessment.recentTrauma { redFlags.append("recent trauma") }
+        if assessment.numbnessOrTingling { redFlags.append("numbness/tingling") }
+        if assessment.nightPain { redFlags.append("night pain") }
+        if assessment.feverOrIllness { redFlags.append("fever/illness") }
+        
+        var context: [String] = []
+        if let activity = assessment.activityLevel { context.append("activity: \(activity.rawValue)") }
+        if let training = assessment.recentTrainingChange { context.append("training: \(training.rawValue)") }
+        if let stress = assessment.stressLevel { context.append("stress: \(stress.rawValue)") }
+        
+        return PainAssessmentInputDTO(
+            bodyRegion: regionKey,
+            side: sideKey,
+            painDuration: durationKey,
+            painIntensity: Int(assessment.intensity),
+            painCharacter: characters,
+            aggravatingFactors: aggravating,
+            relievingFactors: [],
+            activityContext: context,
+            redFlags: redFlags,
+            functionalLimitations: [],
+            notes: assessment.notes.isEmpty ? nil : assessment.notes,
+            photoUrl: nil // photo upload not wired yet
+        )
+    }
+    
+    private func mapRegion(_ region: PainRegion) -> String {
+        switch region {
+        case .neck: return "neck"
+        case .upperBack: return "upper_back"
+        case .lowerBack: return "lower_back"
+        case .shoulder: return "shoulder"
+        case .hip: return "hip"
+        case .knee: return "knee"
+        case .ankle: return "ankle"
+        case .foot: return "foot"
+        case .elbow: return "elbow"
+        case .wrist: return "wrist"
+        case .hand: return "hand"
+        }
+    }
+    
+    private func mapSide(_ side: PainSide) -> String {
+        switch side {
+        case .left: return "left"
+        case .right: return "right"
+        case .both: return "both"
+        case .central: return "center"
+        }
     }
     
     func generatePlan(for assessment: FixPainAssessment) {

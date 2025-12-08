@@ -1,8 +1,12 @@
-// Look Max routes: track aesthetic improvement sessions.
+/**
+ * Look Max Routes
+ * Track aesthetic improvement sessions.
+ */
+
 import { Router } from 'express';
 import { z } from 'zod';
-import { supabase } from '../config/supabaseClient';
 import { AuthenticatedRequest } from '../types';
+import { userSelect, userInsert } from '../utils/db';
 
 const router = Router();
 
@@ -18,74 +22,84 @@ const lookmaxActionSchema = z.object({
   notes: z.string().optional()
 });
 
-router.get('/routines', async (req: AuthenticatedRequest, res, next) => {
+/**
+ * GET /api/v1/lookmax/routines
+ */
+router.get('/routines', async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.user?.id as string;
-    const { data, error } = await supabase
-      .from('lookmax_sessions')
-      .select('*')
-      .eq('user_id', userId)
+    
+    const { data, error } = await userSelect('lookmax_sessions', userId, '*')
       .order('created_at', { ascending: false })
       .limit(3);
 
     if (error) {
-      console.error('Failed to fetch lookmax sessions', error);
-      return res.status(500).json({ message: 'Could not fetch lookmax sessions' });
+      console.error('[lookmax] Failed to fetch sessions:', error.message);
+      return res.status(500).json({ message: 'Could not fetch lookmax sessions', error: error.message });
     }
 
-    return res.json({ lookmaxSessions: data ?? [] });
+    return res.json({ lookmaxSessions: data ?? [], status: 'ok' });
   } catch (err) {
-    return next(err);
+    console.error('[lookmax] Unexpected error:', err);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-router.post('/routines', async (req: AuthenticatedRequest, res, next) => {
+/**
+ * POST /api/v1/lookmax/routines
+ */
+router.post('/routines', async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.user?.id as string;
     const parsed = lookmaxRoutineSchema.parse(req.body);
 
-    const payload = {
-      user_id: userId,
+    const { data, error } = await userInsert('lookmax_sessions', userId, {
       category: parsed.category,
       plan_json: parsed.planJson,
       notes: parsed.notes
-    };
-
-    const { data, error } = await supabase.from('lookmax_sessions').insert(payload).select().single();
+    }).select().single();
 
     if (error) {
-      console.error('Failed to create lookmax session', error);
-      return res.status(500).json({ message: 'Could not create lookmax session' });
+      console.error('[lookmax] Failed to create session:', error.message);
+      return res.status(500).json({ message: 'Could not create lookmax session', error: error.message });
     }
 
-    return res.status(201).json({ lookmaxSession: data });
+    return res.status(201).json({ lookmaxSession: data, status: 'ok' });
   } catch (err) {
-    return next(err);
+    if (err instanceof z.ZodError) {
+      return res.status(400).json({ message: 'Validation failed', issues: err.issues });
+    }
+    console.error('[lookmax] Unexpected error:', err);
+    return res.status(500).json({ message: 'Could not create lookmax session' });
   }
 });
 
-router.post('/actions', async (req: AuthenticatedRequest, res, next) => {
+/**
+ * POST /api/v1/lookmax/actions
+ */
+router.post('/actions', async (req: AuthenticatedRequest, res) => {
   try {
     const userId = req.user?.id as string;
     const parsed = lookmaxActionSchema.parse(req.body);
 
-    const payload = {
-      user_id: userId,
+    const { data, error } = await userInsert('lookmax_actions', userId, {
       session_id: parsed.routineId,
       action: parsed.action,
       notes: parsed.notes
-    };
-
-    const { data, error } = await supabase.from('lookmax_actions').insert(payload).select().single();
+    }).select().single();
 
     if (error) {
-      console.error('Failed to create lookmax action', error);
-      return res.status(500).json({ message: 'Could not create lookmax action' });
+      console.error('[lookmax] Failed to create action:', error.message);
+      return res.status(500).json({ message: 'Could not create lookmax action', error: error.message });
     }
 
-    return res.status(201).json({ action: data });
+    return res.status(201).json({ action: data, status: 'ok' });
   } catch (err) {
-    return next(err);
+    if (err instanceof z.ZodError) {
+      return res.status(400).json({ message: 'Validation failed', issues: err.issues });
+    }
+    console.error('[lookmax] Unexpected error:', err);
+    return res.status(500).json({ message: 'Could not create lookmax action' });
   }
 });
 

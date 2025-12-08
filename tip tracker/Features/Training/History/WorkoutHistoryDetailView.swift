@@ -5,6 +5,7 @@
 //  Detailed view of a completed workout with exercise breakdown
 //  Applied: T-UI, S-OBS2, P-ARCH, C-SIMPLE, R-LOGS
 //
+//
 
 import SwiftUI
 
@@ -13,50 +14,31 @@ struct WorkoutHistoryDetailView: View {
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: DesignSystem.Spacing.lg) {
-                    // Header Stats
-                    WorkoutStatsSection(workout: workout)
-                    
-                    // Exercise Breakdown
-                    if !workout.exerciseSummaries.isEmpty {
-                        ExerciseBreakdownSection(exercises: workout.exerciseSummaries)
-                    }
-                    
-                    // Notes
-                    if let notes = workout.notes, !notes.isEmpty {
-                        NotesSection(notes: notes)
-                    }
-                }
-                .padding(.horizontal, DesignSystem.Spacing.screenPadding)
-                .padding(.vertical, DesignSystem.Spacing.lg)
-            }
-            .navigationTitle(workout.title)
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Close") {
-                        dismiss()
-                    }
+        EFScreenContainer {
+            VStack(spacing: 0) {
+                EFHeader(title: workout.title, showBack: true) {
+                    dismiss()
                 }
                 
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Menu {
-                        Button {
-                            // TODO: Share workout
-                        } label: {
-                            Label("Share", systemImage: "square.and.arrow.up")
+                ScrollView {
+                    VStack(alignment: .leading, spacing: EverFormTheme.Spacing.sectionSpacing) {
+                        // Header Stats
+                        WorkoutStatsSection(workout: workout)
+                        
+                        // Exercise Breakdown
+                        if !workout.exerciseSummaries.isEmpty {
+                            ExerciseBreakdownSection(exercises: workout.exerciseSummaries)
                         }
                         
-                        Button {
-                            // TODO: Export to Health
-                        } label: {
-                            Label("Export to Health", systemImage: "heart")
+                        // Notes
+                        if let notes = workout.notes, !notes.isEmpty {
+                            NotesSection(notes: notes)
                         }
-                    } label: {
-                        Image(systemName: "ellipsis.circle")
+                        
+                        Spacer(minLength: 40)
                     }
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 20)
                 }
             }
         }
@@ -75,54 +57,55 @@ struct WorkoutStatsSection: View {
     let workout: WorkoutHistorySummary
     
     var body: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("Workout Summary")
-                .font(.system(size: 20, weight: .semibold, design: .rounded))
-                .foregroundColor(.primary)
+                .font(EverFormTheme.Typography.sectionTitle)
+                .foregroundColor(EverFormTheme.Colors.textPrimary)
             
-            VStack(spacing: DesignSystem.Spacing.md) {
-                HStack(spacing: DesignSystem.Spacing.md) {
+            VStack(spacing: 12) {
+                HStack(spacing: 12) {
                     DetailStatCard(
                         title: "Duration",
                         value: workout.formattedDuration,
                         icon: "clock.fill",
-                        color: DesignSystem.Colors.info
+                        color: EverFormTheme.Colors.infoBlue
                     )
                     
                     DetailStatCard(
                         title: "Total Volume",
                         value: workout.formattedVolume,
                         icon: "scalemass.fill",
-                        color: DesignSystem.Colors.success
+                        color: EverFormTheme.Colors.successGreen
                     )
                 }
                 
-                HStack(spacing: DesignSystem.Spacing.md) {
+                HStack(spacing: 12) {
                     DetailStatCard(
                         title: "Sets",
                         value: "\(workout.totalSets)",
                         icon: "list.bullet.circle.fill",
-                        color: DesignSystem.Colors.accent
+                        color: EverFormTheme.Colors.trainingGreen
                     )
                     
                     DetailStatCard(
                         title: "Total Reps",
                         value: "\(workout.totalReps)",
                         icon: "number.circle.fill",
-                        color: DesignSystem.Colors.warning
+                        color: EverFormTheme.Colors.warningAmber
                     )
                 }
             }
             
-            // Date and Time
+            // Date
             HStack {
                 Image(systemName: "calendar")
-                    .foregroundColor(.secondary)
+                    .foregroundColor(EverFormTheme.Colors.textSecondary)
                 
                 Text(workout.formattedDate)
-                    .font(.system(size: 16, weight: .medium, design: .rounded))
-                    .foregroundColor(.secondary)
+                    .font(EverFormTheme.Typography.body)
+                    .foregroundColor(EverFormTheme.Colors.textSecondary)
             }
+            .padding(.top, 8)
         }
     }
 }
@@ -133,12 +116,12 @@ struct ExerciseBreakdownSection: View {
     let exercises: [ExerciseSummary]
     
     var body: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("Exercise Breakdown")
-                .font(.system(size: 20, weight: .semibold, design: .rounded))
-                .foregroundColor(.primary)
+                .font(EverFormTheme.Typography.sectionTitle)
+                .foregroundColor(EverFormTheme.Colors.textPrimary)
             
-            VStack(spacing: DesignSystem.Spacing.sm) {
+            VStack(spacing: 8) {
                 ForEach(exercises) { exercise in
                     ExerciseDetailCard(exercise: exercise)
                 }
@@ -153,26 +136,27 @@ struct NotesSection: View {
     let notes: String
     
     var body: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.md) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("Notes")
-                .font(.system(size: 20, weight: .semibold, design: .rounded))
-                .foregroundColor(.primary)
+                .font(EverFormTheme.Typography.sectionTitle)
+                .foregroundColor(EverFormTheme.Colors.textPrimary)
             
             Text(notes)
-                .font(.system(size: 16, design: .rounded))
-                .foregroundColor(.primary)
-                .padding(DesignSystem.Spacing.md)
-                .background(DesignSystem.Colors.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: DesignSystem.Radius.md))
+                .font(EverFormTheme.Typography.body)
+                .foregroundColor(EverFormTheme.Colors.textPrimary)
+                .padding(16)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(EverFormTheme.Colors.card)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
                 .overlay(
-                    RoundedRectangle(cornerRadius: DesignSystem.Radius.md)
-                        .stroke(DesignSystem.Border.outlineColor, lineWidth: DesignSystem.Border.outline)
+                    RoundedRectangle(cornerRadius: 16)
+                        .stroke(EverFormTheme.Colors.cardStroke, lineWidth: 1)
                 )
         }
     }
 }
 
-// MARK: - Detail Stat Card
+// MARK: - Components
 
 struct DetailStatCard: View {
     let title: String
@@ -181,101 +165,67 @@ struct DetailStatCard: View {
     let color: Color
     
     var body: some View {
-        VStack(spacing: DesignSystem.Spacing.sm) {
-            ZStack {
-                Circle()
-                    .fill(color.opacity(0.1))
-                    .frame(width: 40, height: 40)
+        EFCard {
+            VStack(spacing: 8) {
+                ZStack {
+                    Circle()
+                        .fill(color.opacity(0.1))
+                        .frame(width: 40, height: 40)
+                    
+                    Image(systemName: icon)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(color)
+                }
                 
-                Image(systemName: icon)
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(color)
+                VStack(spacing: 2) {
+                    Text(value)
+                        .font(EverFormTheme.Typography.cardTitle)
+                        .foregroundColor(EverFormTheme.Colors.textPrimary)
+                    
+                    Text(title)
+                        .font(EverFormTheme.Typography.caption)
+                        .foregroundColor(EverFormTheme.Colors.textSecondary)
+                }
             }
-            
-            VStack(spacing: 2) {
-                Text(value)
-                    .font(.system(size: 18, weight: .bold, design: .rounded))
-                    .foregroundColor(.primary)
-                
-                Text(title)
-                    .font(.system(size: 12, weight: .medium, design: .rounded))
-                    .foregroundColor(.secondary)
-            }
+            .frame(maxWidth: .infinity)
         }
-        .frame(maxWidth: .infinity)
-        .padding(DesignSystem.Spacing.md)
-        .background(DesignSystem.Colors.cardBackground)
-        .clipShape(RoundedRectangle(cornerRadius: DesignSystem.Radius.md))
-        .overlay(
-            RoundedRectangle(cornerRadius: DesignSystem.Radius.md)
-                .stroke(DesignSystem.Border.outlineColor, lineWidth: DesignSystem.Border.outline)
-        )
     }
 }
-
-// MARK: - Exercise Detail Card
 
 struct ExerciseDetailCard: View {
     let exercise: ExerciseSummary
     
     var body: some View {
-        VStack(alignment: .leading, spacing: DesignSystem.Spacing.sm) {
-            // Exercise Name
-            Text(exercise.exerciseName)
-                .font(.system(size: 16, weight: .semibold, design: .rounded))
-                .foregroundColor(.primary)
-            
-            // Stats Row
-            HStack(spacing: DesignSystem.Spacing.lg) {
-                StatPill(
-                    label: "Sets",
-                    value: "\(exercise.completedSets)",
-                    color: DesignSystem.Colors.accent
-                )
+        EFCard {
+            VStack(alignment: .leading, spacing: 8) {
+                Text(exercise.exerciseName)
+                    .font(EverFormTheme.Typography.cardTitle)
+                    .foregroundColor(EverFormTheme.Colors.textPrimary)
                 
-                StatPill(
-                    label: "Reps",
-                    value: "\(exercise.totalReps)",
-                    color: DesignSystem.Colors.info
-                )
-                
-                if exercise.totalVolume > 0 {
-                    StatPill(
-                        label: "Volume",
-                        value: String(format: "%.0f kg", exercise.totalVolume),
-                        color: DesignSystem.Colors.success
-                    )
+                HStack(spacing: 12) {
+                    StatPill(label: "Sets", value: "\(exercise.completedSets)", color: EverFormTheme.Colors.trainingGreen)
+                    StatPill(label: "Reps", value: "\(exercise.totalReps)", color: EverFormTheme.Colors.infoBlue)
+                    if exercise.totalVolume > 0 {
+                        StatPill(label: "Volume", value: String(format: "%.0f kg", exercise.totalVolume), color: EverFormTheme.Colors.successGreen)
+                    }
+                    Spacer()
                 }
                 
-                Spacer()
-            }
-            
-            // Best Set
-            if let bestSet = exercise.bestSet {
-                HStack {
-                    Text("Best set:")
-                        .font(.system(size: 12, weight: .medium, design: .rounded))
-                        .foregroundColor(.secondary)
-                    
-                    Text(bestSet.displayText)
-                        .font(.system(size: 12, weight: .semibold, design: .rounded))
-                        .foregroundColor(.primary)
-                    
-                    Spacer()
+                if let bestSet = exercise.bestSet {
+                    HStack {
+                        Text("Best set:")
+                            .font(EverFormTheme.Typography.caption)
+                            .foregroundColor(EverFormTheme.Colors.textSecondary)
+                        Text(bestSet.displayText)
+                            .font(EverFormTheme.Typography.label)
+                            .foregroundColor(EverFormTheme.Colors.textPrimary)
+                        Spacer()
+                    }
                 }
             }
         }
-        .padding(DesignSystem.Spacing.md)
-        .background(DesignSystem.Colors.cardBackgroundElevated)
-        .clipShape(RoundedRectangle(cornerRadius: DesignSystem.Radius.sm))
-        .overlay(
-            RoundedRectangle(cornerRadius: DesignSystem.Radius.sm)
-                .stroke(DesignSystem.Border.outlineColor, lineWidth: DesignSystem.Border.outline)
-        )
     }
 }
-
-// MARK: - Stat Pill
 
 struct StatPill: View {
     let label: String
@@ -285,52 +235,15 @@ struct StatPill: View {
     var body: some View {
         HStack(spacing: 4) {
             Text(label)
-                .font(.system(size: 10, weight: .medium, design: .rounded))
+                .font(EverFormTheme.Typography.caption)
                 .foregroundColor(color)
-            
             Text(value)
-                .font(.system(size: 12, weight: .semibold, design: .rounded))
-                .foregroundColor(.primary)
+                .font(EverFormTheme.Typography.label)
+                .foregroundColor(EverFormTheme.Colors.textPrimary)
         }
         .padding(.horizontal, 8)
         .padding(.vertical, 4)
         .background(color.opacity(0.1))
         .clipShape(Capsule())
     }
-}
-
-#Preview {
-    WorkoutHistoryDetailView(
-        workout: WorkoutHistorySummary(
-            title: "Upper Power",
-            totalVolumeKg: 2450.0,
-            totalSets: 18,
-            totalReps: 162,
-            durationSec: 4200,
-            notes: "Great workout! Felt strong on bench press and managed to hit all my target reps.",
-            exerciseSummaries: [
-                ExerciseSummary(
-                    exerciseName: "Bench Press",
-                    completedSets: 3,
-                    totalReps: 30,
-                    totalVolume: 1800.0,
-                    bestSet: SetSummary(reps: 10, weight: 60.0, rpe: 8.0)
-                ),
-                ExerciseSummary(
-                    exerciseName: "Pull-ups",
-                    completedSets: 3,
-                    totalReps: 24,
-                    totalVolume: 0.0,
-                    bestSet: SetSummary(reps: 8, weight: nil, rpe: 7.5)
-                ),
-                ExerciseSummary(
-                    exerciseName: "Overhead Press",
-                    completedSets: 3,
-                    totalReps: 27,
-                    totalVolume: 1080.0,
-                    bestSet: SetSummary(reps: 9, weight: 40.0, rpe: 8.5)
-                )
-            ]
-        )
-    )
 }
