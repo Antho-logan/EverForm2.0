@@ -33,12 +33,30 @@ import { generatePainPlan } from '../services/painAiService';
 
 const router = Router();
 
-const stringArray = z.array(z.string().min(1)).optional().nullable().default([]);
+const stringArray = z.array(z.string().min(1)).optional().default([]);
+
+const painBodyRegions = [
+  'neck',
+  'upper_back',
+  'lower_back',
+  'shoulder',
+  'hip',
+  'knee',
+  'ankle',
+  'elbow',
+  'wrist',
+  'hand',
+  'foot',
+] as const;
+
+const painSides = ['left', 'right', 'both', 'center', 'unspecified'] as const;
+
+const painDurations = ['acute', 'subacute', 'chronic', 'sudden', 'unknown'] as const;
 
 export const painAssessmentInputSchema = z.object({
-  bodyRegion: z.string().min(1),
-  side: z.string().min(1),
-  painDuration: z.string().min(1),
+  bodyRegion: z.enum(painBodyRegions),
+  side: z.enum(painSides),
+  painDuration: z.enum(painDurations),
   painIntensity: z.number().int().min(0).max(10),
   painCharacter: stringArray,
   aggravatingFactors: stringArray,

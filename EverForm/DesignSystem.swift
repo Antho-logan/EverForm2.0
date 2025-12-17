@@ -13,10 +13,10 @@ struct DesignSystem {
 
   // MARK: - Colors (WCAG AA+ Compliant)
   struct Colors {
-    // Primary Accent - Premium Blue
-    static let accent = Color(hex: "0066FF")  // #0066FF - High contrast blue
-    static let accentLight = Color(hex: "3385FF")
-    static let accentDark = Color(hex: "0052CC")
+    // Primary Accent - Brand Blue
+    static let accent = AppTheme.Colors.brandBlue
+    static let accentLight = AppTheme.Colors.brandBlue.opacity(0.85)
+    static let accentDark = AppTheme.Colors.brandBlue.opacity(1.0)
 
     // Neutral Palette
     static let neutral50 = Color(hex: "F9FAFB")  // #F9FAFB
@@ -53,41 +53,31 @@ struct DesignSystem {
     private static let darkBackgroundSoft = UIColor(red: 0.11, green: 0.11, blue: 0.12, alpha: 1.0)
     private static let darkBackgroundPale = UIColor(red: 0.17, green: 0.17, blue: 0.18, alpha: 1.0)
 
-    static let background = dynamicColor(light: lightBackground, dark: darkBackground)
-    static let backgroundSecondary = dynamicColor(
-      light: lightBackgroundSoft, dark: darkBackgroundSoft)
-    static let backgroundTertiary = dynamicColor(
-      light: lightBackgroundPale, dark: darkBackgroundPale)
+    static let background = AppTheme.Colors.appBackground
+    static let backgroundSecondary = AppTheme.Colors.surfaceSecondary
+    static let backgroundTertiary = AppTheme.Colors.surface
 
-    static let textPrimary = Color(.label)
-    static let textSecondary = Color(.secondaryLabel)
-    static let textTertiary = Color(.tertiaryLabel)
+    static let textPrimary = AppTheme.Colors.textPrimary
+    static let textSecondary = AppTheme.Colors.textSecondary
+    static let textTertiary = AppTheme.Colors.textSecondary.opacity(0.75)
 
-    static let border = Color(.separator)
-    static let borderSecondary = Color(.opaqueSeparator)
+    static let border = AppTheme.Colors.separator
+    static let borderSecondary = AppTheme.Colors.separator.opacity(0.8)
 
     // Premium Card Colors (Better contrast for light/dark)
-    static var cardBackground: Color {
-      dynamicColor(light: lightBackgroundPale, dark: darkBackgroundPale)
-    }
-
-    static var cardBackgroundSecondary: Color {
-      dynamicColor(light: lightBackgroundSoft, dark: darkBackgroundSoft)
-    }
-
-    static var cardBackgroundElevated: Color {
-      dynamicColor(light: UIColor.white, dark: darkBackgroundPale)
-    }
+    static var cardBackground: Color { AppTheme.Colors.surface }
+    static var cardBackgroundSecondary: Color { AppTheme.Colors.surfaceSecondary }
+    static var cardBackgroundElevated: Color { AppTheme.Colors.surface }
 
     // Button Colors (White buttons with dark icons)
-    static let buttonBackground = Color.white
-    static let buttonForeground = Color.black
-    static let buttonBackgroundDark = Color.black
-    static let buttonForegroundDark = Color.white
+    static let buttonBackground = AppTheme.Colors.surface
+    static let buttonForeground = AppTheme.Colors.textPrimary
+    static let buttonBackgroundDark = AppTheme.Colors.surface
+    static let buttonForegroundDark = AppTheme.Colors.textPrimary
 
     // Icon Circle Colors
-    static let iconCircleBackground = Color.white
-    static let iconCircleForeground = Color.black
+    static let iconCircleBackground = AppTheme.Colors.surface
+    static let iconCircleForeground = AppTheme.Colors.textPrimary
   }
 
   // MARK: - Font Style System
@@ -471,21 +461,7 @@ extension Color {
 
 // MARK: - View Modifiers for Design System
 extension View {
-  func cardStyle() -> some View {
-    self
-      .background(DesignSystem.Colors.cardBackground)
-      .clipShape(RoundedRectangle(cornerRadius: DesignSystem.Radius.lg))
-      .shadow(
-        color: .black.opacity(0.08),
-        radius: 12,
-        x: 0,
-        y: 4
-      )
-      .overlay(
-        RoundedRectangle(cornerRadius: DesignSystem.Radius.lg)
-          .stroke(Color.white.opacity(0.05), lineWidth: 1)
-      )
-  }
+  // cardStyle moved to EverFormTheme.swift
 
   func buttonPrimaryStyle() -> some View {
     self
@@ -537,7 +513,7 @@ extension View {
 
 /// The single source of truth for the EverForm design system.
 /// Wraps tokens for Colors, Typography, Spacing, Radii, and Shadows.
-public struct EverFormTheme {
+public struct EverFormThemeLegacy {
 
   // MARK: - Colors
   public struct Colors {

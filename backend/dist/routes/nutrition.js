@@ -9,10 +9,40 @@ const zod_1 = require("zod");
 const coachAgent_1 = require("../services/coachAgent");
 const db_1 = require("../utils/db");
 const supabaseClient_1 = require("../config/supabaseClient");
+const nutritionProfileService_1 = require("../services/nutritionProfileService");
+const nutritionAiService_1 = require("../services/nutritionAiService");
 const router = (0, express_1.Router)();
 // ─────────────────────────────────────────────────────────────────────────────
 // Schemas
 // ─────────────────────────────────────────────────────────────────────────────
+const nutritionProfileUpdateSchema = zod_1.z.object({
+    goal: zod_1.z.enum(['maintenance', 'fat_loss', 'recomposition', 'muscle_gain', 'performance', 'longevity']).optional(),
+    calorieTarget: zod_1.z.number().int().min(1200).max(5000).optional(),
+    proteinTargetG: zod_1.z.number().int().min(40).max(350).optional(),
+    carbTargetG: zod_1.z.number().int().min(40).max(600).optional(),
+    fatTargetG: zod_1.z.number().int().min(20).max(200).optional(),
+    dietType: zod_1.z.enum(['omnivore', 'high_protein', 'mediterranean', 'vegetarian', 'vegan', 'low_carb', 'low_fat']).optional(),
+    constraints: zod_1.z
+        .object({
+        glutenFree: zod_1.z.boolean().optional(),
+        dairyFree: zod_1.z.boolean().optional(),
+        nutAllergy: zod_1.z.boolean().optional(),
+        halal: zod_1.z.boolean().optional(),
+        kosher: zod_1.z.boolean().optional(),
+        pescatarian: zod_1.z.boolean().optional(),
+    })
+        .partial()
+        .optional(),
+    biohackerFlags: zod_1.z
+        .object({
+        fastingWindowStart: zod_1.z.string().regex(/^\d{2}:\d{2}$/).optional(),
+        fastingWindowEnd: zod_1.z.string().regex(/^\d{2}:\d{2}$/).optional(),
+        caffeineCutoffHour: zod_1.z.number().int().min(0).max(23).optional(),
+        lateMealCutoffHour: zod_1.z.number().int().min(0).max(23).optional(),
+    })
+        .partial()
+        .optional(),
+});
 const nutritionLogSchema = zod_1.z.object({
     date: zod_1.z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
     mealType: zod_1.z.enum(['breakfast', 'lunch', 'dinner', 'snack', 'pre_workout', 'post_workout']),
@@ -37,6 +67,44 @@ const mealSchema = zod_1.z.object({
     fatG: zod_1.z.number().nonnegative().optional(),
     loggedAt: zod_1.z.string(),
     source: zod_1.z.string().optional()
+});
+const planRequestSchema = zod_1.z.object({
+    date: zod_1.z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
+});
+// ─────────────────────────────────────────────────────────────────────────────
+// Nutrition Profile
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * GET /api/v1/nutrition/profile
+ */
+router.get('/profile', async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const profile = await (0, nutritionProfileService_1.getOrCreateDefaultNutritionProfile)(userId);
+        return res.json(profile);
+    }
+    catch (err) {
+        console.error('[nutrition] GET /profile failed', err);
+        return res.status(500).json({ message: 'Failed to fetch nutrition profile' });
+    }
+});
+/**
+ * PUT /api/v1/nutrition/profile
+ */
+router.put('/profile', async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const parsed = nutritionProfileUpdateSchema.parse(req.body);
+        const profile = await (0, nutritionProfileService_1.updateNutritionProfile)(userId, parsed);
+        return res.json(profile);
+    }
+    catch (err) {
+        if (err instanceof zod_1.z.ZodError) {
+            return res.status(400).json({ message: 'Validation failed', issues: err.issues });
+        }
+        console.error('[nutrition] Failed to update nutrition profile', err);
+        return res.status(500).json({ message: 'Could not update nutrition profile' });
+    }
 });
 // ─────────────────────────────────────────────────────────────────────────────
 // Nutrition Logs (New API)
@@ -207,6 +275,43 @@ router.get('/summary', async (req, res) => {
     catch (err) {
         console.error('[nutrition] Unexpected error:', err);
         return res.status(500).json({ message: 'Internal server error' });
+    }
+});
+// ─────────────────────────────────────────────────────────────────────────────
+// AI Insights & Smart Day Plan
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * GET /api/v1/nutrition/insights/today
+ */
+router.get('/insights/today', async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const date = new Date().toISOString().slice(0, 10);
+        const result = await (0, nutritionAiService_1.generateDailyNutritionInsights)(userId, date);
+        return res.json(result);
+    }
+    catch (err) {
+        console.error('[nutrition/insights] Failed to generate insights', err);
+        return res.status(500).json({ message: 'Failed to generate nutrition insights' });
+    }
+});
+/**
+ * POST /api/v1/nutrition/plan/day
+ */
+router.post('/plan/day', async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const parsed = planRequestSchema.parse(req.body ?? {});
+        const date = parsed.date ?? new Date().toISOString().slice(0, 10);
+        const result = await (0, nutritionAiService_1.generateSmartDayPlan)(userId, date);
+        return res.json(result);
+    }
+    catch (err) {
+        if (err instanceof zod_1.z.ZodError) {
+            return res.status(400).json({ message: 'Validation failed', issues: err.issues });
+        }
+        console.error('[nutrition/plan] Failed to generate smart day plan', err);
+        return res.status(500).json({ message: 'Failed to generate smart day plan' });
     }
 });
 // ─────────────────────────────────────────────────────────────────────────────

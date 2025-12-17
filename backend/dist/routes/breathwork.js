@@ -7,6 +7,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const zod_1 = require("zod");
 const db_1 = require("../utils/db");
+const breathworkAiService_1 = require("../services/breathworkAiService");
 const router = (0, express_1.Router)();
 const BREATHWORK_PATTERNS = [
     {
@@ -171,6 +172,37 @@ router.post('/sessions', async (req, res) => {
         }
         console.error('[breathwork] Unexpected error:', err);
         return res.status(500).json({ message: 'Could not create breathwork session' });
+    }
+});
+// ─────────────────────────────────────────────────────────────────────────────
+// AI Coach
+// ─────────────────────────────────────────────────────────────────────────────
+const isoDateString = zod_1.z.string().regex(/^\d{4}-\d{2}-\d{2}/);
+router.get('/ai/today', async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const suggestion = await (0, breathworkAiService_1.getTodaySuggestion)(userId);
+        return res.json(suggestion);
+    }
+    catch (err) {
+        console.error('[breathwork] ai/today failed', err);
+        return res.status(500).json({ message: 'Failed to generate breathwork suggestion' });
+    }
+});
+router.get('/ai/weekly-insight', async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const from = req.query.from ? isoDateString.parse(String(req.query.from)) : undefined;
+        const to = req.query.to ? isoDateString.parse(String(req.query.to)) : undefined;
+        const insight = await (0, breathworkAiService_1.getWeeklyInsight)(userId, from, to);
+        return res.json(insight);
+    }
+    catch (err) {
+        if (err instanceof zod_1.z.ZodError) {
+            return res.status(400).json({ message: 'Validation failed', issues: err.issues });
+        }
+        console.error('[breathwork] ai/weekly-insight failed', err);
+        return res.status(500).json({ message: 'Failed to generate weekly breathwork insight' });
     }
 });
 exports.default = router;

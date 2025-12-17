@@ -36,21 +36,20 @@ struct NutritionDiaryView: View {
                             }
                         }
                         .padding(.horizontal, DesignSystem.Spacing.screenPadding)
-                        .padding(.bottom, 120) // Space for footer
                     }
                 }
-                
-                Spacer()
-                
-                // Footer with totals and goal
+            }
+            .navigationTitle("Today's Diary")
+            .navigationBarTitleDisplayMode(.large)
+            // Footer is a true safe-area inset so the ScrollView doesn't need magic padding.
+            .safeAreaInset(edge: .bottom, spacing: 0) {
                 DiaryFooter(
                     nutritionStore: nutritionStore,
                     onAdjustGoal: { showGoalEditor = true },
                     onViewTrends: { showWeeklyTrends = true }
                 )
+                .background(DesignSystem.Colors.background.ignoresSafeArea(edges: .bottom))
             }
-            .navigationTitle("Today's Diary")
-            .navigationBarTitleDisplayMode(.large)
         }
         .sheet(isPresented: $showGoalEditor) {
             GoalEditorSheet(nutritionStore: nutritionStore)

@@ -9,6 +9,8 @@ const zod_1 = require("zod");
 const aiService_1 = require("../services/aiService");
 const coachAgent_1 = require("../services/coachAgent");
 const supabaseClient_1 = require("../config/supabaseClient");
+const knowledgeService_1 = require("../services/knowledgeService");
+const promptSanitizer_1 = require("../utils/promptSanitizer");
 const router = (0, express_1.Router)();
 const messageSchema = zod_1.z.object({
     message: zod_1.z.string().min(1),
@@ -29,7 +31,9 @@ router.post('/message', async (req, res) => {
         if (!parseResult.success) {
             return res.status(400).json({ error: 'Invalid payload', issues: parseResult.error.issues });
         }
-        const { message, context: clientContext } = parseResult.data;
+        const { message: rawMessage, context: clientContext } = parseResult.data;
+        // Sanitize message to remove extra quotes, braces, JSON wrappers, etc.
+        const message = (0, promptSanitizer_1.sanitizePrompt)(rawMessage);
         let profile = null;
         let recentMeals = [];
         try {
@@ -55,10 +59,22 @@ router.post('/message', async (req, res) => {
         catch (dbErr) {
             console.error('[coach] Failed to fetch meals:', dbErr);
         }
+        // Attempt RAG lookup for knowledge-based questions
+        let knowledgeContext = null;
+        try {
+            knowledgeContext = await (0, knowledgeService_1.getKnowledgeContext)(message);
+            if (knowledgeContext) {
+                console.log('[coach] RAG: Found relevant knowledge chunks');
+            }
+        }
+        catch (ragErr) {
+            console.warn('[coach] RAG lookup failed, continuing without knowledge context:', ragErr);
+        }
         const fullContext = {
             ...clientContext,
             profile,
-            recentMeals: recentMeals.length > 0 ? recentMeals : undefined
+            recentMeals: recentMeals.length > 0 ? recentMeals : undefined,
+            knowledgeContext, // Pass RAG context to the AI service
         };
         try {
             const reply = await (0, aiService_1.generateCoachReply)(message, fullContext);

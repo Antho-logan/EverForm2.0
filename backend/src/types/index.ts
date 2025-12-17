@@ -385,6 +385,39 @@ export interface TrainingProfile {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Smart Training Engine Types
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type SmartSessionType =
+  | 'FULL_BODY_STRENGTH'
+  | 'UPPER_STRENGTH'
+  | 'LOWER_STRENGTH'
+  | 'PUSH'
+  | 'PULL'
+  | 'CARDIO_ZONE2'
+  | 'CARDIO_HIIT'
+  | 'ACTIVE_RECOVERY'
+  | 'MOBILITY_ONLY';
+
+export interface SmartTrainingDay {
+  dayIndex: number; // 0–6
+  label: string;
+  type: SmartSessionType;
+  focusAreas: string[];
+  intensityHint: 'low' | 'moderate' | 'high';
+  estimatedMinutes: number;
+  isRestDay: boolean;
+}
+
+export interface SmartTrainingPlan {
+  goal: TrainingGoal;
+  daysPerWeek: number;
+  experienceLevel: ExperienceLevel;
+  equipmentAccess: EquipmentAccess;
+  days: SmartTrainingDay[];
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Nutrition Types
 // ─────────────────────────────────────────────────────────────────────────────
 

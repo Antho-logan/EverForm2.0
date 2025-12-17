@@ -21,7 +21,7 @@ struct BreathworkHomeView: View {
 
   var body: some View {
     ZStack(alignment: .top) {
-      DesignSystem.Colors.background.ignoresSafeArea()
+      EverFormTheme.Colors.appBackground.ignoresSafeArea()
 
       VStack(spacing: 0) {
         // Header
@@ -34,18 +34,18 @@ struct BreathworkHomeView: View {
                 Image(systemName: "chevron.left")
                   .font(.system(size: 17, weight: .semibold))
                 Text("Back")
-                  .font(DesignSystem.Typography.bodyMedium())
+                  .font(EverFormTheme.Typography.body)
               }
-              .foregroundStyle(DesignSystem.Colors.accent)
+              .foregroundStyle(EverFormTheme.Colors.primaryBlue)
             }
             Spacer()
-
+            
             Text("Breathwork")
-              .font(DesignSystem.Typography.heading())
-              .foregroundStyle(DesignSystem.Colors.textPrimary)
-
+              .font(EverFormTheme.Typography.screenTitle)
+              .foregroundStyle(EverFormTheme.Colors.textPrimary)
+            
             Spacer()
-
+            
             // Hidden button for balance
             Button {
             } label: {
@@ -69,15 +69,15 @@ struct BreathworkHomeView: View {
               } label: {
                 VStack(spacing: 8) {
                   Text(tab.rawValue)
-                    .font(DesignSystem.Typography.labelLarge())
+                    .font(EverFormTheme.Typography.label)
                     .foregroundStyle(
                       selectedTab == tab
-                        ? DesignSystem.Colors.textPrimary : DesignSystem.Colors.textSecondary
+                        ? EverFormTheme.Colors.textPrimary : EverFormTheme.Colors.textSecondary
                     )
                     .fontWeight(selectedTab == tab ? .semibold : .regular)
 
                   Rectangle()
-                    .fill(selectedTab == tab ? DesignSystem.Colors.accent : Color.clear)
+                    .fill(selectedTab == tab ? EverFormTheme.Colors.primaryBlue : Color.clear)
                     .frame(height: 2)
                 }
               }
@@ -86,7 +86,7 @@ struct BreathworkHomeView: View {
           }
           .padding(.horizontal, 20)
         }
-        .background(DesignSystem.Colors.background.opacity(0.95))
+        .background(EverFormTheme.Colors.appBackground.opacity(0.95))
 
         // Content
         TabView(selection: $selectedTab) {

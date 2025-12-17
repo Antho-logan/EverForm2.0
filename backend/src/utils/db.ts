@@ -42,8 +42,20 @@ export function userQuery(table: TableName, userId: UserId) {
  * const { data } = await userSelect('training_sessions', userId, '*, training_exercises(*)')
  *   .eq('date_planned', date);
  */
-export function userSelect(table: TableName, userId: UserId, columns: string = '*') {
-  return supabase.from(table).select(columns).eq('user_id', userId);
+export function userSelect<TColumns extends string = '*'>(
+  table: TableName,
+  userId: UserId,
+  columns?: TColumns
+) {
+  // IMPORTANT:
+  // Supabase's TS types only infer selected column shapes when the `select(...)`
+  // argument is a *string literal* type. If we pass a plain `string`, the return
+  // type becomes `GenericStringError`, which then breaks downstream property access.
+  //
+  // By making `columns` generic, callers that pass string literals (e.g. '*',
+  // '*, child(*)') keep the literal type through to `.select(...)`.
+  const cols = (columns ?? '*') as TColumns;
+  return supabase.from(table).select(cols).eq('user_id', userId);
 }
 
 /**
@@ -98,7 +110,7 @@ export function userUpsert<T extends Record<string, unknown>>(
   table: TableName,
   userId: UserId,
   payload: T,
-  onConflict: string = 'user_id'
+  onConflict = 'user_id'
 ) {
   const payloadWithUser = { ...payload, user_id: userId };
   return supabase.from(table).upsert(payloadWithUser, { onConflict });
@@ -126,7 +138,7 @@ export async function userGetById(
   table: TableName,
   userId: UserId,
   id: string,
-  columns: string = '*'
+  columns = '*'
 ) {
   const { data, error } = await supabase
     .from(table)
@@ -148,6 +160,9 @@ export async function userGetById(
  * Use sparingly - prefer the scoped helpers for user-facing routes.
  */
 export { supabase as adminClient };
+
+
+
 
 
 

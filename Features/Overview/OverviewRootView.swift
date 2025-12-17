@@ -54,7 +54,6 @@ struct OverviewView: View {
               OverviewHero(
                 isFocusPanelVisible: $isFocusPanelVisible, selectedPeriod: $selectedPeriod
               )
-              .padding(.horizontal, 20)
               .zIndex(100)
               .onPreferenceChange(BoundsPreferenceKey.self) { bounds in
                 self.heroFrame = bounds
@@ -62,29 +61,32 @@ struct OverviewView: View {
 
               // Content below
               VStack(spacing: 24) {
-                VStack(spacing: 16) {
-                  EFSectionHeader(
-                    title: "Key Metrics",
-                    subtitle: metricsSubtitle
-                  )
-                  LazyVGrid(columns: [GridItem(.adaptive(minimum: 160), spacing: 16)], spacing: 16)
+                VStack(spacing: 12) {
+                  Text("Key Metrics")
+                    .sectionTitle()
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    
+                  LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12)
                   {
                     ForEach(dynamicKPIs) { card in
                       KPICard(item: card)
                     }
                   }
                 }
-                .padding(.horizontal, 20)
 
-                VStack(spacing: 16) {
-                  EFSectionHeader(
-                    title: "Today's Plan",
-                    subtitle: "Stay on track with your preset routine",
-                    actionTitle: "View All"
-                  ) {
-                    DebugLog.info("Overview: View All plan tapped")
+                VStack(spacing: 12) {
+                  HStack {
+                    Text("Today's Plan")
+                      .sectionTitle()
+                    Spacer()
+                    Button("View All") {
+                      DebugLog.info("Overview: View All plan tapped")
+                    }
+                    .font(EverFormTheme.Typography.label)
+                    .foregroundStyle(EverFormTheme.Colors.primaryBlue)
                   }
-                  LazyVGrid(columns: [GridItem(.adaptive(minimum: 150), spacing: 12)], spacing: 12)
+                  
+                  LazyVGrid(columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)], spacing: 12)
                   {
                     ForEach(updatedPlanCards) { card in
                       OverviewPlanCard(item: card) {
@@ -99,13 +101,11 @@ struct OverviewView: View {
                     }
                   }
                 }
-                .padding(.horizontal, 20)
 
-                VStack(spacing: 16) {
-                  EFSectionHeader(
-                    title: "Quick Actions",
-                    subtitle: "Log essentials or access tools in seconds"
-                  )
+                VStack(spacing: 12) {
+                  Text("Quick Actions")
+                    .sectionTitle()
+                    .frame(maxWidth: .infinity, alignment: .leading)
 
                   ScrollView(.horizontal, showsIndicators: false) {
                     LazyHStack(spacing: 12) {
@@ -129,19 +129,18 @@ struct OverviewView: View {
                   }
 
                   Text("Tip: Logging water right after meals keeps your hydration streak alive.")
-                    .font(EverFont.caption)
+                    .font(EverFormTheme.Typography.caption)
                     .foregroundStyle(themeManager.textSecondary)
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                .padding(.horizontal, 20)
               }
               // Scale down slightly when focus panel is open to add depth
               .scaleEffect(isFocusPanelVisible ? 0.98 : 1.0)
               .animation(.spring, value: isFocusPanelVisible)
             }
-            // Bottom padding to ensure content scrolls fully above the tab bar
-            // Tab bar height is ~60pt + some breathing room
-            .padding(.bottom, 100)
+            .screenPadding()
+            // RootTabView injects the custom tab bar via `safeAreaInset(edge: .bottom)`,
+            // so we should not add a second "tab bar clearance" padding here.
           }
           .scrollDisabled(isFocusPanelVisible)
 

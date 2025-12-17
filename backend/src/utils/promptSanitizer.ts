@@ -52,7 +52,7 @@ export function sanitizePrompt(raw: unknown): string {
   // 3) Strip obvious wrapping characters from both ends
   //    Leading: quotes, braces, whitespace
   //    Trailing: quotes, braces, whitespace
-  s = s.replace(/^[\s"'{\[]+/, '').replace(/[\s"'\}\]]+$/, '');
+  s = s.replace(/^[\s"'{[]+/, '').replace(/[\s"'}\]]+$/, '');
 
   // 4) Remove common trailing patterns like `"}'`, `'"}'`, `}'`, `'}`
   s = s.replace(/["']?\}['"]?$/g, '').trim();
@@ -62,7 +62,7 @@ export function sanitizePrompt(raw: unknown): string {
   s = s.replace(/['"}\]]+$/g, '').trim();
 
   // 6) Remove leading orphan quotes or braces (if any remain)
-  s = s.replace(/^['"{\[]+/g, '').trim();
+  s = s.replace(/^['"{[]+/g, '').trim();
 
   return s;
 }

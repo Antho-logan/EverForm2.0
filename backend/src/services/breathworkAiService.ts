@@ -32,7 +32,7 @@ function clamp(value: number, min: number, max: number): number {
   return Math.min(max, Math.max(min, Math.round(value)));
 }
 
-async function getRecentBreathworkSessions(userId: string, days: number = 7): Promise<BreathworkSessionLite[]> {
+async function getRecentBreathworkSessions(userId: string, days = 7): Promise<BreathworkSessionLite[]> {
   const sinceIso = new Date(Date.now() - days * 24 * 60 * 60 * 1000).toISOString();
   const { data, error } = await supabase
     .from('breathwork_sessions')

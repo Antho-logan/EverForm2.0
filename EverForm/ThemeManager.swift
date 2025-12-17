@@ -27,22 +27,39 @@ enum ThemeMode: String, CaseIterable {
 final class ThemeManager {
   static let shared = ThemeManager()
 
-  private let storageKey = "appearanceMode"
-  private let legacyStorageKey = "selected_theme"
+  // Single source of truth for theme selection across the app.
+  // Note: Other modules already use `themeMode` (e.g. UI/Foundation/Theme.swift, AppearanceStore).
+  private let storageKey = "themeMode"
+  private let legacyStorageKeys = ["appearanceMode", "selected_theme"]
+  private var defaultsObserver: NSObjectProtocol?
 
   var selectedTheme: ThemeMode
 
   init() {
     selectedTheme =
-      ThemeManager.loadPersistedTheme(storageKey: storageKey, legacyKey: legacyStorageKey)
+      ThemeManager.loadPersistedTheme(primaryKey: storageKey, legacyKeys: legacyStorageKeys)
       ?? .system
+
+    // Keep in sync if any legacy UI writes directly to UserDefaults/AppStorage.
+    defaultsObserver = NotificationCenter.default.addObserver(
+      forName: UserDefaults.didChangeNotification, object: nil, queue: .main
+    ) { [weak self] _ in
+      guard let self else { return }
+      guard
+        let loaded = ThemeManager.loadPersistedTheme(primaryKey: storageKey, legacyKeys: legacyStorageKeys)
+      else { return }
+      guard loaded != self.selectedTheme else { return }
+      withAnimation(.easeInOut(duration: 0.2)) {
+        self.selectedTheme = loaded
+      }
+    }
   }
 
   func setTheme(_ theme: ThemeMode) {
     withAnimation(.easeInOut(duration: 0.2)) {
       self.selectedTheme = theme
     }
-    ThemeManager.persist(theme, storageKey: storageKey, legacyKey: legacyStorageKey)
+    ThemeManager.persist(theme, keys: [storageKey] + legacyStorageKeys)
     print("Telemetry: theme_changed")
   }
 
@@ -69,21 +86,21 @@ final class ThemeManager {
 
 // MARK: - Persistence
 extension ThemeManager {
-  fileprivate static func loadPersistedTheme(storageKey: String, legacyKey: String) -> ThemeMode? {
+  fileprivate static func loadPersistedTheme(primaryKey: String, legacyKeys: [String]) -> ThemeMode? {
     let defaults = UserDefaults.standard
-    if let stored = defaults.string(forKey: storageKey), let mode = ThemeMode(rawValue: stored) {
-      return mode
-    }
-    if let legacy = defaults.string(forKey: legacyKey), let mode = ThemeMode(rawValue: legacy) {
-      return mode
+    for key in [primaryKey] + legacyKeys {
+      if let stored = defaults.string(forKey: key), let mode = ThemeMode(rawValue: stored) {
+        return mode
+      }
     }
     return nil
   }
 
-  fileprivate static func persist(_ theme: ThemeMode, storageKey: String, legacyKey: String) {
+  fileprivate static func persist(_ theme: ThemeMode, keys: [String]) {
     let defaults = UserDefaults.standard
-    defaults.set(theme.rawValue, forKey: storageKey)
-    defaults.set(theme.rawValue, forKey: legacyKey)
+    for key in keys {
+      defaults.set(theme.rawValue, forKey: key)
+    }
   }
 }
 

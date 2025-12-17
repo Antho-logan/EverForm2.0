@@ -24,7 +24,7 @@ struct ScanView: View {
                     // Mode Description
                     Text(modeDescription)
                         .font(.caption)
-                        .foregroundStyle(DesignSystem.Colors.textSecondary)
+                        .foregroundStyle(AppTheme.Colors.textSecondary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.horizontal, 24)
 
@@ -116,15 +116,15 @@ private struct ActionCard: View {
     var body: some View {
                     EFCard {
                         VStack(alignment: .leading, spacing: 12) {
-                            Text(modeTitle).font(.headline).foregroundStyle(EFTheme.text(scheme))
+                            Text(modeTitle).font(.headline).foregroundStyle(AppTheme.Colors.textPrimary)
                 Text(currentMode == .plateAI ? "Take a photo of your plate for AI-powered nutrition analysis" : "Scan barcode or nutrition label for accurate results")
-                                .font(.subheadline).foregroundStyle(EFTheme.muted(scheme))
+                                .font(.subheadline).foregroundStyle(AppTheme.Colors.textSecondary)
                             
                             Button("Generate Mock Result") {
                     onGenerateMock()
                             }
                             .frame(maxWidth: .infinity).padding(.vertical, 12)
-                            .background(Color.green)
+                            .background(AppTheme.Colors.brandBlue)
                             .foregroundStyle(Color.white)
                             .clipShape(RoundedRectangle(cornerRadius: 14))
                             
@@ -132,7 +132,7 @@ private struct ActionCard: View {
                     HStack {
                         if isLoading {
                             ProgressView()
-                                .progressViewStyle(CircularProgressViewStyle(tint: .green))
+                                .progressViewStyle(CircularProgressViewStyle(tint: AppTheme.Colors.brandBlue))
                                 .scaleEffect(0.8)
                             Text("Analyzing…")
                         } else {
@@ -141,8 +141,8 @@ private struct ActionCard: View {
                         }
                     }
                                     .frame(maxWidth: .infinity).padding(.vertical, 12)
-                                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(Color.green))
-                    .foregroundStyle(isLoading ? Color.gray : Color.green)
+                                    .overlay(RoundedRectangle(cornerRadius: 14).stroke(AppTheme.Colors.brandBlue))
+                    .foregroundStyle(isLoading ? AppTheme.Colors.textSecondary : AppTheme.Colors.brandBlue)
                             }
                 .disabled(isLoading)
                             .onChange(of: selectedItem) { _, newItem in
@@ -155,10 +155,10 @@ private struct ActionCard: View {
                 if hasImage {
                     HStack(spacing: 6) {
                         Image(systemName: "photo.fill")
-                            .foregroundStyle(.green)
+                            .foregroundStyle(AppTheme.Colors.brandBlue)
                         Text("Photo loaded • Switch tabs to see different analyses")
                             .font(.caption)
-                            .foregroundStyle(EFTheme.muted(scheme))
+                            .foregroundStyle(AppTheme.Colors.textSecondary)
                 }
                     .padding(.top, 4)
                 }
@@ -208,7 +208,7 @@ private struct LoadingView: View {
                 .scaleEffect(1.2)
             Text("Analyzing your food…")
                 .font(.subheadline)
-                .foregroundStyle(EFTheme.muted(scheme))
+                .foregroundStyle(AppTheme.Colors.textSecondary)
         }
         .padding(.vertical, 40)
     }
@@ -229,17 +229,17 @@ private struct ErrorCard: View {
                     .foregroundStyle(.orange)
                 Text("Analysis Issue")
                     .font(.headline)
-                    .foregroundStyle(EFTheme.text(scheme))
+                    .foregroundStyle(AppTheme.Colors.textPrimary)
                 Text(error)
                     .font(.subheadline)
-                    .foregroundStyle(EFTheme.muted(scheme))
+                    .foregroundStyle(AppTheme.Colors.textSecondary)
                     .multilineTextAlignment(.center)
                 
                 Button("Try Again") {
                     onRetry()
                 }
                 .font(.subheadline.weight(.semibold))
-                .foregroundStyle(.blue)
+                .foregroundStyle(AppTheme.Colors.brandBlue)
                 .padding(.top, 4)
             }
             .frame(maxWidth: .infinity)
@@ -257,10 +257,10 @@ private struct EmptyStateCard: View {
     var body: some View {
         EFCard {
             VStack(spacing: 12) {
-                Image(systemName: "viewfinder").font(.largeTitle).foregroundStyle(EFTheme.muted(scheme))
-                Text(hasImage ? "Analyzing..." : "Nothing scanned yet").font(.headline).foregroundStyle(EFTheme.text(scheme))
+                Image(systemName: "viewfinder").font(.largeTitle).foregroundStyle(AppTheme.Colors.textSecondary)
+                Text(hasImage ? "Analyzing..." : "Nothing scanned yet").font(.headline).foregroundStyle(AppTheme.Colors.textPrimary)
                 Text(hasImage ? "Results will appear shortly" : "Import a photo or generate a mock result to see how it works")
-                    .font(.subheadline).foregroundStyle(EFTheme.muted(scheme))
+                    .font(.subheadline).foregroundStyle(AppTheme.Colors.textSecondary)
                     .multilineTextAlignment(.center)
             }.frame(maxWidth: .infinity)
                     }
@@ -278,9 +278,9 @@ private struct SegmentedTabs: View {
             ForEach(ScanMode.allCases, id: \.self) { mode in
                 Text(title(for: mode))
                     .font(.subheadline.weight(currentMode == mode ? .bold : .regular))
-                    .foregroundStyle(currentMode == mode ? EFTheme.text(scheme) : EFTheme.muted(scheme))
+                    .foregroundStyle(currentMode == mode ? AppTheme.Colors.textPrimary : AppTheme.Colors.textSecondary)
                     .padding(.vertical, 8).padding(.horizontal, 14)
-                    .background(EFTheme.surface(scheme).opacity(currentMode == mode ? 1 : 0.7))
+                    .background(AppTheme.Colors.surfaceSecondary.opacity(currentMode == mode ? 1 : 0.7))
                     .clipShape(Capsule())
                     .onTapGesture { currentMode = mode }
             }
@@ -309,7 +309,7 @@ private struct ResultCard: View {
                 // Header
                 HStack {
                     Image(systemName: "sparkles")
-                        .foregroundStyle(Color.blue)
+                        .foregroundStyle(AppTheme.Colors.brandBlue)
                     Text(headerTitle)
                         .font(.headline)
                     Spacer()
@@ -471,7 +471,7 @@ private struct PlateAIContent: View {
                     VStack(alignment: .leading) {
                         Text("\(cals)")
                             .font(.title2.bold())
-                            .foregroundStyle(DesignSystem.Colors.accent)
+                            .foregroundStyle(AppTheme.Colors.brandBlue)
                         Text("Estimated Calories")
                             .font(.caption)
                             .foregroundStyle(.secondary)

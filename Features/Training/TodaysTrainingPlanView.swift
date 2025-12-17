@@ -90,28 +90,34 @@ struct TodaysTrainingPlanView: View {
               }
             }
 
-            // Bottom Padding
-            Spacer().frame(height: 100)
           }
           .padding(.top, 24)
         }
-
-        // Sticky Button
-        if !day.isRestDay {
-          VStack {
-            Spacer()
-            EFPrimaryButton("Start Workout", color: EverFormTheme.Colors.trainingGreen) {
-                // Start logic
-            }
-            .padding(.horizontal, 20)
-            .padding(.bottom, 34)
-          }
-          .frame(height: 100)
-          .background(
-            LinearGradient(colors: [EverFormTheme.Colors.background.opacity(0), EverFormTheme.Colors.background], startPoint: .top, endPoint: .bottom)
-          )
-        }
       }
+    }
+    // Sticky bottom CTA as a proper safe-area inset (no fixed heights / magic padding).
+    .safeAreaInset(edge: .bottom, spacing: 0) {
+        if !day.isRestDay {
+            VStack(spacing: 0) {
+                // Top fade so the button feels docked but content is still readable.
+                LinearGradient(
+                    colors: [
+                        EverFormTheme.Colors.background.opacity(0),
+                        EverFormTheme.Colors.background,
+                    ],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .frame(height: 22)
+
+                EFPrimaryButton("Start Workout", color: EverFormTheme.Colors.trainingGreen) {
+                    // Start logic
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+            }
+            .background(EverFormTheme.Colors.background.ignoresSafeArea(edges: .bottom))
+        }
     }
     .sheet(item: $selectedExercise) { exercise in
       ExerciseDetailSheet(

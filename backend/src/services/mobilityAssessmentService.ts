@@ -8,7 +8,12 @@ import {
 } from '../types';
 import { userInsert, userSelect, userUpsert } from '../utils/db';
 
-const JOINT_KEYS: Array<keyof MobilityJointScores> = ['hipsScore', 'thoracicScore', 'shouldersScore', 'anklesScore'];
+const JOINT_KEYS: (keyof MobilityJointScores)[] = [
+  'hipsScore',
+  'thoracicScore',
+  'shouldersScore',
+  'anklesScore',
+];
 
 function clampScore(value: number): number {
   if (Number.isNaN(value)) return 0;

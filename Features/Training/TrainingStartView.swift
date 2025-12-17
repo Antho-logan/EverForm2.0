@@ -19,20 +19,52 @@ struct TrainingStartView: View {
   var body: some View {
     EFScreenContainer {
         ScrollView {
-          VStack(alignment: .leading, spacing: EverFormTheme.Spacing.sectionSpacing) {
+          VStack(alignment: .leading, spacing: 24) {
 
             // Header
             EFHeader(title: "Training", showBack: true) {
                 dismiss()
             }
 
-            // Hero Card
-            TrainingHero(onTap: { showingSchedule = true })
-              .padding(.horizontal, EverFormTheme.Spacing.screenPadding)
+            // Hero Card (Refactored to remove "green wall" look)
+            Button {
+                showingSchedule = true
+            } label: {
+                EverFormCard {
+                    HStack(alignment: .top) {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Your Schedule")
+                                .font(EverFormTheme.Typography.label)
+                                .foregroundStyle(EverFormTheme.Colors.textSecondary)
+                            
+                            Text("Keep the momentum")
+                                .font(EverFormTheme.Typography.cardTitle)
+                                .foregroundStyle(EverFormTheme.Colors.textPrimary)
+                            
+                            Text("Next: Upper Body Power")
+                                .font(EverFormTheme.Typography.body)
+                                .foregroundStyle(EverFormTheme.Colors.textSecondary)
+                        }
+                        
+                        Spacer()
+                        
+                        Image(systemName: "calendar")
+                            .font(.system(size: 24))
+                            .foregroundStyle(EverFormTheme.Colors.trainingGreen)
+                            .padding(12)
+                            .background(EverFormTheme.Colors.trainingGreen.opacity(0.1))
+                            .clipShape(Circle())
+                    }
+                }
+            }
+            .buttonStyle(.plain)
+            .padding(.horizontal, 20)
 
             // Recent Sessions
             VStack(spacing: 16) {
-              EFSectionHeader(title: "Recent Sessions")
+              Text("Recent Sessions")
+                  .sectionTitle()
+                  .padding(.horizontal, 20)
               
               VStack(spacing: 12) {
                 RecentSessionRow(
@@ -51,13 +83,13 @@ struct TrainingStartView: View {
                   iconColor: EverFormTheme.Colors.recoveryBlue
                 )
               }
+              .padding(.horizontal, 20)
             }
-            .padding(.horizontal, EverFormTheme.Spacing.screenPadding)
             .padding(.bottom, 20)
-
-            Spacer(minLength: 100)
           }
-          .padding(.bottom, 40)
+          // RootTabView provides bottom safe-area for the custom tab bar via `safeAreaInset`.
+          // Avoid large spacer hacks that can make content feel clipped/zoomed.
+          .padding(.bottom, 24)
         }
     }
     .navigationDestination(isPresented: $showingSchedule) {
@@ -68,50 +100,6 @@ struct TrainingStartView: View {
 
 // MARK: - Subviews
 
-struct TrainingHero: View {
-    var onTap: () -> Void
-    
-    var body: some View {
-        EFCard(style: .gradient(EverFormTheme.Colors.gradient(for: EverFormTheme.Colors.trainingGreen))) {
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Good morning")
-                    .font(EverFormTheme.Typography.caption)
-                    .foregroundStyle(.white.opacity(0.8))
-                
-                Text("Training")
-                    .font(EverFormTheme.Typography.screenTitle)
-                    .foregroundStyle(.white)
-                
-                Text("Follow your plan and stay on track.")
-                    .font(EverFormTheme.Typography.body)
-                    .foregroundStyle(.white.opacity(0.9))
-                    .padding(.top, 4)
-                
-                Spacer()
-                
-                Button(action: onTap) {
-                    HStack {
-                        Text("Go to Workout Schedule")
-                            .font(EverFormTheme.Typography.button)
-                            .foregroundStyle(EverFormTheme.Colors.trainingGreen)
-                        
-                        Image(systemName: "arrow.right")
-                            .font(.system(size: 14, weight: .bold))
-                            .foregroundStyle(EverFormTheme.Colors.trainingGreen)
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(Color.white)
-                    .clipShape(Capsule())
-                }
-                .buttonStyle(.plain)
-            }
-            .frame(height: 180)
-            .frame(maxWidth: .infinity, alignment: .leading)
-        }
-    }
-}
-
 struct RecentSessionRow: View {
     let title: String
     let subtitle: String
@@ -120,7 +108,7 @@ struct RecentSessionRow: View {
     let iconColor: Color
     
     var body: some View {
-        EFCard {
+        EverFormCard {
             HStack(spacing: 16) {
                 Image(systemName: icon)
                     .font(.system(size: 20))

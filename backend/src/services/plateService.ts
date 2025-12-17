@@ -120,7 +120,7 @@ Do NOT include markdown, code blocks, or any text outside the JSON. Output ONLY 
  */
 export async function analyzePlateImage(
   imageBase64: string,
-  mimeType: string = 'image/jpeg'
+  mimeType = 'image/jpeg'
 ): Promise<PlateAnalysisResponse> {
   const debugId = `plate-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   

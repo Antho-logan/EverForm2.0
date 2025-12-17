@@ -384,14 +384,15 @@ function mapToAnalysis(mode: ScanMode, parsed: any): VisionAnalysis {
         caloriesEstimate: null,
       };
 
-    case 'ingredients':
+    case 'ingredients': {
       const ingredients = Array.isArray(parsed.ingredients)
         ? parsed.ingredients.map((i: any) => ({
             name: String(i.name || 'Unknown'),
-            confidence: typeof i.confidence === 'number' ? Math.min(1, Math.max(0, i.confidence)) : 0.5,
+            confidence:
+              typeof i.confidence === 'number' ? Math.min(1, Math.max(0, i.confidence)) : 0.5,
           }))
         : null;
-      
+
       return {
         ...baseFields,
         mode: 'ingredients',
@@ -406,8 +407,9 @@ function mapToAnalysis(mode: ScanMode, parsed: any): VisionAnalysis {
         mealType: null,
         caloriesEstimate: null,
       };
+    }
 
-    case 'plate':
+    case 'plate': {
       // Extract macros from nested object if present
       const macros = parsed.macros || {};
       const protein = typeof macros.protein === 'number' ? macros.protein : null;
@@ -452,6 +454,7 @@ function mapToAnalysis(mode: ScanMode, parsed: any): VisionAnalysis {
         warnings,
         suggestions,
       };
+    }
 
     default:
       return getMockAnalysis(mode);

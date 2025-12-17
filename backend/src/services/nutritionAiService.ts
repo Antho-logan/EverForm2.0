@@ -150,3 +150,7 @@ export async function generateSmartDayPlan(userId: string, date: string) {
   return { profile, summary, plan };
 }
 
+
+
+
+

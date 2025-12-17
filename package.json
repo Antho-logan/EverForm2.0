@@ -6,7 +6,12 @@
   "scripts": {
     "backend:dev": "cd backend && npm install && npm run dev",
     "backend:build": "cd backend && npm run build",
-    "backend:start": "cd backend && npm run start"
+    "backend:start": "cd backend && npm run start",
+    "backend:lint": "cd backend && npm run lint",
+    "backend:test": "cd backend && npm run test",
+    "backend:format": "cd backend && npm run format",
+    "backend:format:check": "cd backend && npm run format:check",
+    "backend:ci": "cd backend && npm ci && npm run lint && npm run test && npm run build"
   },
   "engines": {
     "node": ">=20"

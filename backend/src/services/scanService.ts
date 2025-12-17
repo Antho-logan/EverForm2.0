@@ -15,7 +15,7 @@ export interface ScanResponse {
   carbs?: number;
   fat?: number;
   confidence?: number;
-  ingredients?: Array<{ name: string; confidence: number }>;
+  ingredients?: { name: string; confidence: number }[];
   notes?: string;
   description?: string;
   mealType?: string;

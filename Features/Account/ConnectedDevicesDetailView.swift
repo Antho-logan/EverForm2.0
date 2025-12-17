@@ -58,3 +58,7 @@ struct ConnectedDevicesDetailView: View {
 
 
 
+
+
+
+

@@ -9,6 +9,7 @@ const zod_1 = require("zod");
 const coachAgent_1 = require("../services/coachAgent");
 const db_1 = require("../utils/db");
 const supabaseClient_1 = require("../config/supabaseClient");
+const trainingProfileService_1 = require("../services/trainingProfileService");
 const router = (0, express_1.Router)();
 // ─────────────────────────────────────────────────────────────────────────────
 // Schemas
@@ -41,6 +42,54 @@ const exerciseSchema = zod_1.z.object({
     restSeconds: zod_1.z.number().int().default(90),
     intensityTarget: zod_1.z.string().optional(),
     orderIndex: zod_1.z.number().int().default(0)
+});
+const trainingProfileUpdateSchema = zod_1.z.object({
+    goal: zod_1.z.enum(['muscle_gain', 'fat_loss', 'performance', 'health', 'general_fitness']).optional(),
+    daysPerWeek: zod_1.z.number().int().min(0).max(14).optional(),
+    experienceLevel: zod_1.z.enum(['beginner', 'intermediate', 'advanced']).optional(),
+    equipmentAccess: zod_1.z.enum(['full_gym', 'limited_home', 'bodyweight_only']).optional()
+});
+// ─────────────────────────────────────────────────────────────────────────────
+// Training Profile
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * GET /api/v1/training/profile
+ */
+router.get('/profile', async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const profile = await (0, trainingProfileService_1.getOrCreateDefaultTrainingProfile)(userId);
+        return res.json((0, trainingProfileService_1.mapTrainingProfileToResponse)(profile));
+    }
+    catch (err) {
+        const errorMessage = err instanceof Error ? err.message : String(err);
+        console.error('[training] GET /profile failed', { userId: req.user?.id, error: err });
+        return res.status(500).json({ message: 'Failed to fetch training profile', error: errorMessage });
+    }
+});
+/**
+ * PUT /api/v1/training/profile
+ */
+router.put('/profile', async (req, res) => {
+    try {
+        const userId = req.user?.id;
+        const parsed = trainingProfileUpdateSchema.parse(req.body);
+        const updates = {
+            ...(parsed.goal !== undefined ? { goal: parsed.goal } : {}),
+            ...(parsed.daysPerWeek !== undefined ? { days_per_week: parsed.daysPerWeek } : {}),
+            ...(parsed.experienceLevel !== undefined ? { experience_level: parsed.experienceLevel } : {}),
+            ...(parsed.equipmentAccess !== undefined ? { equipment_access: parsed.equipmentAccess } : {})
+        };
+        const profile = await (0, trainingProfileService_1.updateTrainingProfile)(userId, updates);
+        return res.json((0, trainingProfileService_1.mapTrainingProfileToResponse)(profile));
+    }
+    catch (err) {
+        if (err instanceof zod_1.z.ZodError) {
+            return res.status(400).json({ message: 'Validation failed', issues: err.issues });
+        }
+        console.error('[training] Failed to update training profile:', err);
+        return res.status(500).json({ message: 'Could not update training profile' });
+    }
 });
 // ─────────────────────────────────────────────────────────────────────────────
 // Sessions (Planned Workouts)

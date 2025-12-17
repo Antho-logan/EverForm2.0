@@ -48,32 +48,38 @@ struct OverviewHero: View {
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.top, 20)
 
-        Spacer()
-
-        // Focus Pill
-        Button {
-          withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
-            isFocusPanelVisible.toggle()
+        // Focus Selector
+        HStack {
+          Text("Today's focus")
+            .font(.app(.body))
+            .foregroundStyle(.white.opacity(0.9))
+          
+          Spacer()
+          
+          Button {
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.85)) {
+              isFocusPanelVisible.toggle()
+            }
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+          } label: {
+            HStack(spacing: 6) {
+              Text(selectedPeriod.label)
+                .font(.system(size: 14, weight: .bold))
+              Image(systemName: "chevron.down")
+                .font(.system(size: 12, weight: .bold))
+                .rotationEffect(.degrees(isFocusPanelVisible ? 180 : 0))
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 6)
+            .background(.white)
+            .foregroundStyle(EverFormTheme.Colors.primaryBlue)
+            .clipShape(Capsule())
           }
-          UIImpactFeedbackGenerator(style: .light).impactOccurred()
-        } label: {
-          HStack {
-            Text("Focus: \(selectedPeriod.label)")
-              .font(.app(.button))
-            Spacer()
-            Image(systemName: "chevron.down")
-              .rotationEffect(.degrees(isFocusPanelVisible ? 180 : 0))
-          }
-          .padding(.horizontal, 16)
-          .padding(.vertical, 10)
-          .background(.white.opacity(0.2))
-          .clipShape(Capsule())
-          .foregroundStyle(.white)
+          .buttonStyle(.plain)
         }
-        .buttonStyle(.plain)
-        .padding(.bottom, 16)
+        .padding(.bottom, 20)
       }
-      .frame(height: 180)  // Explicit height to ensure consistent sizing
+      .frame(height: 180)
       .foregroundStyle(.white)
     }
     .background(

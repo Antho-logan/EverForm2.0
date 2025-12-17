@@ -80,3 +80,7 @@ struct BreathworkAiWeeklyInsightViewData: Equatable {
     let trendLabel: String
 }
 
+
+
+
+

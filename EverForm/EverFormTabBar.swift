@@ -31,97 +31,109 @@ enum EverFormTab: Int, CaseIterable, Identifiable {
 // MARK: - Custom Tab Bar
 struct EverFormTabBar: View {
   @Binding var selection: Int
-  @Environment(ThemeManager.self) private var themeManager
   @Environment(\.colorScheme) private var colorScheme
 
   private let tabs = EverFormTab.allCases
 
   // MARK: - Dynamic Theme Colors
 
-  private var tabBarBackground: Color {
-    // Use themeManager beige background for consistency
-    themeManager.beigeBackground
+  private var tabBarTint: Color {
+    AppTheme.Colors.surfaceSecondary.opacity(colorScheme == .dark ? 0.78 : 0.92)
   }
 
   private var activeColor: Color {
-    DesignSystem.Colors.accent
+    AppTheme.Colors.brandBlue
   }
 
   private var inactiveColor: Color {
-    DesignSystem.Colors.textSecondary
+    AppTheme.Colors.textSecondary
   }
 
   private var activePillColor: Color {
     activeColor.opacity(colorScheme == .dark ? 0.22 : 0.12)
   }
 
-  private var separatorColor: Color {
-    colorScheme == .dark ? Color.white.opacity(0.1) : Color.black.opacity(0.05)
+  private var topFadeOpacity: Double {
+    colorScheme == .dark ? 0.28 : 0.10
   }
 
   // MARK: - Body
 
   var body: some View {
-    VStack(spacing: 0) {
-      // Top Separator
-      Rectangle()
-        .fill(separatorColor)
-        .frame(height: 1)
-
-      HStack(spacing: 0) {
-        ForEach(tabs) { tab in
-          let isSelected = selection == tab.rawValue
-
-          Button {
-            if !isSelected {
-              // Preserved snappy spring animation for selection
-              withAnimation(.spring(response: 0.25, dampingFraction: 0.85)) {
-                selection = tab.rawValue
-              }
-              UIImpactFeedbackGenerator(style: .light).impactOccurred()
-            }
-          } label: {
-            VStack(spacing: 2) {
-              // Icon Container
-              ZStack {
-                // Active Indicator Pill
-                if isSelected {
-                  Capsule()
-                    .fill(activePillColor)
-                    .frame(width: 44, height: 26)
-                    .matchedGeometryEffect(id: "TabBackground", in: namespace)
-                }
-
-                Image(systemName: tab.icon)
-                  .font(.system(size: 18, weight: isSelected ? .semibold : .regular))
-                  .foregroundStyle(isSelected ? activeColor : inactiveColor)
-                  .scaleEffect(isSelected ? 1.05 : 1.0)
-              }
-              .frame(width: 44, height: 26)
-
-              // Label
-              Text(tab.title)
-                .font(DesignSystem.Typography.labelSmall())
-                .foregroundStyle(isSelected ? activeColor : inactiveColor)
-                .scaleEffect(isSelected ? 1.02 : 1.0)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 4)
-            .contentShape(Rectangle())
+    tabRow
+      .frame(maxWidth: .infinity, alignment: .bottom)
+      // Background extends under the home-indicator region (no visible gap).
+      .background {
+        Rectangle()
+          .fill(.ultraThinMaterial)
+          .overlay(tabBarTint)
+          .overlay(alignment: .top) {
+            LinearGradient(
+              colors: [
+                Color.black.opacity(topFadeOpacity),
+                .clear
+              ],
+              startPoint: .top,
+              endPoint: .bottom
+            )
+            .frame(height: 14)
+            .allowsHitTesting(false)
           }
-          .buttonStyle(.plain)
-        }
+          .ignoresSafeArea(edges: .bottom)
       }
-      .padding(.vertical, 2)
-    }
-    .frame(maxWidth: .infinity, alignment: .bottom)
-    // Anchor to bottom: Background extends into safe area (home indicator)
-    // Theme: Uses DesignSystem.Colors.background (Overview tone) for both Light/Dark modes
-    .background(
-      tabBarBackground
-        .ignoresSafeArea(edges: .bottom)
-    )
+      .shadow(
+        color: Color.black.opacity(colorScheme == .dark ? 0.26 : 0.08),
+        radius: 12,
+        x: 0,
+        y: -4
+      )
+      // Keep height stable when the keyboard appears (RootTabView hides the bar).
+      .ignoresSafeArea(.keyboard, edges: .bottom)
   }
 
   @Namespace private var namespace
+
+  private var tabRow: some View {
+    HStack(spacing: 0) {
+      ForEach(tabs) { tab in
+        let isSelected = selection == tab.rawValue
+
+        Button {
+          if !isSelected {
+            withAnimation(.spring(response: 0.25, dampingFraction: 0.85)) {
+              selection = tab.rawValue
+            }
+            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+          }
+        } label: {
+          VStack(spacing: 2) {
+            ZStack {
+              if isSelected {
+                Capsule()
+                  .fill(activePillColor)
+                  .frame(width: 44, height: 26)
+                  .matchedGeometryEffect(id: "TabBackground", in: namespace)
+              }
+
+              Image(systemName: tab.icon)
+                .font(.system(size: 18, weight: isSelected ? .semibold : .regular))
+                .foregroundStyle(isSelected ? activeColor : inactiveColor)
+                .scaleEffect(isSelected ? 1.05 : 1.0)
+            }
+            .frame(width: 44, height: 26)
+
+            Text(tab.title)
+              .font(DesignSystem.Typography.labelSmall())
+              .foregroundStyle(isSelected ? activeColor : inactiveColor)
+              .scaleEffect(isSelected ? 1.02 : 1.0)
+          }
+          .frame(maxWidth: .infinity)
+          .padding(.top, 6)
+          .padding(.bottom, 6)
+          .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+      }
+    }
+  }
 }

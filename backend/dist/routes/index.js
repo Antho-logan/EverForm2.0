@@ -19,6 +19,7 @@ const recovery_1 = __importDefault(require("./recovery"));
 const sleep_1 = __importDefault(require("./sleep"));
 const mobility_1 = __importDefault(require("./mobility"));
 const breathwork_1 = __importDefault(require("./breathwork"));
+const pain_1 = __importDefault(require("./pain"));
 // AI & coach routes
 const coach_1 = __importDefault(require("./coach"));
 const ai_1 = __importDefault(require("./ai"));
@@ -44,6 +45,7 @@ router.use('/recovery', recovery_1.default);
 router.use('/sleep', sleep_1.default);
 router.use('/mobility', mobility_1.default);
 router.use('/breathwork', breathwork_1.default);
+router.use('/pain', pain_1.default);
 // ─────────────────────────────────────────────────────────────────────────────
 // AI & Coaching Routes
 // ─────────────────────────────────────────────────────────────────────────────

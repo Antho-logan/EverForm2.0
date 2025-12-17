@@ -21,6 +21,7 @@ struct EverFormApp: App {
   
   // Recovery Store
   @StateObject private var recoveryLogStore = RecoveryLogStore()
+  @StateObject private var bottomDock = BottomDock()
 
   // Session State (Single Source of Truth for Auth/Onboarding gating)
   @State private var sessionStore = AppSessionStore()
@@ -77,6 +78,7 @@ struct EverFormApp: App {
       // ALSO inject as EnvironmentObject for any store that conforms to ObservableObject.
       // CoachCoordinator uses singleton pattern, so we don't inject it here
       .environmentObject(CoachCoordinator.shared)
+      .environmentObject(bottomDock)
       .background(themeManager.beigeBackground.ignoresSafeArea())
       .preferredColorScheme(themeManager.selectedTheme.colorScheme)
       .onAppear {

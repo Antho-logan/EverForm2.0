@@ -67,9 +67,16 @@ struct TrainingScheduleView: View {
                         Button {
                             showingChangePlanOptions = true
                         } label: {
-                            Text("Change plan")
-                                .font(EverFormTheme.Typography.label)
-                                .foregroundStyle(EverFormTheme.Colors.trainingGreen)
+                            HStack(spacing: 4) {
+                                Image(systemName: "gear")
+                                Text("Change plan")
+                            }
+                            .font(EverFormTheme.Typography.label)
+                            .foregroundStyle(EverFormTheme.Colors.textSecondary)
+                            .padding(.vertical, 8)
+                            .padding(.horizontal, 12)
+                            .background(EverFormTheme.Colors.surface)
+                            .clipShape(Capsule())
                         }
                         .padding(.trailing, EverFormTheme.Spacing.screenPadding)
                     }
@@ -86,23 +93,9 @@ struct TrainingScheduleView: View {
                     }
                     .padding(.horizontal, EverFormTheme.Spacing.screenPadding)
                 }
-                
-                Spacer(minLength: 100)
             }
-            .padding(.bottom, 40)
+            .padding(.bottom, 24)
         }
-      }
-      
-      // Sheet Overlay
-      if showPlan, let day = viewModel.selectedDay {
-        Color.black.opacity(0.25)
-          .ignoresSafeArea()
-          .onTapGesture { closePlan() }
-          .zIndex(1)
-
-        TodaysTrainingPlanView(show: $showPlan, day: day)
-          .transition(.move(edge: .bottom))
-          .zIndex(2)
       }
     }
     .actionSheet(isPresented: $showingChangePlanOptions) {
@@ -120,6 +113,18 @@ struct TrainingScheduleView: View {
             )
         } else {
             return ActionSheet(title: Text("Error"), buttons: [.cancel()])
+        }
+    }
+    // Use a native sheet to avoid clipping/overlay hit-testing issues.
+    .sheet(isPresented: $showPlan) {
+        if let day = viewModel.selectedDay {
+            TodaysTrainingPlanView(show: $showPlan, day: day)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        } else {
+            // Fallback: shouldn't happen, but keeps the sheet consistent.
+            Text("No plan available.")
+                .presentationDetents([.medium])
         }
     }
   }
@@ -167,26 +172,28 @@ struct DayChip: View {
                 Text(day.dayLetter)
                     .font(EverFormTheme.Typography.caption)
                     .fontWeight(.semibold)
-                    .foregroundStyle(isSelected ? EverFormTheme.Colors.textOnAccent : EverFormTheme.Colors.textSecondary)
+                    .foregroundStyle(isSelected ? EverFormTheme.Colors.background : EverFormTheme.Colors.textSecondary)
                 
                 Circle()
                     .fill(indicatorColor)
                     .frame(width: 6, height: 6)
             }
-            .frame(width: 48, height: 64)
-            .background(isSelected ? EverFormTheme.Colors.trainingGreen : EverFormTheme.Colors.card)
-            .clipShape(RoundedRectangle(cornerRadius: EverFormTheme.Radius.pill))
+            .frame(width: 44, height: 60) // Min tap target height adjusted slightly, width > 44
+            .chipStyle()
+            .background(isSelected ? EverFormTheme.Colors.textPrimary : EverFormTheme.Colors.cardBackground)
+            .clipShape(RoundedRectangle(cornerRadius: 12))
+            // Override chipStyle background if selected
             .overlay(
-                RoundedRectangle(cornerRadius: EverFormTheme.Radius.pill)
+                RoundedRectangle(cornerRadius: 12)
                     .stroke(EverFormTheme.Colors.cardStroke, lineWidth: isSelected ? 0 : 1)
             )
-            .shadow(color: isSelected ? EverFormTheme.Colors.trainingGreen.opacity(0.3) : Color.clear, radius: 8, y: 4)
         }
+        .frame(minWidth: 44, minHeight: 44) // Ensure tap target
     }
     
     var indicatorColor: Color {
-        if day.isCompleted { return isSelected ? .white : EverFormTheme.Colors.successGreen }
-        return isSelected ? .white.opacity(0.5) : EverFormTheme.Colors.textSecondary.opacity(0.3)
+        if day.isCompleted { return isSelected ? EverFormTheme.Colors.background : EverFormTheme.Colors.successGreen }
+        return isSelected ? EverFormTheme.Colors.background.opacity(0.5) : EverFormTheme.Colors.textSecondary.opacity(0.3)
     }
 }
 
@@ -195,12 +202,11 @@ struct TodayPlanSummaryCard: View {
     let action: () -> Void
     
     var body: some View {
-        EFCard(style: .tinted(EverFormTheme.Colors.trainingGreen)) {
+        EverFormCard {
             VStack(alignment: .leading, spacing: 16) {
                 HStack {
                     Text("Today's Plan")
-                        .font(EverFormTheme.Typography.cardTitle)
-                        .foregroundStyle(EverFormTheme.Colors.textPrimary)
+                        .sectionTitle()
                     Spacer()
                     Text("Generated")
                         .font(EverFormTheme.Typography.caption)
@@ -260,7 +266,7 @@ struct WeekListRow: View {
     let day: TrainingDay
     
     var body: some View {
-        EFCard {
+        EverFormCard {
             HStack(spacing: 16) {
                 // Date Badge
                 VStack {

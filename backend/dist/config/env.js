@@ -52,6 +52,12 @@ const envSchema = zod_1.z.object({
     SCAN_API_URL: zod_1.z.string().url().optional().default('https://openrouter.ai/api/v1/chat/completions'),
     SCAN_API_KEY: zod_1.z.string().optional().default(''),
     ALLOW_DEV_USER: zod_1.z.string().optional().default('false'),
+    // Dev mode: real Supabase auth user UUID for local testing (must exist in auth.users)
+    DEV_USER_ID: zod_1.z.string().uuid().optional(),
+    // RAG / Embeddings configuration (optional - RAG disabled if not set)
+    OPENAI_API_KEY: zod_1.z.string().optional(),
+    OPENAI_BASE_URL: zod_1.z.string().optional().default('https://api.openai.com/v1'),
+    EMBEDDING_MODEL: zod_1.z.string().optional().default('text-embedding-3-small'),
 });
 const parsed = envSchema.safeParse(process.env);
 if (!parsed.success) {
@@ -67,7 +73,19 @@ const allowDevUser = exports.env.ALLOW_DEV_USER === 'true';
 const isDevelopment = exports.env.NODE_ENV === 'development';
 const isProduction = exports.env.NODE_ENV === 'production';
 exports.isDevMode = isDevelopment || allowDevUser;
-exports.DEV_USER_ID = 'dev-user-0001';
+/**
+ * Dev user ID for local development without JWT auth.
+ *
+ * IMPORTANT: This should be a REAL Supabase auth user UUID that exists in your
+ * auth.users table. Using a fake string like "dev-user-0001" will cause UUID
+ * validation errors when querying tables with user_id FK constraints.
+ *
+ * Set DEV_USER_ID in your .env file to your actual Supabase user UUID.
+ * Falls back to a placeholder if not set (will cause errors on FK tables).
+ *
+ * @example DEV_USER_ID=086d851d-1ae0-4d78-8603-d5707156d896
+ */
+exports.DEV_USER_ID = exports.env.DEV_USER_ID ?? 'dev-user-0001';
 // ─────────────────────────────────────────────────────────────────────────────
 // STARTUP LOGGING (Compact)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -78,6 +96,7 @@ if (exports.isDevMode) {
     console.log('[env] NODE_ENV:', exports.env.NODE_ENV);
     console.log('[env] ALLOW_DEV_USER:', exports.env.ALLOW_DEV_USER);
     console.log('[env] isDevMode:', exports.isDevMode);
+    console.log('[env] DEV_USER_ID:', exports.DEV_USER_ID);
     console.log('[env] ───────────────────────────────────────────────────');
     console.log('[env] Keys present:');
     console.log('[env]   SUPABASE_URL:', exports.env.SUPABASE_URL ? '✓' : '✗');
@@ -85,6 +104,8 @@ if (exports.isDevMode) {
     console.log('[env]   SUPABASE_JWT_SECRET:', exports.env.SUPABASE_JWT_SECRET ? '✓' : '✗');
     console.log('[env]   DEEPSEEK_API_KEY:', exports.env.DEEPSEEK_API_KEY ? '✓' : '✗');
     console.log('[env]   SCAN_API_KEY:', exports.env.SCAN_API_KEY ? '✓' : '(empty, will use mock)');
+    console.log('[env]   OPENAI_API_KEY:', exports.env.OPENAI_API_KEY ? '✓ (RAG enabled)' : '✗ (RAG disabled)');
+    console.log('[env]   EMBEDDING_MODEL:', exports.env.EMBEDDING_MODEL);
     console.log('[env] ───────────────────────────────────────────────────');
 }
 else {

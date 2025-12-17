@@ -118,12 +118,10 @@ struct NutritionOverviewDashboardView: View {
       VStack(spacing: 20) {
         MacroSummaryCard(profile: viewModel.profile, summary: viewModel.todaySummary)
 
-        MacroTargetsCard(targets: reportSummary.macroTargets)
-
         TodayMealsSection(meals: viewModel.todaySummary.meals)
 
         if viewModel.isLoadingInsights {
-            EFCard {
+            EverFormCard {
                 HStack(spacing: 12) {
                     ProgressView()
                     Text("Analyzing today's intake...")
@@ -140,7 +138,7 @@ struct NutritionOverviewDashboardView: View {
         WeeklyCaloriesSparkline(week: viewModel.weekSummaries)
       }
       .padding(.bottom, 32)
-      .padding(.horizontal, DesignSystem.Spacing.screenPadding)
+      .screenPadding()
       .animation(.easeInOut, value: viewModel.isLoadingInsights)
     }
   }
@@ -151,28 +149,26 @@ struct MacroSummaryCard: View {
   let summary: EFNutritionDaySummary
 
   var body: some View {
-    EFCard(
-      style: .gradient(
-        LinearGradient(
-          colors: [DesignSystem.Colors.accent, DesignSystem.Colors.accent.opacity(0.5)],
-          startPoint: .topLeading,
-          endPoint: .bottomTrailing)
-      )
-    ) {
+    EverFormCard {
       VStack(alignment: .leading, spacing: 16) {
-        EFSectionHeader(
-          title: "Today's Fuel",
-          subtitle: "\(summary.caloriesConsumed) / \(profile.dailyCalorieTarget) kcal")
+        HStack {
+            Text("Today's Fuel")
+                .sectionTitle()
+            Spacer()
+            Text("\(summary.caloriesConsumed) / \(profile.dailyCalorieTarget) kcal")
+                .font(EverFormTheme.Typography.body)
+                .foregroundStyle(EverFormTheme.Colors.textSecondary)
+        }
 
-        HStack(spacing: 16) {
+        HStack(spacing: 24) {
           CalorieRing(
             consumed: summary.caloriesConsumed, target: profile.dailyCalorieTarget
           )
-          .frame(width: 110, height: 110)
+          .frame(width: 120, height: 120)
 
           VStack(alignment: .leading, spacing: 12) {
             NutritionMacroPill(
-              label: "Protein", value: summary.protein, target: profile.proteinTarget, color: .blue)
+              label: "Protein", value: summary.protein, target: profile.proteinTarget, color: .purple)
             NutritionMacroPill(
               label: "Carbs", value: summary.carbs, target: profile.carbsTarget, color: .green)
             NutritionMacroPill(
@@ -198,27 +194,23 @@ struct CalorieRing: View {
   var body: some View {
     ZStack {
       Circle()
-        .stroke(Color.white.opacity(0.1), lineWidth: 12)
+        .stroke(EverFormTheme.Colors.neutral100, lineWidth: 12)
 
       Circle()
         .trim(from: 0, to: animatedProgress)
         .stroke(
-          AngularGradient(
-            gradient: Gradient(colors: [.white.opacity(0.8), .white, .white.opacity(0.8)]),
-            center: .center
-          ),
+          EverFormTheme.Colors.primaryBlue,
           style: StrokeStyle(lineWidth: 12, lineCap: .round)
         )
         .rotationEffect(.degrees(-90))
-        .shadow(color: .white.opacity(0.3), radius: 10, x: 0, y: 0)
 
       VStack(spacing: 2) {
         Text("\(consumed)")
           .font(.system(size: 28, weight: .bold, design: .rounded))
-          .foregroundStyle(.white)
+          .foregroundStyle(EverFormTheme.Colors.textPrimary)
         Text("kcal")
           .font(.system(size: 12, weight: .medium))
-          .foregroundStyle(.white.opacity(0.7))
+          .foregroundStyle(EverFormTheme.Colors.textSecondary)
       }
     }
     .onAppear {
@@ -252,25 +244,24 @@ struct NutritionMacroPill: View {
       HStack {
         Text(label)
           .font(.system(size: 14, weight: .medium))
+          .foregroundStyle(EverFormTheme.Colors.textPrimary)
         Spacer()
-        Text("\(value)g / \(target)g")
+        Text("\(value)g")
           .font(.system(size: 12, weight: .medium))
-          .opacity(0.8)
+          .foregroundStyle(EverFormTheme.Colors.textSecondary)
       }
-      .foregroundStyle(.white)
 
       GeometryReader { geo in
         ZStack(alignment: .leading) {
           Capsule()
-            .fill(.white.opacity(0.15))
+            .fill(EverFormTheme.Colors.neutral100)
 
           Capsule()
             .fill(color)
             .frame(width: showProgress ? geo.size.width * progress : 0)
-            .shadow(color: color.opacity(0.5), radius: 4, x: 0, y: 2)
         }
       }
-      .frame(height: 8)
+      .frame(height: 6)
     }
     .onAppear {
       withAnimation(.spring(response: 1.0, dampingFraction: 0.7).delay(0.2)) {
@@ -323,10 +314,11 @@ struct MacroTargetsCard: View {
   let targets: [NutrientTarget]
 
   var body: some View {
-    EFCard {
+    EverFormCard {
       VStack(alignment: .leading, spacing: 14) {
-        EFSectionHeader(title: "Macronutrient Targets", subtitle: "Daily progress")
-
+        Text("Macronutrient Targets")
+            .sectionTitle()
+        
         VStack(spacing: 12) {
           ForEach(targets) { target in
             NutrientProgressRow(target: target)
@@ -379,7 +371,8 @@ struct TodayMealsSection: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
-      EFSectionHeader(title: "Today's Meals", subtitle: "Logged items")
+      Text("Today's Meals")
+          .sectionTitle()
 
       VStack(spacing: 10) {
         ForEach(meals) { meal in
@@ -394,44 +387,67 @@ struct MealSummaryRow: View {
   let meal: EFMeal
 
   var body: some View {
-    HStack(spacing: 16) {
-      ZStack {
-        Circle()
-          .fill(DesignSystem.Colors.backgroundSecondary)
-          .frame(width: 48, height: 48)
-        Image(systemName: meal.type.icon)
-          .font(.system(size: 20))
-          .foregroundStyle(DesignSystem.Colors.accent)
-      }
+    if meal.totalCalories == 0 {
+        // Compact Add Row
+        HStack {
+            Image(systemName: "plus.circle.fill")
+                .font(.system(size: 20))
+                .foregroundStyle(EverFormTheme.Colors.primaryBlue)
+            
+            Text("Add \(meal.type.rawValue)")
+                .font(.system(size: 16, weight: .medium))
+                .foregroundStyle(EverFormTheme.Colors.primaryBlue)
+            
+            Spacer()
+        }
+        .padding()
+        .background(EverFormTheme.Colors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
+    } else {
+        // Full Meal Row
+        HStack(spacing: 16) {
+          ZStack {
+            Circle()
+              .fill(DesignSystem.Colors.backgroundSecondary)
+              .frame(width: 48, height: 48)
+            Image(systemName: meal.type.icon)
+              .font(.system(size: 20))
+              .foregroundStyle(DesignSystem.Colors.accent)
+          }
 
-      VStack(alignment: .leading, spacing: 4) {
-        Text(meal.type.rawValue)
-          .font(.system(size: 16, weight: .semibold))
-          .foregroundStyle(DesignSystem.Colors.textPrimary)
-        Text(meal.summaryText)
-          .font(.caption)
-          .foregroundStyle(DesignSystem.Colors.textSecondary)
-      }
+          VStack(alignment: .leading, spacing: 4) {
+            Text(meal.type.rawValue)
+              .font(.system(size: 16, weight: .semibold))
+              .foregroundStyle(DesignSystem.Colors.textPrimary)
+            Text(meal.summaryText)
+              .font(.caption)
+              .foregroundStyle(DesignSystem.Colors.textSecondary)
+              .lineLimit(1)
+          }
 
-      Spacer()
+          Spacer()
 
-      VStack(alignment: .trailing, spacing: 2) {
-        Text("\(meal.totalCalories) kcal")
-          .font(.system(size: 14, weight: .medium))
-          .foregroundStyle(DesignSystem.Colors.textPrimary)
-        Text("P\(meal.totalProtein) • C\(meal.totalCarbs) • F\(meal.totalFat)")
-          .font(.caption)
-          .foregroundStyle(DesignSystem.Colors.textSecondary)
-      }
+          // Aligned Kcal
+          VStack(alignment: .trailing, spacing: 4) {
+            Text("\(meal.totalCalories) kcal")
+              .font(.system(size: 16, weight: .semibold))
+              .foregroundStyle(DesignSystem.Colors.textPrimary)
+              
+            Text("P\(meal.totalProtein) • C\(meal.totalCarbs) • F\(meal.totalFat)")
+              .font(.caption)
+              .foregroundStyle(DesignSystem.Colors.textSecondary)
+          }
 
-      Image(systemName: "chevron.right")
-        .font(.caption)
-        .foregroundStyle(DesignSystem.Colors.textSecondary)
+          Image(systemName: "chevron.right")
+            .font(.caption)
+            .foregroundStyle(DesignSystem.Colors.textSecondary)
+        }
+        .padding()
+        .background(DesignSystem.Colors.cardBackground)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
     }
-    .padding()
-    .background(DesignSystem.Colors.cardBackground)
-    .clipShape(RoundedRectangle(cornerRadius: 16))
-    .shadow(color: Color.black.opacity(0.05), radius: 5, x: 0, y: 2)
   }
 }
 
@@ -439,11 +455,13 @@ struct GuidanceCard: View {
   let message: String
 
   var body: some View {
-    EFCard {
+    EverFormCard {
       HStack(alignment: .top, spacing: 12) {
-        Image(systemName: "lightbulb.max")
-          .font(.system(size: 22, weight: .semibold))
-          .foregroundStyle(DesignSystem.Colors.warning)
+        Image(systemName: "lightbulb.max.fill")
+          .font(.system(size: 20))
+          .foregroundStyle(.white)
+          .padding(8)
+          .background(Circle().fill(DesignSystem.Colors.warning))
 
         VStack(alignment: .leading, spacing: 6) {
           Text("Today's Guidance")
@@ -470,9 +488,10 @@ struct WeeklyCaloriesSparkline: View {
   }
 
   var body: some View {
-    EFCard {
+    EverFormCard {
       VStack(alignment: .leading, spacing: 16) {
-        EFSectionHeader(title: "Weekly Snapshot", subtitle: "Calories per day")
+        Text("Weekly Snapshot")
+            .sectionTitle()
 
         HStack(alignment: .bottom, spacing: 10) {
           ForEach(Array(week.enumerated()), id: \.element.id) { index, day in
@@ -579,9 +598,10 @@ struct DiaryTotalsCard: View {
   let totals: NutritionValues
 
   var body: some View {
-    EFCard {
+    EverFormCard {
       VStack(alignment: .leading, spacing: 12) {
-        EFSectionHeader(title: "Totals vs Goal", subtitle: "Logged today")
+        Text("Totals vs Goal")
+            .sectionTitle()
 
         HStack(spacing: 8) {
           TotalsPill(
@@ -723,10 +743,11 @@ struct HighlightedNutrientsGrid: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
-      EFSectionHeader(title: "Key Micronutrients", subtitle: "Focus areas")
+      Text("Key Micronutrients")
+          .sectionTitle()
       LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
         ForEach(targets) { target in
-          EFCard {
+          EverFormCard {
             VStack(alignment: .leading, spacing: 10) {
               Text(target.name)
                 .font(.system(size: 16, weight: .semibold))
@@ -776,10 +797,11 @@ struct NutrientGroupsSection: View {
 
   var body: some View {
     VStack(alignment: .leading, spacing: 12) {
-      EFSectionHeader(title: "Micronutrient Coverage", subtitle: "Grouped by system")
+      Text("Micronutrient Coverage")
+          .sectionTitle()
 
       ForEach(Array(groups.enumerated()), id: \.element.id) { index, group in
-        EFCard {
+        EverFormCard {
           VStack(alignment: .leading, spacing: 10) {
             Text(group.title)
               .font(.app(.heading))
@@ -813,9 +835,10 @@ struct WeeklyAverageCard: View {
   }
 
   var body: some View {
-    EFCard {
+    EverFormCard {
       VStack(alignment: .leading, spacing: 12) {
-        EFSectionHeader(title: "Weekly Averages", subtitle: "Per day")
+        Text("Weekly Averages")
+            .sectionTitle()
 
         HStack(spacing: 12) {
           TotalsPill(

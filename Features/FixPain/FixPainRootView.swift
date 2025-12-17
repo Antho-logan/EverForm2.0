@@ -66,9 +66,7 @@ struct FixPainView: View {
             // Placeholder or Education
             VStack(alignment: .leading, spacing: 16) {
               Text("Common Issues")
-                .font(.title3)
-                .fontWeight(.bold)
-                .foregroundStyle(FixPainTheme.textPrimary)
+                .sectionTitle()
 
               ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
@@ -99,34 +97,32 @@ struct RecentAssessmentRow: View {
     HStack(spacing: 16) {
       ZStack {
         Circle()
-          .fill(FixPainTheme.cardBackgroundSecondary)
+          .fill(EverFormTheme.Colors.surface)
           .frame(width: 48, height: 48)
 
         Image(systemName: "cross.case.fill")
-          .foregroundStyle(FixPainTheme.primary)
+          .foregroundStyle(EverFormTheme.Colors.fixPainIndigo)
           .font(.system(size: 20))
       }
 
       VStack(alignment: .leading, spacing: 4) {
         Text(assessment.region?.rawValue ?? "Unknown Region")
           .font(.system(size: 16, weight: .semibold))
-          .foregroundStyle(FixPainTheme.textPrimary)
+          .foregroundStyle(EverFormTheme.Colors.textPrimary)
 
         Text(assessment.createdAt.formatted(date: .abbreviated, time: .omitted))
           .font(.caption)
-          .foregroundStyle(FixPainTheme.textSecondary)
+          .foregroundStyle(EverFormTheme.Colors.textSecondary)
       }
 
       Spacer()
 
       Image(systemName: "chevron.right")
         .font(.caption)
-        .foregroundStyle(FixPainTheme.textSecondary)
+        .foregroundStyle(EverFormTheme.Colors.textSecondary)
     }
     .padding()
-    .background(FixPainTheme.cardBackground)
-    .clipShape(RoundedRectangle(cornerRadius: FixPainTheme.radiusMedium))
-    .shadow(color: FixPainTheme.shadowColor.opacity(0.05), radius: 5, x: 0, y: 2)
+    .cardStyle()
   }
 }
 
@@ -138,19 +134,17 @@ struct CommonIssueCard: View {
     VStack(alignment: .leading, spacing: 12) {
       Image(systemName: icon)
         .font(.title)
-        .foregroundStyle(FixPainTheme.primary)
+        .foregroundStyle(EverFormTheme.Colors.fixPainIndigo)
         .frame(width: 40, height: 40)
-        .background(FixPainTheme.cardBackgroundSecondary)
+        .background(EverFormTheme.Colors.surface)
         .clipShape(Circle())
 
       Text(title)
         .font(.system(size: 15, weight: .semibold))
-        .foregroundStyle(FixPainTheme.textPrimary)
+        .foregroundStyle(EverFormTheme.Colors.textPrimary)
     }
     .padding(16)
     .frame(width: 120, height: 120)
-    .background(FixPainTheme.cardBackground)
-    .clipShape(RoundedRectangle(cornerRadius: FixPainTheme.radiusMedium))
-    .shadow(color: FixPainTheme.shadowColor.opacity(0.05), radius: 5, x: 0, y: 2)
+    .cardStyle()
   }
 }

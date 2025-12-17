@@ -9,7 +9,6 @@ import SwiftUI
 
 struct BreathworkPracticeView: View {
     @Environment(BreathworkStore.self) private var store
-    // Removed Binding for self-contained navigation
     
     // Local config state
     @State private var selectedRounds: Int = 3
@@ -39,67 +38,102 @@ struct BreathworkPracticeView: View {
                 // Pattern Selector
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Quick Patterns")
-                        .font(DesignSystem.Typography.sectionHeader())
+                        .sectionTitle()
                         .padding(.horizontal, 20)
                     
                     ScrollView(.horizontal, showsIndicators: false) {
                         HStack(spacing: 16) {
                             ForEach(store.patterns) { pattern in
-                                BreathworkPatternCard(
-                                    pattern: pattern,
-                                    isSelected: store.selectedPatternType == pattern.type
-                                ) {
+                                Button {
                                     withAnimation {
                                         store.selectedPatternType = pattern.type
                                     }
+                                } label: {
+                                    EverFormCard {
+                                        VStack(alignment: .leading, spacing: 12) {
+                                            Image(systemName: pattern.type.iconName)
+                                                .font(.system(size: 24))
+                                                .foregroundStyle(store.selectedPatternType == pattern.type ? EverFormTheme.Colors.breathworkTeal : EverFormTheme.Colors.textSecondary)
+                                            
+                                            VStack(alignment: .leading, spacing: 4) {
+                                                Text(pattern.displayName)
+                                                    .font(EverFormTheme.Typography.body.weight(.semibold))
+                                                    .foregroundStyle(EverFormTheme.Colors.textPrimary)
+                                                    .lineLimit(2)
+                                                    .fixedSize(horizontal: false, vertical: true)
+                                                
+                                                Text("\(pattern.estimatedMinutes) min")
+                                                    .font(EverFormTheme.Typography.caption)
+                                                    .foregroundStyle(EverFormTheme.Colors.textSecondary)
+                                            }
+                                        }
+                                        .frame(width: 140, height: 100, alignment: .topLeading)
+                                    }
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 20)
+                                            .stroke(store.selectedPatternType == pattern.type ? EverFormTheme.Colors.breathworkTeal : Color.clear, lineWidth: 2)
+                                    )
                                 }
+                                .buttonStyle(.plain)
                             }
                         }
                         .padding(.horizontal, 20)
+                        .padding(.vertical, 4) // Shadow room
                     }
-                }
-                
-                // AI Suggestion
-                VStack(alignment: .leading, spacing: 16) {
-                    BreathworkAiTodayCard(
-                        state: store.todaySuggestionState,
-                        data: store.todaySuggestion,
-                        onApply: {
-                            withAnimation {
-                                store.applyTodaySuggestionToSession()
-                            }
-                        }
-                    )
-                    .padding(.horizontal, 20)
                 }
                 
                 // Configuration
                 VStack(alignment: .leading, spacing: 16) {
                     Text("Session Config")
-                        .font(DesignSystem.Typography.sectionHeader())
+                        .sectionTitle()
                         .padding(.horizontal, 20)
                     
-                    VStack(spacing: 0) {
-                        ConfigRow(label: "Rounds", icon: "arrow.triangle.2.circlepath") {
-                            Stepper("\(selectedRounds)", value: $selectedRounds, in: 1...10)
-                        }
-                        
-                        Divider().padding(.leading, 50)
-                        
-                        ConfigRow(label: "Haptics", icon: "iphone.radiowaves.left.and.right") {
-                            Toggle("", isOn: $hapticsEnabled)
-                                .labelsHidden()
-                        }
-                        
-                        Divider().padding(.leading, 50)
-                        
-                        ConfigRow(label: "Guidance", icon: "waveform") {
-                             Text("Voice & Sound")
-                                .foregroundStyle(DesignSystem.Colors.textSecondary)
+                    EverFormCard {
+                        VStack(spacing: 0) {
+                            ConfigRow(label: "Rounds", icon: "arrow.triangle.2.circlepath") {
+                                HStack(spacing: 12) {
+                                    Button {
+                                        if selectedRounds > 1 { selectedRounds -= 1 }
+                                    } label: {
+                                        Image(systemName: "minus")
+                                            .frame(width: 32, height: 32)
+                                            .background(EverFormTheme.Colors.surface)
+                                            .clipShape(Circle())
+                                            .foregroundStyle(EverFormTheme.Colors.primaryBlue)
+                                    }
+                                    
+                                    Text("\(selectedRounds)")
+                                        .font(EverFormTheme.Typography.body.weight(.bold))
+                                        .frame(minWidth: 24)
+                                    
+                                    Button {
+                                        if selectedRounds < 10 { selectedRounds += 1 }
+                                    } label: {
+                                        Image(systemName: "plus")
+                                            .frame(width: 32, height: 32)
+                                            .background(EverFormTheme.Colors.surface)
+                                            .clipShape(Circle())
+                                            .foregroundStyle(EverFormTheme.Colors.primaryBlue)
+                                    }
+                                }
+                            }
+                            
+                            Divider().padding(.leading, 50)
+                            
+                            ConfigRow(label: "Haptics", icon: "iphone.radiowaves.left.and.right") {
+                                Toggle("", isOn: $hapticsEnabled)
+                                    .labelsHidden()
+                                    .tint(EverFormTheme.Colors.primaryBlue)
+                            }
+                            
+                            Divider().padding(.leading, 50)
+                            
+                            ConfigRow(label: "Guidance", icon: "waveform") {
+                                 Text("Voice & Sound")
+                                    .foregroundStyle(EverFormTheme.Colors.textSecondary)
+                            }
                         }
                     }
-                    .background(DesignSystem.Colors.cardBackground)
-                    .clipShape(RoundedRectangle(cornerRadius: 16))
                     .padding(.horizontal, 20)
                 }
                 
@@ -129,67 +163,47 @@ struct HeroSessionCard: View {
     let onStart: () -> Void
     
     var body: some View {
-        Button(action: onStart) {
-            ZStack(alignment: .bottomLeading) {
-                // Background Gradient
-                LinearGradient(
-                    colors: pattern.type.gradientColors,
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                
-                // Content
-                VStack(alignment: .leading, spacing: 20) {
-                    HStack {
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text("Good Evening, Anthony")
-                                .font(DesignSystem.Typography.subheadline())
-                                .foregroundStyle(.white.opacity(0.9))
-                            
-                            Text("Recommended for you")
-                                .font(DesignSystem.Typography.caption())
-                                .foregroundStyle(.white.opacity(0.7))
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(.white.opacity(0.2))
-                                .clipShape(Capsule())
-                        }
-                        Spacer()
-                        Image(systemName: pattern.type.iconName)
-                            .font(.system(size: 32))
-                            .foregroundStyle(.white.opacity(0.8))
-                    }
-                    
-                    Spacer()
-                    
-                    VStack(alignment: .leading, spacing: 8) {
-                        Text(pattern.displayName)
-                            .font(DesignSystem.Typography.displaySmall())
-                            .foregroundStyle(.white)
+        EverFormCard {
+            VStack(alignment: .leading, spacing: 20) {
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Recommended for you")
+                            .font(EverFormTheme.Typography.caption)
+                            .foregroundStyle(EverFormTheme.Colors.textSecondary)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 4)
+                            .background(EverFormTheme.Colors.surface)
+                            .clipShape(Capsule())
                         
-                        Text("\(pattern.targetEffect) • \(pattern.estimatedMinutes) min")
-                            .font(DesignSystem.Typography.bodyMedium())
-                            .foregroundStyle(.white.opacity(0.9))
+                        Text(pattern.displayName)
+                            .font(EverFormTheme.Typography.screenTitle)
+                            .foregroundStyle(EverFormTheme.Colors.textPrimary)
                     }
-                    
-                    HStack {
-                        Text("Start Session")
-                            .font(DesignSystem.Typography.buttonLarge())
-                            .foregroundStyle(pattern.type.gradientColors.first ?? .blue)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(.white)
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
-                    }
+                    Spacer()
+                    Image(systemName: pattern.type.iconName)
+                        .font(.system(size: 32))
+                        .foregroundStyle(pattern.type.gradientColors.first ?? EverFormTheme.Colors.breathworkTeal)
                 }
-                .padding(24)
+                
+                Text("\(pattern.targetEffect) • \(pattern.estimatedMinutes) min")
+                    .font(EverFormTheme.Typography.body)
+                    .foregroundStyle(EverFormTheme.Colors.textSecondary)
+                
+                Spacer(minLength: 20)
+                
+                Button(action: onStart) {
+                    Text("Start Session")
+                        .font(EverFormTheme.Fonts.buttonText())
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 50)
+                        .background(EverFormTheme.Colors.primaryBlue)
+                        .foregroundStyle(.white)
+                        .clipShape(RoundedRectangle(cornerRadius: 20))
+                        .shadow(color: EverFormTheme.Colors.primaryBlue.opacity(0.3), radius: 10, x: 0, y: 5)
+                }
             }
-            .frame(height: 320)
-            .clipShape(RoundedRectangle(cornerRadius: 24))
-            .shadow(color: pattern.type.gradientColors.first?.opacity(0.3) ?? .clear, radius: 20, y: 10)
-            .padding(.horizontal, 20)
         }
-        .buttonStyle(.plain)
+        .padding(.horizontal, 20)
     }
 }
 
@@ -210,12 +224,11 @@ struct ConfigRow<Content: View>: View {
                 .frame(width: 24)
                 .foregroundStyle(DesignSystem.Colors.neutral500)
             Text(label)
-                .font(DesignSystem.Typography.bodyMedium())
-                .foregroundStyle(DesignSystem.Colors.textPrimary)
+                .font(EverFormTheme.Typography.body)
+                .foregroundStyle(EverFormTheme.Colors.textPrimary)
             Spacer()
             content
         }
         .padding(16)
     }
 }
-

@@ -8,6 +8,44 @@
 
 import SwiftUI
 
+// MARK: - Bottom Dock (Single Source of Truth)
+//
+// Legacy helper (currently unused):
+// - Older iterations used a root `.safeAreaInset(edge: .bottom)` and registered accessories here.
+// - The current root layout contract overlays the custom tab bar and reserves space via padding,
+//   allowing screens to safely use their own `.safeAreaInset(edge: .bottom)` for composers/CTAs.
+//
+@MainActor
+final class BottomDock: ObservableObject {
+  /// The currently registered accessory view (e.g. chat composer).
+  @Published private(set) var accessory: AnyView?
+
+  /// Ownership token for the accessory to prevent cross-tab onDisappear races clearing a newer accessory.
+  private var ownerID: UUID?
+
+  /// Registers an accessory view and returns an ownership token.
+  @discardableResult
+  func setAccessory(_ view: AnyView) -> UUID {
+    let id = UUID()
+    ownerID = id
+    accessory = view
+    return id
+  }
+
+  /// Clears the accessory only if the provided token matches the current owner.
+  func clearAccessory(ownerID: UUID?) {
+    guard let ownerID, ownerID == self.ownerID else { return }
+    self.ownerID = nil
+    accessory = nil
+  }
+
+  /// Force-clears the accessory (use sparingly).
+  func clearAccessory() {
+    ownerID = nil
+    accessory = nil
+  }
+}
+
 // MARK: - Button Components
 
 struct ButtonPrimary: View {
@@ -416,61 +454,26 @@ public struct EFCard<Content: View>: View {
             .padding(16)
             .frame(maxWidth: .infinity, alignment: .leading)
             .background(cardBackground)
-            .overlay(
-                RoundedRectangle(cornerRadius: 18)
-                    .stroke(borderColor, lineWidth: 1)
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-            .shadow(color: shadowColor, radius: 12, x: 0, y: 6)
+            .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .shadow(color: Color.black.opacity(0.05), radius: 10, x: 0, y: 4)
     }
 
     @ViewBuilder
     private var cardBackground: some View {
-        let base = RoundedRectangle(cornerRadius: 18, style: .continuous)
+        let base = RoundedRectangle(cornerRadius: 20, style: .continuous)
         switch style {
         case .standard:
-            base.fill(EFTheme.surface(scheme))
+            base.fill(EverFormTheme.Colors.cardBackground)
         case .tinted(let color):
             ZStack {
-                base.fill(EFTheme.surface(scheme))
-                base.fill(color.opacity(scheme == .light ? 0.12 : 0.25))
+                base.fill(EverFormTheme.Colors.cardBackground)
+                base.fill(color.opacity(0.12))
             }
         case .gradient(let gradient):
             ZStack {
-                base.fill(EFTheme.surface(scheme))
+                base.fill(EverFormTheme.Colors.cardBackground)
                 base.fill(gradient)
             }
-        }
-    }
-
-    private var borderColor: Color {
-        switch style {
-        case .standard:
-            return EFTheme.cardStroke(scheme)
-        case .tinted(let color):
-            return color.opacity(scheme == .light ? 0.45 : 0.7)
-        case .gradient:
-            return EFTheme.cardStroke(scheme).opacity(0.35)
-        }
-    }
-
-    private var shadowColor: Color {
-        switch scheme {
-        case .dark:
-            return .black.opacity(0.4)
-        default:
-            return .black.opacity(styleShadowOpacity)
-        }
-    }
-
-    private var styleShadowOpacity: Double {
-        switch style {
-        case .standard:
-            return 0.08
-        case .tinted:
-            return 0.12
-        case .gradient:
-            return 0.15
         }
     }
 }
@@ -526,7 +529,7 @@ public struct EFScreenContainer<Content: View>: View {
 
     public var body: some View {
         ZStack(alignment: .top) {
-            DesignSystem.Colors.background
+            EverFormTheme.Colors.appBackground
                 .ignoresSafeArea()
 
             content
@@ -555,27 +558,22 @@ public struct EFPrimaryButton: View {
             HStack(spacing: 8) {
                 if let icon {
                     Image(systemName: icon)
-                        .font(.system(size: 16, weight: .semibold))
+                        .font(.system(size: 16, weight: .bold))
                 }
                 Text(title)
-                    .font(EverFormTheme.Typography.button)
+                    .font(EverFormTheme.Fonts.buttonText())
             }
             .frame(maxWidth: .infinity)
-            .frame(height: 56)
+            .frame(height: 50)
             .background(backgroundColor)
-            .foregroundStyle(foregroundColor)
-            .clipShape(RoundedRectangle(cornerRadius: EverFormTheme.Radius.pill))
-            .shadow(color: backgroundColor.opacity(0.3), radius: 8, x: 0, y: 4)
+            .foregroundStyle(.white)
+            .clipShape(RoundedRectangle(cornerRadius: 20))
+            .shadow(color: backgroundColor.opacity(0.3), radius: 10, x: 0, y: 5)
         }
     }
     
     private var backgroundColor: Color {
-        color ?? EverFormTheme.Colors.textPrimary
-    }
-    
-    private var foregroundColor: Color {
-        if color != nil { return .white }
-        return EverFormTheme.Colors.background
+        color ?? EverFormTheme.Colors.primaryBlue
     }
 }
 
@@ -596,19 +594,19 @@ public struct EFSecondaryButton: View {
                 if let icon {
                     Image(systemName: icon)
                         .font(.system(size: 16, weight: .semibold))
-                }
-                Text(title)
-                    .font(EverFormTheme.Typography.button)
-            }
-            .frame(maxWidth: .infinity)
-            .frame(height: 56)
-            .background(Color.clear)
-            .foregroundStyle(EverFormTheme.Colors.textPrimary)
-            .overlay(
-                RoundedRectangle(cornerRadius: EverFormTheme.Radius.pill)
-                    .stroke(EverFormTheme.Colors.textPrimary.opacity(0.3), lineWidth: 1)
-            )
-        }
+                  }
+                  Text(title)
+                      .font(EverFormTheme.Typography.button)
+              }
+              .frame(maxWidth: .infinity)
+              .frame(height: 56)
+              .background(Color.clear)
+              .foregroundStyle(EverFormTheme.Colors.textPrimary)
+              .overlay(
+                  RoundedRectangle(cornerRadius: EverFormTheme.Radius.pill)
+                      .stroke(EverFormTheme.Colors.textPrimary.opacity(0.3), lineWidth: 1)
+              )
+          }
     }
 }
 
@@ -624,19 +622,19 @@ public struct EFPillChip: View {
     }
     
     public var body: some View {
-        Button(action: action) {
-            Text(title)
-                .font(EverFormTheme.Typography.label)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 8)
-                .background(isSelected ? EverFormTheme.Colors.textPrimary : EverFormTheme.Colors.card)
-                .foregroundStyle(isSelected ? EverFormTheme.Colors.background : EverFormTheme.Colors.textPrimary)
-                .clipShape(Capsule())
-                .overlay(
-                    Capsule()
-                        .stroke(EverFormTheme.Colors.cardStroke, lineWidth: isSelected ? 0 : 1)
-                )
-        }
+          Button(action: action) {
+              Text(title)
+                  .font(EverFormTheme.Typography.label)
+                  .padding(.horizontal, 16)
+                  .padding(.vertical, 8)
+                  .background(isSelected ? EverFormTheme.Colors.textPrimary : EverFormTheme.Colors.card)
+                  .foregroundStyle(isSelected ? EverFormTheme.Colors.background : EverFormTheme.Colors.textPrimary)
+                  .clipShape(Capsule())
+                  .overlay(
+                      Capsule()
+                          .stroke(EverFormTheme.Colors.cardStroke, lineWidth: isSelected ? 0 : 1)
+                  )
+          }
     }
 }
 
@@ -658,35 +656,35 @@ public struct EFSegmentedControl<T: Hashable>: View {
                     withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
                         selection = item
                     }
-                } label: {
-                    Text(titleFor(item))
-                        .font(EverFormTheme.Typography.label)
-                        .fontWeight(selection == item ? .semibold : .medium)
-                        .foregroundStyle(selection == item ? EverFormTheme.Colors.textPrimary : EverFormTheme.Colors.textSecondary)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 8)
-                        .background(
-                            ZStack {
-                                if selection == item {
-                                    RoundedRectangle(cornerRadius: EverFormTheme.Radius.segmented - 2)
-                                        .fill(EverFormTheme.Colors.card)
-                                        .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
-                                        .padding(2)
-                                }
-                            }
-                        )
-                }
-                .buttonStyle(PlainButtonStyle())
-            }
-        }
-        .padding(2)
-        .background(EverFormTheme.Colors.surface.opacity(0.5))
-        .clipShape(RoundedRectangle(cornerRadius: EverFormTheme.Radius.segmented))
-        .overlay(
-            RoundedRectangle(cornerRadius: EverFormTheme.Radius.segmented)
-                .stroke(EverFormTheme.Colors.cardStroke, lineWidth: 0.5)
-        )
-    }
+                  } label: {
+                      Text(titleFor(item))
+                          .font(EverFormTheme.Typography.label)
+                          .fontWeight(selection == item ? .semibold : .medium)
+                          .foregroundStyle(selection == item ? EverFormTheme.Colors.textPrimary : EverFormTheme.Colors.textSecondary)
+                          .frame(maxWidth: .infinity)
+                          .padding(.vertical, 8)
+                          .background(
+                              ZStack {
+                                  if selection == item {
+                                      RoundedRectangle(cornerRadius: EverFormTheme.Radius.segmented - 2)
+                                          .fill(EverFormTheme.Colors.card)
+                                          .shadow(color: Color.black.opacity(0.1), radius: 2, x: 0, y: 1)
+                                          .padding(2)
+                                  }
+                              }
+                          )
+                  }
+                  .buttonStyle(PlainButtonStyle())
+              }
+          }
+          .padding(2)
+          .background(EverFormTheme.Colors.surface.opacity(0.5))
+          .clipShape(RoundedRectangle(cornerRadius: EverFormTheme.Radius.segmented))
+          .overlay(
+              RoundedRectangle(cornerRadius: EverFormTheme.Radius.segmented)
+                  .stroke(EverFormTheme.Colors.cardStroke, lineWidth: 0.5)
+          )
+      }
 }
 
 // MARK: - Legacy Header Compatibility
@@ -713,7 +711,7 @@ public struct EFHeader: View {
                 }) {
                     Image(systemName: "chevron.left")
                         .font(.system(size: 20, weight: .semibold))
-                        .foregroundColor(DesignSystem.Colors.textPrimary)
+                        .foregroundColor(EverFormTheme.Colors.textPrimary)
                 }
                 .padding(.trailing, 8)
             }
@@ -721,7 +719,7 @@ public struct EFHeader: View {
             Text(title)
                 .font(.system(.largeTitle, design: .rounded).weight(.bold))
                 .kerning(-0.5)
-                .foregroundStyle(DesignSystem.Colors.textPrimary)
+                .foregroundStyle(EverFormTheme.Colors.textPrimary)
             
             Spacer()
         }

@@ -107,32 +107,30 @@ struct MobilityRoutineCard: View {
         HStack {
           Label("\(routine.durationMinutes) min", systemImage: "clock")
           Spacer()
-          Image(systemName: "chevron.right")
-            .font(.caption)
-            .foregroundStyle(DesignSystem.Colors.neutral400)
-        }
-        .font(DesignSystem.Typography.caption())
-        .foregroundStyle(DesignSystem.Colors.textSecondary)
+            Image(systemName: "chevron.right")
+              .font(.caption)
+              .foregroundStyle(EverFormTheme.Colors.neutral400)
+          }
+          .font(EverFormTheme.Typography.caption)
+          .foregroundStyle(EverFormTheme.Colors.textSecondary)
 
-        HStack {
-          ForEach(routine.focusAreas.prefix(2)) { area in
-            Text(area.rawValue)
-              .font(DesignSystem.Typography.labelSmall())
-              .foregroundStyle(DesignSystem.Colors.textSecondary)
-              .padding(.horizontal, 8)
-              .padding(.vertical, 2)
-              .background(DesignSystem.Colors.neutral100.opacity(0.1))
-              .clipShape(Capsule())
+          HStack {
+            ForEach(routine.focusAreas.prefix(2)) { area in
+              Text(area.rawValue)
+                .font(EverFormTheme.Typography.label)
+                .foregroundStyle(EverFormTheme.Colors.textSecondary)
+                .padding(.horizontal, 8)
+                .padding(.vertical, 2)
+                .background(EverFormTheme.Colors.neutral100.opacity(0.1))
+                .clipShape(Capsule())
+            }
           }
         }
+        .padding(16)
       }
-      .padding(16)
-      .background(DesignSystem.Colors.cardBackground)
+      .frame(width: 260)
+      .cardStyle()
     }
-    .frame(width: 260)
-    .clipShape(RoundedRectangle(cornerRadius: 16))
-    .shadow(radius: 4, y: 2)
-  }
 
   func cardGradientColor(for type: MobilityRoutine.RoutineType) -> Color {
     switch type {

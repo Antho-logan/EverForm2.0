@@ -21,78 +21,82 @@ struct FixPainAssessmentFlowView: View {
     
     var body: some View {
         NavigationStack {
-            VStack(spacing: 0) {
-                // 1. Top Bar
-                HStack {
-                    Button {
-                        if stepIndex > 0 {
-                            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
-                                stepIndex -= 1
+            EFScreenContainer {
+                VStack(spacing: 0) {
+                    // 1. Top Bar
+                    HStack {
+                        Button {
+                            if stepIndex > 0 {
+                                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                                    stepIndex -= 1
+                                }
+                            } else {
+                                isPresented = false
                             }
-                        } else {
-                            isPresented = false
+                        } label: {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundStyle(EverFormTheme.Colors.textPrimary)
+                                .frame(width: 44, height: 44)
+                                .background(EverFormTheme.Colors.cardBackground)
+                                .clipShape(Circle())
                         }
-                    } label: {
-                        Image(systemName: "chevron.left")
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(FixPainTheme.textPrimary)
-                            .frame(width: 44, height: 44)
-                            .background(FixPainTheme.cardBackgroundSecondary)
-                            .clipShape(Circle())
-                    }
-                    
-                    Spacer()
-                    
-                    FixPainProgressBar(progress: Double(stepIndex + 1) / Double(totalSteps))
-                        .frame(width: 100)
-                    
-                    Spacer()
-                    
-                    // Placeholder to balance layout
-                    Color.clear.frame(width: 44, height: 44)
-                }
-                .padding(.horizontal)
-                .padding(.top, 10)
-                .padding(.bottom, 20)
-                
-                // 2. Main Content (Wizard)
-                TabView(selection: $stepIndex) {
-                    // Step 1: Body Region
-                    BodyRegionStep(assessment: Binding(get: { viewModel.currentAssessment ?? FixPainAssessment() }, set: { viewModel.currentAssessment = $0 }))
-                        .tag(0)
-                    
-                    // Step 2: Pain Details
-                    PainDetailsStep(assessment: Binding(get: { viewModel.currentAssessment ?? FixPainAssessment() }, set: { viewModel.currentAssessment = $0 }))
-                        .tag(1)
-                    
-                    // Step 3: Context
-                    TriggersStep(assessment: Binding(get: { viewModel.currentAssessment ?? FixPainAssessment() }, set: { viewModel.currentAssessment = $0 }))
-                        .tag(2)
-                    
-                    // Step 4: Media
-                    MediaStep(assessment: Binding(get: { viewModel.currentAssessment ?? FixPainAssessment() }, set: { viewModel.currentAssessment = $0 }), selectedPhoto: $selectedPhoto)
-                        .tag(3)
                         
-                    // Step 5: Summary
-                    SummaryStep(assessment: Binding(get: { viewModel.currentAssessment ?? FixPainAssessment() }, set: { viewModel.currentAssessment = $0 }))
-                        .tag(4)
+                        Spacer()
+                        
+                        FixPainProgressBar(progress: Double(stepIndex + 1) / Double(totalSteps))
+                            .frame(width: 100)
+                        
+                        Spacer()
+                        
+                        // Placeholder to balance layout
+                        Color.clear.frame(width: 44, height: 44)
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 10)
+                    .padding(.bottom, 20)
+                    
+                    // 2. Main Content (Wizard)
+                    TabView(selection: $stepIndex) {
+                        // Step 1: Body Region
+                        BodyRegionStep(assessment: Binding(get: { viewModel.currentAssessment ?? FixPainAssessment() }, set: { viewModel.currentAssessment = $0 }))
+                            .tag(0)
+                        
+                        // Step 2: Pain Details
+                        PainDetailsStep(assessment: Binding(get: { viewModel.currentAssessment ?? FixPainAssessment() }, set: { viewModel.currentAssessment = $0 }))
+                            .tag(1)
+                        
+                        // Step 3: Context
+                        TriggersStep(assessment: Binding(get: { viewModel.currentAssessment ?? FixPainAssessment() }, set: { viewModel.currentAssessment = $0 }))
+                            .tag(2)
+                        
+                        // Step 4: Media
+                        MediaStep(assessment: Binding(get: { viewModel.currentAssessment ?? FixPainAssessment() }, set: { viewModel.currentAssessment = $0 }), selectedPhoto: $selectedPhoto)
+                            .tag(3)
+                            
+                        // Step 5: Summary
+                        SummaryStep(assessment: Binding(get: { viewModel.currentAssessment ?? FixPainAssessment() }, set: { viewModel.currentAssessment = $0 }))
+                            .tag(4)
+                    }
+                    .tabViewStyle(.page(indexDisplayMode: .never))
                 }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                // Disable swipe to enforce button navigation if desired, currently enabled for fluid feel
-                
-                // 3. Bottom Action Area
+            }
+            .navigationBarHidden(true)
+            // Bottom action is a true safe-area inset so content doesn't need magic bottom padding.
+            .safeAreaInset(edge: .bottom, spacing: 0) {
                 VStack(spacing: 16) {
                     if stepIndex < totalSteps - 1 {
-                        FixPainPrimaryButton(title: "Continue") {
+                        Button("Continue") {
                             withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
                                 stepIndex += 1
                             }
                         }
+                        .primaryStyle()
                     } else {
                         if viewModel.isLoadingPlan {
                             ProgressView("Generating Plan...")
                         } else {
-                            FixPainPrimaryButton(title: "Generate Plan") {
+                            Button("Generate Plan") {
                                 Task {
                                     await viewModel.submitAssessmentAndLoadPlan()
                                     if viewModel.plan != nil {
@@ -100,22 +104,21 @@ struct FixPainAssessmentFlowView: View {
                                     }
                                 }
                             }
+                            .primaryStyle()
                         }
-                        
+
                         if let error = viewModel.submitErrorMessage {
                             Text(error)
-                                .font(.caption)
-                                .foregroundColor(.red)
+                                .font(EverFormTheme.Typography.caption)
+                                .foregroundColor(EverFormTheme.Colors.errorRed)
                                 .padding(.top, 4)
                         }
                     }
                 }
-                .padding(.horizontal, FixPainTheme.paddingLarge)
-                .padding(.top, 20)
-                .padding(.bottom, 10) // Safe area handled by wrapper usually, but extra padding looks nice
+                .screenPadding()
+                .padding(.vertical, 16)
+                .background(EverFormTheme.Colors.appBackground.ignoresSafeArea(edges: .bottom))
             }
-            .navigationBarHidden(true)
-            .background(FixPainTheme.background.ignoresSafeArea())
             .fullScreenCover(isPresented: $showResult) {
                 if let plan = viewModel.plan {
                     FixPainResultView(plan: plan, isPresented: $isPresented)
@@ -151,13 +154,13 @@ struct BodyRegionStep: View {
                         }
                     }
                 }
-                .padding(.horizontal, FixPainTheme.paddingLarge)
+                .screenPadding()
                 
                 if let region = assessment.region {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Which Side?")
-                            .font(.headline)
-                            .padding(.horizontal, FixPainTheme.paddingLarge)
+                            .sectionTitle()
+                            .screenPadding()
                         
                         HStack(spacing: 12) {
                             ForEach(availableSides(for: region)) { side in
@@ -166,13 +169,12 @@ struct BodyRegionStep: View {
                                 }
                             }
                         }
-                        .padding(.horizontal, FixPainTheme.paddingLarge)
+                        .screenPadding()
                     }
                     .padding(.top, 20)
                     .transition(.move(edge: .bottom).combined(with: .opacity))
                 }
             }
-            .padding(.bottom, 100) // Spacing for bottom button
         }
     }
     
@@ -203,7 +205,7 @@ struct PainDetailsStep: View {
                 VStack(alignment: .leading, spacing: 16) {
                     HStack {
                         Text("Intensity")
-                            .font(.headline)
+                            .sectionTitle()
                         Spacer()
                         Text("\(Int(assessment.intensity))/10")
                             .font(.system(size: 24, weight: .bold))
@@ -212,20 +214,21 @@ struct PainDetailsStep: View {
                     
                     Slider(value: $assessment.intensity, in: 0...10, step: 1)
                         .tint(intensityColor(assessment.intensity))
+                        .padding(.vertical, 8) // More tap area
                     
                     HStack {
-                        Text("Mild").font(.caption).foregroundStyle(.gray)
+                        Text("Mild").font(EverFormTheme.Typography.caption).foregroundStyle(EverFormTheme.Colors.textSecondary)
                         Spacer()
-                        Text("Severe").font(.caption).foregroundStyle(.gray)
+                        Text("Severe").font(EverFormTheme.Typography.caption).foregroundStyle(EverFormTheme.Colors.textSecondary)
                     }
                 }
-                .padding(.horizontal, FixPainTheme.paddingLarge)
+                .screenPadding()
                 
                 // Quality
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Sensation")
-                        .font(.headline)
-                        .padding(.horizontal, FixPainTheme.paddingLarge)
+                        .sectionTitle()
+                        .screenPadding()
                     
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 100))], spacing: 12) {
                         ForEach(PainQuality.allCases) { quality in
@@ -234,14 +237,14 @@ struct PainDetailsStep: View {
                             }
                         }
                     }
-                    .padding(.horizontal, FixPainTheme.paddingLarge)
+                    .screenPadding()
                 }
                 
                 // Onset
                 VStack(alignment: .leading, spacing: 12) {
                     Text("When did it start?")
-                        .font(.headline)
-                        .padding(.horizontal, FixPainTheme.paddingLarge)
+                        .sectionTitle()
+                        .screenPadding()
                     
                     HStack(spacing: 12) {
                         ForEach(PainOnset.allCases) { onset in
@@ -250,15 +253,14 @@ struct PainDetailsStep: View {
                             }
                         }
                     }
-                    .padding(.horizontal, FixPainTheme.paddingLarge)
+                    .screenPadding()
                 }
             }
-            .padding(.bottom, 100)
         }
     }
     
     func intensityColor(_ value: Double) -> Color {
-        value > 7 ? .red : (value > 4 ? .orange : .green)
+        value > 7 ? EverFormTheme.Colors.errorRed : (value > 4 ? EverFormTheme.Colors.warningAmber : EverFormTheme.Colors.successGreen)
     }
 }
 
@@ -280,23 +282,22 @@ struct TriggersStep: View {
                     FixPainToggleRow(title: "Worse with rest?", isOn: $assessment.restWorse)
                     FixPainToggleRow(title: "Desk/Phone Strain?", isOn: $assessment.postureStrain)
                 }
-                .padding(.horizontal, FixPainTheme.paddingLarge)
+                .screenPadding()
                 
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Red Flags")
-                        .font(.headline)
-                        .foregroundStyle(.red)
-                        .padding(.horizontal, FixPainTheme.paddingLarge)
+                        .sectionTitle()
+                        .foregroundStyle(EverFormTheme.Colors.errorRed)
+                        .screenPadding()
                     
                     VStack(spacing: 12) {
                         FixPainToggleRow(title: "Recent Trauma / Fall", isOn: $assessment.recentTrauma)
                         FixPainToggleRow(title: "Numbness / Tingling", isOn: $assessment.numbnessOrTingling)
                         FixPainToggleRow(title: "Night Pain", isOn: $assessment.nightPain)
                     }
-                    .padding(.horizontal, FixPainTheme.paddingLarge)
+                    .screenPadding()
                 }
             }
-            .padding(.bottom, 100)
         }
     }
 }
@@ -318,12 +319,12 @@ struct MediaStep: View {
                 PhotosPicker(selection: $selectedPhoto, matching: .images) {
                     ZStack {
                         RoundedRectangle(cornerRadius: 24)
-                            .fill(FixPainTheme.cardBackground)
+                            .fill(EverFormTheme.Colors.cardBackground)
                             .frame(height: 240)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 24)
                                     .stroke(style: StrokeStyle(lineWidth: 2, dash: [6]))
-                                    .foregroundStyle(Color.gray.opacity(0.3))
+                                    .foregroundStyle(EverFormTheme.Colors.textSecondary.opacity(0.3))
                             )
                         
                         if let data = assessment.attachedImageData, let uiImage = UIImage(data: data) {
@@ -336,15 +337,15 @@ struct MediaStep: View {
                             VStack(spacing: 12) {
                                 Image(systemName: "camera.fill")
                                     .font(.system(size: 40))
-                                    .foregroundStyle(FixPainTheme.primary)
+                                    .foregroundStyle(EverFormTheme.Colors.primaryBlue)
                                 Text("Tap to upload photo")
-                                    .font(.subheadline)
-                                    .foregroundStyle(FixPainTheme.textSecondary)
+                                    .font(EverFormTheme.Typography.body)
+                                    .foregroundStyle(EverFormTheme.Colors.textSecondary)
                             }
                         }
                     }
                 }
-                .padding(.horizontal, FixPainTheme.paddingLarge)
+                .screenPadding()
                 .onChange(of: selectedPhoto) { _, newItem in
                     Task {
                         if let data = try? await newItem?.loadTransferable(type: Data.self) {
@@ -370,31 +371,29 @@ struct SummaryStep: View {
                     subtitle: "Review your details before we generate your recovery plan."
                 )
                 
-                VStack(spacing: 16) {
-                    SummaryCardRow(icon: "figure.stand", label: "Region", value: assessment.region?.rawValue ?? "-")
-                    SummaryCardRow(icon: "exclamationmark.circle", label: "Intensity", value: "\(Int(assessment.intensity))/10")
-                    SummaryCardRow(icon: "clock", label: "Onset", value: assessment.onset?.rawValue ?? "-")
-                    
-                    if assessment.recentTrauma || assessment.nightPain {
-                        HStack {
-                            Image(systemName: "exclamationmark.triangle.fill")
-                                .foregroundStyle(.red)
-                            Text("Red flags reported")
-                                .font(.subheadline)
-                                .foregroundStyle(.red)
-                            Spacer()
+                EverFormCard {
+                    VStack(spacing: 16) {
+                        SummaryCardRow(icon: "figure.stand", label: "Region", value: assessment.region?.rawValue ?? "-")
+                        SummaryCardRow(icon: "exclamationmark.circle", label: "Intensity", value: "\(Int(assessment.intensity))/10")
+                        SummaryCardRow(icon: "clock", label: "Onset", value: assessment.onset?.rawValue ?? "-")
+                        
+                        if assessment.recentTrauma || assessment.nightPain {
+                            HStack {
+                                Image(systemName: "exclamationmark.triangle.fill")
+                                    .foregroundStyle(EverFormTheme.Colors.errorRed)
+                                Text("Red flags reported")
+                                    .font(EverFormTheme.Typography.caption)
+                                    .foregroundStyle(EverFormTheme.Colors.errorRed)
+                                Spacer()
+                            }
+                            .padding()
+                            .background(EverFormTheme.Colors.errorRed.opacity(0.1))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
-                        .padding()
-                        .background(Color.red.opacity(0.1))
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
                 }
-                .padding(20)
-                .background(FixPainTheme.cardBackground)
-                .clipShape(RoundedRectangle(cornerRadius: 24))
-                .padding(.horizontal, FixPainTheme.paddingLarge)
+                .screenPadding()
             }
-            .padding(.bottom, 100)
         }
     }
 }
@@ -407,15 +406,40 @@ struct SummaryCardRow: View {
     var body: some View {
         HStack {
             Image(systemName: icon)
-                .foregroundStyle(FixPainTheme.textSecondary)
+                .foregroundStyle(EverFormTheme.Colors.textSecondary)
                 .frame(width: 24)
             Text(label)
-                .foregroundStyle(FixPainTheme.textSecondary)
+                .font(EverFormTheme.Typography.body)
+                .foregroundStyle(EverFormTheme.Colors.textSecondary)
             Spacer()
             Text(value)
-                .font(.system(size: 17, weight: .semibold))
-                .foregroundStyle(FixPainTheme.textPrimary)
+                .font(EverFormTheme.Typography.body.weight(.semibold))
+                .foregroundStyle(EverFormTheme.Colors.textPrimary)
         }
     }
 }
 
+// Helper Chip Component
+struct FixPainChip: View {
+    let title: String
+    let isSelected: Bool
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+                .font(EverFormTheme.Typography.body)
+                .fontWeight(isSelected ? .semibold : .regular)
+                .foregroundStyle(isSelected ? EverFormTheme.Colors.textOnAccent : EverFormTheme.Colors.textPrimary)
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 12)
+                .background(isSelected ? EverFormTheme.Colors.fixPainIndigo : EverFormTheme.Colors.cardBackground)
+                .clipShape(RoundedRectangle(cornerRadius: 12))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(EverFormTheme.Colors.cardStroke, lineWidth: isSelected ? 0 : 1)
+                )
+                .shadow(color: isSelected ? EverFormTheme.Colors.fixPainIndigo.opacity(0.3) : Color.clear, radius: 4, y: 2)
+        }
+    }
+}

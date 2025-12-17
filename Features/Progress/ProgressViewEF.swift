@@ -8,34 +8,34 @@ struct ProgressViewEF: View {
     @State private var range: RangeOpt = .d7
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 16) {
-                Text("Progress")
-                    .font(.system(size: 34, weight: .bold))
-                    .foregroundStyle(EFTheme.text(scheme))
-                    .frame(maxWidth: .infinity, alignment: .leading)
+        EFScreenContainer {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    EFHeader(title: "Progress")
 
-                RangePicker(selection: $range)
+                    RangePicker(selection: $range)
+                        .padding(.horizontal, 20)
 
-                // Summary cards
-                LazyVGrid(columns: Array(repeating: .init(.flexible(), spacing: 12), count: 2), spacing: 12) {
-                    Summary("Training",  "51.0 min", .green,  "dumbbell.fill")
-                    Summary("Nutrition", "2.1k kcal", .orange, "fork.knife")
-                    Summary("Mobility",  "14.4 min", .purple, "figure.run")
-                    Summary("Recovery",  "6.7 hrs", .blue,   "moon.fill")
-                    Summary("Hydration", "1.7k ml",  .cyan,   "drop.fill")
+                    // Summary cards
+                    LazyVGrid(columns: Array(repeating: .init(.flexible(), spacing: 12), count: 2), spacing: 12) {
+                        Summary("Training",  "51.0 min", .green,  "dumbbell.fill")
+                        Summary("Nutrition", "2.1k kcal", .orange, "fork.knife")
+                        Summary("Mobility",  "14.4 min", .purple, "figure.run")
+                        Summary("Recovery",  "6.7 hrs", .blue,   "moon.fill")
+                        Summary("Hydration", "1.7k ml",  .cyan,   "drop.fill")
+                    }
+                    .padding(.horizontal, 20)
+
+                    ChartCard(title: "Training", tint: .green,  range: range)
+                    ChartCard(title: "Nutrition", tint: .orange, range: range)
+                    ChartCard(title: "Mobility", tint: .purple,  range: range)
+                    ChartCard(title: "Recovery", tint: .blue,    range: range)
+                    ChartCard(title: "Hydration", tint: .cyan,   range: range)
                 }
-
-                ChartCard(title: "Training", tint: .green,  range: range)
-                ChartCard(title: "Nutrition", tint: .orange, range: range)
-                ChartCard(title: "Mobility", tint: .purple,  range: range)
-                ChartCard(title: "Recovery", tint: .blue,    range: range)
-                ChartCard(title: "Hydration", tint: .cyan,   range: range)
+                .padding(.top, 8)
+                .padding(.bottom, 24)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 8)
         }
-        .background(EFTheme.background(scheme).ignoresSafeArea())
     }
 }
 
@@ -49,9 +49,9 @@ private struct RangePicker: View {
             ForEach(RangeOpt.allCases, id: \.rawValue) { r in
                 Text(r.rawValue)
                     .font(.subheadline.weight(selection == r ? .bold : .regular))
-                    .foregroundStyle(selection == r ? EFTheme.text(scheme) : EFTheme.muted(scheme))
+                    .foregroundStyle(selection == r ? AppTheme.Colors.textPrimary : AppTheme.Colors.textSecondary)
                     .padding(.vertical, 8).padding(.horizontal, 12)
-                    .background(EFTheme.surface(scheme).opacity(selection == r ? 1 : 0.8))
+                    .background(AppTheme.Colors.surfaceSecondary.opacity(selection == r ? 1 : 0.7))
                     .clipShape(Capsule())
                     .onTapGesture { selection = r }
             }
@@ -70,8 +70,8 @@ private struct Summary: View {
             HStack(spacing: 12) {
                 Image(systemName: icon).foregroundStyle(tint).font(.system(size: 18, weight: .bold))
                 VStack(alignment: .leading, spacing: 4) {
-                    Text(title).font(.headline).foregroundStyle(EFTheme.text(scheme))
-                    Text(value).font(.subheadline).foregroundStyle(EFTheme.muted(scheme))
+                    Text(title).font(.headline).foregroundStyle(AppTheme.Colors.textPrimary)
+                    Text(value).font(.subheadline).foregroundStyle(AppTheme.Colors.textSecondary)
                 }
                 Spacer()
             }
@@ -103,7 +103,7 @@ private struct ChartCard: View {
                 HStack {
                     Text(title)
                         .font(.headline)
-                        .foregroundStyle(EFTheme.text(scheme))
+                        .foregroundStyle(AppTheme.Colors.textPrimary)
                     Spacer()
                     if progress < 1 {
                         ProgressView()
@@ -151,21 +151,21 @@ private struct ChartCard: View {
                 }
                 .chartXAxis {
                     AxisMarks(values: .automatic) { _ in
-                        AxisGridLine().foregroundStyle(Color.secondary.opacity(0.1))
-                        AxisTick().foregroundStyle(Color.secondary.opacity(0.2))
-                        AxisValueLabel()
+                        AxisGridLine().foregroundStyle(AppTheme.Colors.separator.opacity(0.35))
+                        AxisTick().foregroundStyle(AppTheme.Colors.separator.opacity(0.45))
+                        AxisValueLabel().foregroundStyle(AppTheme.Colors.textSecondary)
                     }
                 }
                 .chartYAxis {
                     AxisMarks(position: .leading) { _ in
-                        AxisGridLine().foregroundStyle(Color.secondary.opacity(0.1))
-                        AxisValueLabel()
+                        AxisGridLine().foregroundStyle(AppTheme.Colors.separator.opacity(0.35))
+                        AxisValueLabel().foregroundStyle(AppTheme.Colors.textSecondary)
                     }
                 }
                 .frame(height: 220)
                 .id(drawingKey) // Force redraw on range change
                 #else
-                Text("Charts unavailable on this SDK").foregroundStyle(EFTheme.muted(scheme)).frame(height: 120)
+                Text("Charts unavailable on this SDK").foregroundStyle(AppTheme.Colors.textSecondary).frame(height: 120)
                 #endif
             }
         }
